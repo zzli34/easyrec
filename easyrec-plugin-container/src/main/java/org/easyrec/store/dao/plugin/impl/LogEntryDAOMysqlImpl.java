@@ -49,6 +49,7 @@ import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -213,9 +214,10 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
 
 
         getComputationDurationForDate = new SqlFunction<Integer>(dataSource,
-                "SELECT sum(timestampdiff(second, startDate, endDate)) AS sum_seconds FROM plugin_log WHERE DATE(endDate) = ?");
+                "SELECT sum(timestampdiff(second, startDate, endDate)) AS sum_seconds FROM plugin_log WHERE endDate BETWEEN ? AND ?");
         getComputationDurationForDate.setResultType(Integer.class);
-        getComputationDurationForDate.declareParameter(new SqlParameter("endDate", Types.DATE));
+        getComputationDurationForDate.declareParameter(new SqlParameter("start", Types.DATE));
+        getComputationDurationForDate.declareParameter(new SqlParameter("end", Types.DATE));
         getComputationDurationForDate.compile();
 
 
@@ -239,6 +241,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return "classpath:sql/pluginContainer/PluginLog.sql";
     }
 
+    @Override
     public void startEntry(LogEntry entry) {
         Preconditions.checkNotNull(entry);
         Preconditions.checkNotNull(entry.getPluginId());
@@ -254,6 +257,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
                 serializedConfiguration);
     }
 
+    @Override
     public void endEntry(LogEntry entry) {
         Preconditions.checkNotNull(entry);
         Preconditions.checkNotNull(entry.getPluginId());
@@ -275,27 +279,32 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
                 serializedStatistics);
     }
 
+    @Override
     public void endAllEntries(Date endDate) {
         Preconditions.checkNotNull(endDate);
 
         endAllEntries.update(endDate, FORCED_END_MARSHALED);
     }
 
+    @Override
     public void endAllEntries() {
         Date endDate = new Date();
 
         endAllEntries(endDate);
     }
 
+    @Override
     public void deleteEntry(LogEntry entry) {
         deleteLogEntryStatement.update(entry.getTenantId(), entry.getPluginId().getUri().toASCIIString(),
                 entry.getPluginId().getVersion().toString(), entry.getStartDate(), entry.getAssocTypeId());
     }
 
+    @Override
     public List<Integer> getRunningTenants() {
         return getRunningTenants.execute();
     }
 
+    @Override
     public List<LogEntry> getLogEntries(int offset, int limit) {
         Preconditions.checkArgument(offset >= 0, "offset must be greater than or equal to 0");
         Preconditions.checkArgument(limit >= 0, "limit must be greater than or equal to 0");
@@ -303,6 +312,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getLogEntries.execute(offset, limit);
     }
 
+    @Override
     public List<LogEntry> getLogEntriesForTenant(int tenantId, int offset, int limit) {
         Preconditions.checkArgument(offset >= 0, "offset must be greater than or equal to 0");
         Preconditions.checkArgument(limit >= 0, "limit must be greater than or equal to 0");
@@ -310,6 +320,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getLogEntriesForTenant.execute(tenantId, offset, limit);
     }
 
+    @Override
     public List<LogEntry> getLogEntries(int assocTypeId, int offset, int limit) {
         Preconditions.checkArgument(offset >= 0, "offset must be greater than or equal to 0");
         Preconditions.checkArgument(limit >= 0, "limit must be greater than or equal to 0");
@@ -317,6 +328,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getLogEntriesWithAssocType.execute(assocTypeId, offset, limit);
     }
 
+    @Override
     public List<LogEntry> getLogEntriesForTenant(int tenantId, int assocTypeId, int offset, int limit) {
         Preconditions.checkArgument(offset >= 0, "offset must be greater than or equal to 0");
         Preconditions.checkArgument(limit >= 0, "limit must be greater than or equal to 0");
@@ -324,26 +336,45 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getLogEntriesForTenantWithAssocType.execute(tenantId, assocTypeId, offset, limit);
     }
 
+    @Override
     public int getNumberOfLogEntries() {
         return getNumberOfLogEntries.run();
     }
 
+    @Override
     public int getNumberOfLogEntriesForTenant(int tenantId) {
         return getNumberOfLogEntriesForTenant.run(tenantId);
     }
 
+    @Override
     public void deleteLogEntries() {
         deleteLogEntries.update();
     }
 
+    @Override
     public int getComputationDurationForDate(Date date) {
         Preconditions.checkNotNull(date);
-
-        Integer result = getComputationDurationForDate.findObject(date);
+        
+       //following looks unneccesary complicated but is used to avoid SQL Date() function and thus use index on endDate!
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date);
+        cal2.set(Calendar.HOUR, 23);
+        cal2.set(Calendar.MINUTE, 59);
+        cal2.set(Calendar.SECOND, 59);
+        cal2.set(Calendar.MILLISECOND, 999);
+        
+        Integer result = getComputationDurationForDate.findObject(cal.getTime(),cal2.getTime());
 
         return Objects.firstNonNull(result, 0);
     }
 
+    @Override
     public int getComputationDurationForDate() {
         Date date = new Date();
 

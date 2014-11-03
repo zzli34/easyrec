@@ -285,9 +285,7 @@ public class OperatorController extends MultiActionController {
                         tenantService.updateConfigProperty(iTenantId, RemoteTenant.SCHEDULER_ENABLED, "true");
                         tenantService.updateConfigProperty(iTenantId, RemoteTenant.SCHEDULER_EXECUTION_TIME,
                                 RemoteTenant.SCHEDULER_DEFAULT_EXECUTION_TIME);
-                        pluginScheduler.addTask(remoteTenantDAO.get(iTenantId));
-
-                        pluginScheduler.addTask(remoteTenantDAO.get(iTenantId));
+                        pluginScheduler.addTask(remoteTenantDAO.get(iTenantId), null);
 
                         namedConfigurationService.setupDefaultTenant(iTenantId, request.getRemoteAddr());
 

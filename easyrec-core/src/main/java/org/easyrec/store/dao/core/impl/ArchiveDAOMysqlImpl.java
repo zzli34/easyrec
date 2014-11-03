@@ -60,6 +60,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
      *
      * @return
      */
+    @Override
     public String getActualArchiveTableName() {
 
         String actualArchiveTableName = "actionarchive";
@@ -89,6 +90,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
      * @param actualArchiveTableName
      * @return
      */
+    @Override
     public String generateNewArchive(String actualArchiveTableName) {
 
         Integer getNextIndex = null;
@@ -122,6 +124,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
         }
     }
 
+    @Override
     public Integer getNumberOfActionsToArchive(int tenantId, Date refDate) {
 
         Object[] args = null;
@@ -141,6 +144,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
         }
     }
 
+    @Override
     public Integer getArchiveSize(String tablename) {
         StringBuilder sql = new StringBuilder().append(" SELECT").append("   Count(1) as c ").append(" FROM ")
                 .append(tablename);
@@ -153,10 +157,12 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
         }
     }
 
+    @Override
     public boolean isArchiveFull(String tablename, Integer actionsToAdd) {
         return getArchiveSize(tablename) > MAX_TABLE_RECORDS - actionsToAdd;
     }
 
+    @Override
     public void moveActions(String tablename, int tenantId, Date refDate) {
 
         Object[] args = null;

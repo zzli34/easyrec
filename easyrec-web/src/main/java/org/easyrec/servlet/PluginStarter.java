@@ -71,7 +71,7 @@ import java.util.Set;
 public class PluginStarter extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
 
     @SuppressWarnings({"UnusedDeclaration"})
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5919514564735863894L;
     private TenantService tenantService;
     private RemoteTenantDAO remoteTenantDAO;
     private RemoteTenantService remoteTenantService;

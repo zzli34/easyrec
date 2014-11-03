@@ -20,15 +20,17 @@ package org.easyrec.service.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.web.RemoteTenant;
-import org.easyrec.model.web.Queue;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.easyrec.store.dao.web.RemoteTenantDAO;
 
 /**
  * This Class adds a tenant to the plugin queue at its execution time
@@ -56,46 +58,46 @@ public class PluginTimerTask {
     private final Log logger = LogFactory.getLog(getClass());
 
     private Timer pluginTimer = null;
-    private RemoteTenant remoteTenant;
+    private final RemoteTenantDAO remoteTenantDAO;
+    private final String exectutionTime;
 
     private class PluginInnerTimerTask extends TimerTask {
 
-        private RemoteTenant remoteTenant;
-        private Queue queue;
+        private final RemoteTenantDAO remoteTenantDAO;
+        private final LinkedBlockingQueue<RemoteTenant> queue;
+        private final String executionTime;
         private final Log logger = LogFactory.getLog(getClass());
 
-        public PluginInnerTimerTask(RemoteTenant remoteTenant, Queue queue) {
-            this.remoteTenant = remoteTenant;
+        public PluginInnerTimerTask(RemoteTenantDAO remoteTenantDAO, LinkedBlockingQueue<RemoteTenant> queue, String executionTime) {
+            this.remoteTenantDAO = remoteTenantDAO;
             this.queue = queue;
+            this.executionTime = executionTime;
         }
 
+        @Override
         public void run() {
-            logger.info("Adding Tenant '" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() +
-                    "' for plugin runs to Queue (" + new Date() + ")");
+            
+            logger.info("Getting tenants scheduled for plugin execution at " + executionTime);
+            
+            List<RemoteTenant> tenants = remoteTenantDAO.getTenantsByExecutionTime(RemoteTenant.SCHEDULER_EXECUTION_TIME, executionTime);
 
-            queue.add(remoteTenant);
+            queue.addAll(tenants);
+            
+            logger.info("Added " + tenants.size() + " tenants to queue!");
         }
-    }
+    };
 
-    ;
-
-    public PluginTimerTask() {}
-
-    public PluginTimerTask(RemoteTenant remoteTenant, Queue queue) {
+    public PluginTimerTask(RemoteTenantDAO remoteTenantDAO, LinkedBlockingQueue<RemoteTenant> queue, String executionTime) {
 
         logger.debug(
-                "Init PluginTimerTask for '" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() +
-                        "' at " + remoteTenant.getSchedulerExecutionTime());
+                "Init PluginTimerTask for " + executionTime);
 
-        this.remoteTenant = remoteTenant;
+        this.remoteTenantDAO = remoteTenantDAO;
+        this.exectutionTime = executionTime;
 
         pluginTimer = new Timer();
-        pluginTimer.scheduleAtFixedRate(new PluginInnerTimerTask(remoteTenant, queue),
-                getExecutionTime(remoteTenant.getSchedulerExecutionTime()), FIXED_RATE);
-    }
-
-    public String getTenantName() {
-        return remoteTenant.getStringId();
+        pluginTimer.scheduleAtFixedRate(new PluginInnerTimerTask(remoteTenantDAO, queue, executionTime),
+                getExecutionTime(executionTime), FIXED_RATE);
     }
 
     /**
@@ -105,7 +107,7 @@ public class PluginTimerTask {
         pluginTimer.cancel();
         pluginTimer = null;
         logger.debug(
-                "cancel Timertask for '" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() + "'");
+                "cancel Timertask for '" + exectutionTime);
     }
 
 
@@ -117,6 +119,9 @@ public class PluginTimerTask {
      */
     private Date getExecutionTime(String exeTime) {
         try {
+            if (exeTime == null) {
+                exeTime = "02:00";
+            }
             Date now = new Date();
             DateFormat exeTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
             DateFormat todayDateFormat = new SimpleDateFormat("dd.MM.yyyy");

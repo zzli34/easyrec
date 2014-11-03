@@ -26,7 +26,6 @@ import org.easyrec.model.plugin.NamedConfiguration;
 import org.easyrec.model.plugin.archive.ArchivePseudoConfiguration;
 import org.easyrec.model.plugin.archive.ArchivePseudoGenerator;
 import org.easyrec.model.web.EasyRecSettings;
-import org.easyrec.model.web.Queue;
 import org.easyrec.plugin.configuration.GeneratorContainer;
 import org.easyrec.service.core.TenantService;
 import org.easyrec.store.dao.plugin.LogEntryDAO;
@@ -38,6 +37,8 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.springframework.core.task.TaskExecutor;
 
 /**
  * This class schedules plugins for each tenant.
@@ -64,8 +65,10 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
     private RemoteTenantDAO remoteTenantDAO;
     private OperatorDAO operatorDAO;
     private HashMap<Integer, PluginTimerTask> pluginTimerTasks;
+    private HashMap<String, PluginTimerTask> timerTaskPerMinute;
+    private TaskExecutor taskExecutor;
     private LogEntryDAO logEntryDAO;
-    private Queue queue;
+    private LinkedBlockingQueue<RemoteTenant> queue;
     private TenantService tenantService;
     private RemoteTenantService remoteTenantService;
     private EasyRecSettings easyrecSettings;
@@ -74,7 +77,10 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
     private Scheduler scheduler;
 
     public PluginScheduler() {
-        queue = new Queue();
+        //this.taskExecutor = taskExecutor;
+        
+        queue = new LinkedBlockingQueue<>();
+        timerTaskPerMinute = new HashMap<>();
     }
 
     /**
@@ -101,16 +107,14 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
      */
     @Override
     public void destroy() throws Exception {
-        Thread interruptThread = scheduler;
-        scheduler = null;
-        interruptThread.interrupt();
-
-        for (PluginTimerTask task : pluginTimerTasks.values()) {
-            task.destroy();
-            //noinspection UnusedAssignment
-            task = null;
+        
+        for (PluginTimerTask task : timerTaskPerMinute.values()) {
+            if (task != null) {
+                task.destroy();
+                task = null;
+            }
         }
-        pluginTimerTasks.clear();
+        timerTaskPerMinute.clear();
         logger.info("PluginScheduler shut down.");
     }
 
@@ -118,45 +122,29 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
      * Add a PluginTimerTask to a Tenant
      *
      * @param remoteTenant RemoteTenant
+     * @param previousTime
      */
-    public void addTask(RemoteTenant remoteTenant) {
-
-        if (pluginTimerTasks != null) {
-            pluginTimerTasks.put(remoteTenant.getId(), new PluginTimerTask(remoteTenant, queue));
+    public void addTask(RemoteTenant remoteTenant, String previousTime) {
+        
+        if (previousTime != null) {
+            PluginTimerTask ptt = timerTaskPerMinute.get(previousTime);
+            if (ptt != null) { // a TimerTask for the given minute exists
+                 // check if any other tenant uses this execution time
+                List<RemoteTenant> tenants = remoteTenantDAO.getTenantsByExecutionTime(RemoteTenant.SCHEDULER_EXECUTION_TIME, previousTime);
+                // if no other tenants needs the minute anymore, remove
+                if ((tenants == null) || (tenants.isEmpty())) {
+                    timerTaskPerMinute.remove(previousTime);
+                    ptt.destroy();
+                    logger.info("Removed TimerTaks for " + previousTime +"! No further tenants scheduled at this time.");
+                }
+            }
         }
-    }
-
-    /**
-     * Update a tenant's PluginTimerTask
-     *
-     * @param remoteTenant RemoteTenant
-     */
-    public void updateTask(RemoteTenant remoteTenant) {
-
-        boolean tenantInTaskList = false;
-
-        if (pluginTimerTasks != null) {
-
-            PluginTimerTask pluginTimerTask = pluginTimerTasks.get(remoteTenant.getId());
-
-            if (pluginTimerTask != null) {
-                tenantInTaskList = true;
-                pluginTimerTask.destroy();
-                pluginTimerTasks.remove(remoteTenant.getId());
-
-            }
-            if (remoteTenant.isSchedulerEnabled()) {
-                pluginTimerTasks.put(remoteTenant.getId(), new PluginTimerTask(remoteTenant, queue));
-                if (!tenantInTaskList) {
-                    logger.info("'" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() +
-                            "' added to PluginTask List");
-                }
-            } else {
-                if (tenantInTaskList) {
-                    logger.info("'" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() +
-                            "' removed from PluginTask List");
-                }
-            }
+        
+        PluginTimerTask tt = timerTaskPerMinute.get(remoteTenant.getSchedulerExecutionTime());
+        if (tt == null) { //if no other tenant uses this exectutionTime yet, add a new TimerTask for this minute
+            tt = new PluginTimerTask(remoteTenantDAO, queue, remoteTenant.getSchedulerExecutionTime());
+            timerTaskPerMinute.put(remoteTenant.getSchedulerExecutionTime(), tt);
+            logger.info("Added TimerTask for " + remoteTenant.getSchedulerExecutionTime());
         }
     }
 
@@ -184,7 +172,7 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
 
     public void initTasks() {
 
-        pluginTimerTasks = new HashMap<Integer, PluginTimerTask>();
+        //pluginTimerTasks = new HashMap<Integer, PluginTimerTask>();
 
         List<Operator> operators = operatorDAO.getOperators(0, Integer.MAX_VALUE);
         for (Operator operator : operators) {
@@ -194,25 +182,9 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
             for (RemoteTenant r : tenants) {
 
                 if (r.isSchedulerEnabled()) {
-                    addTask(r);
-                    logger.info("'" + r.getOperatorId() + " - " + r.getStringId() + "' added to PluginTask List");
+                    addTask(r, null);
+                    //logger.info("'" + r.getOperatorId() + " - " + r.getStringId() + "' added to PluginTask List");
                 }
-            }
-        }
-    }
-
-    /**
-     * Iterates through all tenants and adds or removes a tenant
-     */
-    private void updateTasks() {
-
-        List<Operator> operators = operatorDAO.getOperators(0, Integer.MAX_VALUE);
-
-        for (Operator operator : operators) {
-
-            List<RemoteTenant> tenants = remoteTenantDAO.getTenantsFromOperator(operator.getOperatorId());
-            for (RemoteTenant r : tenants) {
-                updateTask(r);
             }
         }
     }
@@ -221,10 +193,10 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
 
         private final Log logger = LogFactory.getLog(getClass());
 
-        Queue queue;
+        LinkedBlockingQueue<RemoteTenant> queue;
         RemoteTenant remoteTenant;
 
-        Scheduler(Queue queue) {
+        Scheduler(LinkedBlockingQueue<RemoteTenant> queue) {
             this.queue = queue;
         }
 
@@ -235,18 +207,20 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
 
             while (!thisThread.isInterrupted() && scheduler == thisThread) {
 
-                updateTasks();
-
-                if (queue.isEmpty()) {
-                    try {
-                        sleep(SCHEDULER_PAUSE);
-                        logger.debug("pausing plugin scheduler for " + SCHEDULER_PAUSE + "ms.");
-                    } catch (InterruptedException ex) {
-                        logger.debug("pausing plugin scheduler failed", ex);
-                        Thread.currentThread().interrupt();
-                    }
-                } else {
-                    remoteTenant = queue.poll();
+                try {
+                    // why all the time?
+                    //updateTasks();
+                    
+//                if (queue.isEmpty()) {
+//                    try {
+//                        sleep(SCHEDULER_PAUSE);
+//                        logger.debug("pausing plugin scheduler for " + SCHEDULER_PAUSE + "ms.");
+//                    } catch (InterruptedException ex) {
+//                        logger.debug("pausing plugin scheduler failed", ex);
+//                        Thread.currentThread().interrupt();
+//                    }
+//                } else {
+                    remoteTenant = queue.take();
 
                     final Properties tenantConfig = tenantService.getTenantConfig(remoteTenant.getId());
 
@@ -267,6 +241,9 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
                         logger.info("Archiving actions older than " + days + " day(s)");
 
                         generatorContainer.runGenerator(namedConfiguration);
+                    } else {
+                        logger.info("Archiving disabled for tenant: "+ remoteTenant.getOperatorId() + ":" +
+                                remoteTenant.getStringId());
                     }
 
                     logger.info("starting generator plugin for tenant: " + remoteTenant.getOperatorId() + ":" +
@@ -280,11 +257,13 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
                     // Problem: how to get ContextPath the needs to present to build backtracking URL?
 
                     remoteTenantService.updateTenantStatistics(remoteTenant.getId());
+                } catch (InterruptedException ex) {
+                    logger.debug("PluginScheduler stopped. ");
+                }
                 }
             }
-            logger.debug("PluginScheduler stopped. ");
         }
-    }
+    
 
     public void setOperatorDAO(OperatorDAO operatorDAO) {
         this.operatorDAO = operatorDAO;

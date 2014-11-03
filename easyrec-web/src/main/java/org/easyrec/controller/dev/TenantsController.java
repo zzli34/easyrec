@@ -437,13 +437,15 @@ public class TenantsController extends MultiActionController {
 
         if (remoteTenant != null) {
             remoteTenant.setSchedulingEnabled(enabled);
+            String previousTime = remoteTenant.getSchedulerExecutionTime();
             remoteTenant.setSchedulerExecutionTime(executionTime);
 
             tenantService.storeTenantConfig(remoteTenant.getId(), remoteTenant.getTenantConfigProperties());
 
-            if (!Strings.isNullOrEmpty(executionTime)) {
-                pluginScheduler.updateTask(remoteTenant);
-            }
+            // always update! tenant is removed on update if scheduling is disabled
+            //if (!Strings.isNullOrEmpty(executionTime)) {
+                pluginScheduler.addTask(remoteTenant, previousTime);
+            //}
         }
 
         return MessageBlock.createSingle(mav, MSG.PLUGIN_CONFIG_CHANGED, STORE_SCHEDULER, MSG.SUCCESS);

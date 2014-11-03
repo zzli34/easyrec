@@ -161,7 +161,7 @@ public class RemoteTenantController extends MultiActionController {
 
     public ModelAndView register(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
@@ -236,7 +236,7 @@ public class RemoteTenantController extends MultiActionController {
                 tenantService.updateConfigProperty(iTenantId, RemoteTenant.SCHEDULER_ENABLED, "true");
                 tenantService.updateConfigProperty(iTenantId, RemoteTenant.SCHEDULER_EXECUTION_TIME,
                         RemoteTenant.SCHEDULER_DEFAULT_EXECUTION_TIME);
-                pluginScheduler.addTask(remoteTenantDAO.get(iTenantId));
+                pluginScheduler.addTask(remoteTenantDAO.get(iTenantId), null);
 
                 if (RemoteTenant.DEFAULT_TENANT_ID.equals(tenantId))
                     // create default items and rules for "EASYREC_DEMO"

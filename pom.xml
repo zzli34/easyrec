@@ -99,8 +99,8 @@
             -Xlint:deprecation,fallthrough,finally,path,serial,unchecked
         </maven.compile.compilerargs>
         <compile.forked>false</compile.forked>
-        <java.source.version>1.6</java.source.version>
-        <java.target.version>1.6</java.target.version>
+        <java.source.version>1.7</java.source.version>
+        <java.target.version>1.7</java.target.version>
         <surefire.skip>false</surefire.skip>
         <surefire.failure.ignore>true</surefire.failure.ignore>
         <surefire.forkmode>once</surefire.forkmode>
@@ -246,8 +246,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.source.version}</source>
-                    <target>${java.target.version}</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <showDeprecation>true</showDeprecation>
                     <fork>${compile.forked}</fork>
                     <compilerArgument>

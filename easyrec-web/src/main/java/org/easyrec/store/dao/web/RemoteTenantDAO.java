@@ -160,4 +160,14 @@ public interface RemoteTenantDAO extends BasicDAO {
      * @param tenantId
      */
     public void reset(Integer tenantId);
+    
+    /**
+     * Finds tenants by execution time. The execution time is stored in the tenantConfig properties.
+     * You can specify the property key used to store the exectuion time and the executionTime that the
+     * tenant should match.
+     * @param propertyKey
+     * @param executionTime
+     * @return 
+     */
+    public List<RemoteTenant> getTenantsByExecutionTime(String propertyKey, String executionTime);
 }

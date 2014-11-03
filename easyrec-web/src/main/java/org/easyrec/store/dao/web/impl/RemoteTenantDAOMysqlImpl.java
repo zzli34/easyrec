@@ -73,6 +73,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     private static final String SQL_GET_TENANTS;
     private static final String SQL_GET_TENANTS_FROM_OPERATOR;
     private static final String SQL_GET_ALL_TENANTS;
+    private static final String SQL_GET_TENANTS_BY_EXECUTIONTIME;
 
     private static final int[] ARGTYPES_KEY = {Types.VARCHAR, Types.VARCHAR};
 
@@ -107,6 +108,9 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
                 .append(", OPERATORID, URL, DESCRIPTION, CREATIONDATE, TENANTCONFIG, TENANTSTATISTIC ").append(" FROM ")
                 .append(DEFAULT_TABLE_NAME).append(" WHERE ").append("   OPERATORID = ? ").append(" ORDER BY  ")
                 .append("   CREATIONDATE ").toString();
+        
+        SQL_GET_TENANTS_BY_EXECUTIONTIME = new StringBuilder().append("SELECT * FROM ").append(DEFAULT_TABLE_NAME)
+                .append(" WHERE ").append(DEFAULT_TENANT_CONFIG_COLUMN_NAME).append(" LIKE ?").toString();
 
     }
 
@@ -251,6 +255,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     * (non-Javadoc)
     * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO#getTenantsFromOperator(java.lang.String)
     */
+    @Override
     public List<RemoteTenant> getTenantsFromOperator(String operatorId) {
 
         Object[] args = {operatorId};
@@ -269,6 +274,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
      * (non-Javadoc)
      * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO#getTenantsFromOperator(java.lang.String)
      */
+    @Override
     public List<RemoteTenant> getAllTenants() {
         try {
             return getJdbcTemplate().query(SQL_GET_ALL_TENANTS, remoteTenantRowMapper);
@@ -283,6 +289,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
      * (non-Javadoc)
      * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO
      */
+    @Override
     public List<RemoteTenant> getTenants(int offset, int limit) {
         return getTenants(offset, limit, false);
     }
@@ -291,6 +298,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
      * (non-Javadoc)
      * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO
      */
+    @Override
     public List<RemoteTenant> getTenants(int offset, int limit, boolean filterDemoTenants) {
         try {
             String filter = "";
@@ -311,6 +319,20 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     }
 
 
+    @Override
+    public List<RemoteTenant> getTenantsByExecutionTime(String propertyKey, String executionTime) {
+        
+        try {
+            String clause = "%" + propertyKey + "=" + executionTime.replace(":", "\\\\:") + "%";
+            Object[] args = {clause};
+            int[] argTypes = {Types.VARCHAR};
+            return getJdbcTemplate().query(SQL_GET_TENANTS_BY_EXECUTIONTIME, args, argTypes, remoteTenantRowMapper);
+        } catch (Exception e) {
+            logger.warn("An error occurred while fetching tenants by executionTime!", e);
+            return null;
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#removeOperator(java.lang.String)
@@ -342,6 +364,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     /**
      * updates Tenant from Cache
      */
+    @Override
     public void updateTenantInCache(RemoteTenant r) {
         remoteTenantCache.remove(r.getStringId() + ":::" + r.getOperatorId());
         remoteTenantIntCache.remove(r.getId());
@@ -364,6 +387,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     /**
      * Clears the statistic properties
      */
+    @Override
     public void reset(Integer tenantId) {
         getJdbcTemplate().update("UPDATE tenant SET tenantStatistic='' WHERE id=" + tenantId);
     }
