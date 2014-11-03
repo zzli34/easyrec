@@ -78,6 +78,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      *
      * @param tenantId
      * @param operatorId
+     * @return 
      */
     public RemoteTenant get(String operatorId, String tenantId);
 
@@ -86,6 +87,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * with the given tenantid.
      *
      * @param tenantId
+     * @return 
      */
     public RemoteTenant get(Integer tenantId);
 
@@ -151,6 +153,7 @@ public interface RemoteTenantDAO extends BasicDAO {
 
     /**
      * updates Tenant from Cache
+     * @param r
      */
     public void updateTenantInCache(RemoteTenant r);
 

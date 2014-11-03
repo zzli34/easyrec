@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
-import org.springframework.core.task.TaskExecutor;
 
 /**
  * This class schedules plugins for each tenant.
@@ -57,16 +56,12 @@ import org.springframework.core.task.TaskExecutor;
  */
 public class PluginScheduler implements InitializingBean, DisposableBean {
 
-    // TODO: move to vocabulary?
-    private final static int SCHEDULER_PAUSE = 30 * 1000;
-
+ 
     private final Log logger = LogFactory.getLog(getClass());
 
     private RemoteTenantDAO remoteTenantDAO;
     private OperatorDAO operatorDAO;
-    private HashMap<Integer, PluginTimerTask> pluginTimerTasks;
     private HashMap<String, PluginTimerTask> timerTaskPerMinute;
-    private TaskExecutor taskExecutor;
     private LogEntryDAO logEntryDAO;
     private LinkedBlockingQueue<RemoteTenant> queue;
     private TenantService tenantService;
@@ -77,7 +72,6 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
     private Scheduler scheduler;
 
     public PluginScheduler() {
-        //this.taskExecutor = taskExecutor;
         
         queue = new LinkedBlockingQueue<>();
         timerTaskPerMinute = new HashMap<>();
@@ -149,30 +143,8 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
     }
 
 
-    /**
-     * Stops a tenant's PluginTimerTask
-     *
-     * @param remoteTenant RemoteTenant
-     */
-    public void stopTask(RemoteTenant remoteTenant) {
-
-        if (pluginTimerTasks != null) {
-            PluginTimerTask pluginTimerTask = pluginTimerTasks.get(remoteTenant.getId());
-
-            if (pluginTimerTask != null) {
-                pluginTimerTask.destroy();
-                pluginTimerTasks.remove(remoteTenant.getId());
-            }
-
-            logger.info("'" + remoteTenant.getOperatorId() + " - " + remoteTenant.getStringId() +
-                    "' removed from PluginTimerTask");
-
-        }
-    }
-
     public void initTasks() {
 
-        //pluginTimerTasks = new HashMap<Integer, PluginTimerTask>();
 
         List<Operator> operators = operatorDAO.getOperators(0, Integer.MAX_VALUE);
         for (Operator operator : operators) {
@@ -208,18 +180,6 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
             while (!thisThread.isInterrupted() && scheduler == thisThread) {
 
                 try {
-                    // why all the time?
-                    //updateTasks();
-                    
-//                if (queue.isEmpty()) {
-//                    try {
-//                        sleep(SCHEDULER_PAUSE);
-//                        logger.debug("pausing plugin scheduler for " + SCHEDULER_PAUSE + "ms.");
-//                    } catch (InterruptedException ex) {
-//                        logger.debug("pausing plugin scheduler failed", ex);
-//                        Thread.currentThread().interrupt();
-//                    }
-//                } else {
                     remoteTenant = queue.take();
 
                     final Properties tenantConfig = tenantService.getTenantConfig(remoteTenant.getId());

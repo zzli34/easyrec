@@ -110,7 +110,8 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
                 .append("   CREATIONDATE ").toString();
         
         SQL_GET_TENANTS_BY_EXECUTIONTIME = new StringBuilder().append("SELECT * FROM ").append(DEFAULT_TABLE_NAME)
-                .append(" WHERE ").append(DEFAULT_TENANT_CONFIG_COLUMN_NAME).append(" LIKE ?").toString();
+                .append(" WHERE ").append(DEFAULT_TENANT_CONFIG_COLUMN_NAME).append(" LIKE ? AND ")
+                .append(DEFAULT_TENANT_CONFIG_COLUMN_NAME).append(" LIKE ?").toString();
 
     }
 
@@ -171,6 +172,7 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     * (non-Javadoc)
     * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#get(java.lang.String)
     */
+    @Override
     public RemoteTenant get(String operatorId, String tenantId) {
 
         String coreTenantId = tenantId + ":::" + operatorId;
@@ -324,8 +326,9 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
         
         try {
             String clause = "%" + propertyKey + "=" + executionTime.replace(":", "\\\\:") + "%";
-            Object[] args = {clause};
-            int[] argTypes = {Types.VARCHAR};
+            String clause2 = "%" + RemoteTenant.SCHEDULER_ENABLED + "=true%";
+            Object[] args = {clause, clause2};
+            int[] argTypes = {Types.VARCHAR, Types.VARCHAR};
             return getJdbcTemplate().query(SQL_GET_TENANTS_BY_EXECUTIONTIME, args, argTypes, remoteTenantRowMapper);
         } catch (Exception e) {
             logger.warn("An error occurred while fetching tenants by executionTime!", e);

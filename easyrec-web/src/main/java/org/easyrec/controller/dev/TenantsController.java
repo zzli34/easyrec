@@ -165,7 +165,6 @@ public class TenantsController extends MultiActionController {
             if (remoteTenant != null) {
                 remoteTenantService.removeTenant(remoteTenant.getId());
 
-                pluginScheduler.stopTask(remoteTenant);
                 Security.setAttribute(request, "tenantId", null);
                 return MessageBlock.createSingle(mav, MSG.TENANT_REMOVED, REMOVE_TENANT, MSG.SUCCESS);
             }
