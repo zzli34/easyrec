@@ -83,6 +83,7 @@ public interface StatisticsDAO {
      * @param from
      * @param to
      * @param actionType
+     * @param assocType
      * @return
      */
     public HashMap<Integer, HashMap<Integer, Integer>> getActionBundleMap(int tenant, long from, long to,

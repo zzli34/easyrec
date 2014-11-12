@@ -43,6 +43,7 @@ import org.easyrec.store.dao.web.RemoteTenantDAO;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author patrick
@@ -199,4 +200,11 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
 
         return namedConfiguration;
     }
+
+    @Override
+    public List<NamedConfiguration> readActiveConfigurations(int tenantId) {
+        return namedConfigurationDAO.readActiveConfigurations(tenantId);
+    }
+    
+    
 }

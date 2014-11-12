@@ -31,7 +31,7 @@
     <modules>
         <module>easyrec-plugins-arm</module>
         <module>easyrec-plugins-slopeone</module>
-        <module>easyrec-plugins-itemitem</module>
+        <!--<module>easyrec-plugins-itemitem</module>-->
         <module>easyrec-plugins-pearson</module>
         <module>easyrec-plugins-profile-duke</module>
         <module>easyrec-plugins-sample</module>

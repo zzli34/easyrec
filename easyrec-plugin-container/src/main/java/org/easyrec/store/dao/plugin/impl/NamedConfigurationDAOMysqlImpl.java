@@ -60,6 +60,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
     private SqlUpdate updateSetInactiveByPluginId;
     private MappingSqlQuery<NamedConfiguration> readConfiguration;
     private MappingSqlQuery<NamedConfiguration> readActiveConfiguration;
+    private MappingSqlQuery<NamedConfiguration> readActiveConfigurations;
     private MappingSqlQuery<NamedConfiguration> readConfigurations;
 
     public NamedConfigurationDAOMysqlImpl(DataSource dataSource, SqlScriptService sqlScriptService,
@@ -127,6 +128,12 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
         readActiveConfiguration.declareParameter(new SqlParameter("tenantId", Types.INTEGER));
         readActiveConfiguration.declareParameter(new SqlParameter("assocTypeId", Types.INTEGER));
         readActiveConfiguration.compile();
+        
+        readActiveConfigurations = new NamedConfigurationMappingStatement(dataSource,
+                "SELECT * FROM plugin_configuration WHERE tenantId = ? AND active = b'1'",
+                pluginRegistry);
+        readActiveConfigurations.declareParameter(new SqlParameter("tenantId", Types.INTEGER));
+        readActiveConfigurations.compile();
     }
 
     @Override
@@ -139,6 +146,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
         return "classpath:sql/pluginContainer/PluginConfiguration.sql";
     }
 
+    @Override
     public int updateConfiguration(NamedConfiguration namedConfiguration) {
         Preconditions.checkNotNull(namedConfiguration);
         Preconditions.checkNotNull(namedConfiguration.getPluginId());
@@ -172,6 +180,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
         return rowsAffected;
     }
 
+    @Override
     public int createConfiguration(NamedConfiguration namedConfiguration) {
         Preconditions.checkNotNull(namedConfiguration);
         Preconditions.checkNotNull(namedConfiguration.getPluginId());
@@ -191,6 +200,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
                 namedConfiguration.getConfiguration().marshal(false), namedConfiguration.isActive());
     }
 
+    @Override
     public int deleteConfiguration(NamedConfiguration namedConfiguration) {
         Preconditions.checkNotNull(namedConfiguration);
         Preconditions.checkNotNull(namedConfiguration.getName());
@@ -203,6 +213,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
                 namedConfiguration.getPluginId().getVersion().toString(), namedConfiguration.getName());
     }
 
+    @Override
     public NamedConfiguration readConfiguration(int tenantId, int assocTypeId, PluginId pluginId, String name) {
         Preconditions.checkNotNull(pluginId);
         Preconditions.checkNotNull(pluginId.getUri());
@@ -213,6 +224,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
                 pluginId.getVersion().toString(), name);
     }
 
+    @Override
     public List<NamedConfiguration> readConfigurations(int tenantId, int assocTypeId, PluginId pluginId) {
         Preconditions.checkNotNull(pluginId);
         Preconditions.checkNotNull(pluginId.getUri());
@@ -222,10 +234,17 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
                 pluginId.getVersion().toString());
     }
 
+    @Override
     public NamedConfiguration readActiveConfiguration(int tenantId, int assocTypeId) {
         return readActiveConfiguration.findObject(tenantId, assocTypeId);
     }
+    
+    @Override
+    public List<NamedConfiguration> readActiveConfigurations(int tenantId) {
+        return readActiveConfigurations.execute(tenantId);
+    }
 
+    @Override
     public int deactivateByPlugin(PluginId pluginId) {
         Preconditions.checkNotNull(pluginId);
         Preconditions.checkNotNull(pluginId.getUri());
@@ -238,6 +257,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
         return updateSetInactiveByPluginId.update(pluginId.getUri(), pluginId.getVersion());
     }
 
+    @Override
     public int deactivateByAssocType(Integer tenantId, Integer assocTypeId) {
         Preconditions.checkNotNull(tenantId);
         Preconditions.checkNotNull(assocTypeId);

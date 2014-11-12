@@ -55,6 +55,7 @@ import org.springframework.web.util.HtmlUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import org.easyrec.model.plugin.NamedConfiguration;
 
 /**
  * This Controller handles the Tenant operation.
@@ -514,7 +515,7 @@ public class RemoteTenantController extends MultiActionController {
     public ModelAndView statistics(HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
@@ -574,24 +575,19 @@ public class RemoteTenantController extends MultiActionController {
                 mav.addObject("generatorLog", entry);
             }
 
-            // i am sorry for such a code... will be fixed soon
-            if (remoteTenant == null) {    // seems like there is no session for this user.
-                messages.add(MSG.NOT_SIGNED_IN);
-                return MessageBlock.create(mav, messages, REGISTER_TENANT, MSG.ERROR);
-            }
 
-            // We need to get a full list of ASSOC types before we can create Statistics
-            HashMap<String, Integer> mapping = assocTypeDAO.getMapping(remoteTenant.getId());
+            // We need to get a full list of ASSOC types with active rule generation before we can create Statistics
+            List<NamedConfiguration> configurations = namedConfigurationService.readActiveConfigurations(remoteTenant.getId());
 
             Map<String, String> assocTypeToStatistic = Maps.newHashMap();
             Map<String, PluginId> assocTypeToPlugin = Maps.newHashMap();
             Map<String, String> pluginRealName = Maps.newHashMap();
 
-            for (Map.Entry<String, Integer> assocTypeFromTenant : mapping.entrySet()) {
+            for (NamedConfiguration configuration: configurations) {
                 // now we can load the last ran log entry from each assoc type. if there is no log the assoc type gets skipped.
                 List<LogEntry> logEntries =
-                        logEntryDAO.getLogEntriesForTenant(remoteTenant.getId(), assocTypeFromTenant.getValue(), 0, 1);
-                if (logEntries.size() == 0) continue;
+                        logEntryDAO.getLogEntriesForTenant(remoteTenant.getId(), configuration.getAssocTypeId(), 0, 1);
+                if (logEntries.isEmpty()) continue;
 
                 // due some problems with the taglib which converts the XML to a table we have to remove the first line which contains
                 // <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -601,13 +597,13 @@ public class RemoteTenantController extends MultiActionController {
 
                 // here we fill our maps with the data for later use in the JSP.
                 PluginId pluginId = logEntries.get(0).getPluginId();
-                assocTypeToPlugin.put(assocTypeFromTenant.getKey(), pluginId);
-                assocTypeToStatistic.put(assocTypeFromTenant.getKey(), xmlString);
+                assocTypeToPlugin.put(configuration.getConfiguration().getAssociationType(), pluginId);
+                assocTypeToStatistic.put(configuration.getConfiguration().getAssociationType(), xmlString);
 
                 Generator<GeneratorConfiguration, GeneratorStatistics> generator =
                         pluginRegistry.getGenerators().get(pluginId);
                 if (generator == null) continue; // avoid null pointer exception when the plugin is uninstalled now.
-                pluginRealName.put(assocTypeFromTenant.getKey(), generator.getDisplayName());
+                pluginRealName.put(configuration.getConfiguration().getAssociationType(), generator.getDisplayName());
             }
 
             // as i told you we use this two hash-maps in our JSP
@@ -646,7 +642,7 @@ public class RemoteTenantController extends MultiActionController {
     public ModelAndView viewmostvieweditems(HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
@@ -736,7 +732,7 @@ public class RemoteTenantController extends MultiActionController {
     public ModelAndView viewhotrecommendations(HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
@@ -795,7 +791,7 @@ public class RemoteTenantController extends MultiActionController {
     public ModelAndView clustermanager(HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
@@ -846,7 +842,7 @@ public class RemoteTenantController extends MultiActionController {
     public ModelAndView refreshstatistics(HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");

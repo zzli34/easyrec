@@ -19,6 +19,7 @@
 
 package org.easyrec.service.web;
 
+import java.util.List;
 import org.easyrec.model.plugin.NamedConfiguration;
 import org.easyrec.plugin.model.PluginId;
 
@@ -32,4 +33,6 @@ public interface NamedConfigurationService {
     NamedConfiguration createDefaultConfiguration(PluginId pluginId, int tenantId, int assocTypeId);
 
     public void setupDefaultConfiguration(int tenantId);
+    
+    List<NamedConfiguration> readActiveConfigurations(int tenantId);
 }

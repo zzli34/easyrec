@@ -18,7 +18,6 @@
  */
 package org.easyrec.store.dao.plugin.impl;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.plugin.PluginVO;
@@ -37,6 +36,7 @@ import org.springframework.jdbc.support.lob.LobCreator;
 import java.net.URI;
 import java.sql.*;
 import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * @author szavrel
@@ -88,7 +88,7 @@ public class PluginDAOMysqlImpl extends JdbcDaoSupport implements PluginDAO {
 
     }
 
-    public PluginDAOMysqlImpl(BasicDataSource dataSource) {
+    public PluginDAOMysqlImpl(DataSource dataSource) {
         setDataSource(dataSource);
         lobHandler = new DefaultLobHandler();
     }

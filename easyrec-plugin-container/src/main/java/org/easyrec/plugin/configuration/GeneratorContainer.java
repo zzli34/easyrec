@@ -122,13 +122,11 @@ public class GeneratorContainer {
 
     public List<LogEntry> runGeneratorsForTenant(int tenantId, Predicate<GeneratorStatistics> writeLog,
                                                  boolean writeLogLast) {
-        Map<String, Integer> assocTypes = assocTypeDAO.getMapping(tenantId);
+
+        List<NamedConfiguration> configurations = namedConfigurationDAO.readActiveConfigurations(tenantId);
         List<LogEntry> result = Lists.newArrayList();
 
-        for (Integer assocTypeId : assocTypes.values()) {
-            NamedConfiguration namedConfiguration = namedConfigurationDAO.readActiveConfiguration(tenantId,
-                    assocTypeId);
-
+        for (NamedConfiguration namedConfiguration : configurations) {
             if (namedConfiguration == null) continue;
 
             result.add(runGenerator(namedConfiguration, writeLog, writeLogLast));

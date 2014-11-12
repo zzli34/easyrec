@@ -109,7 +109,7 @@ public class Benchmark {
 
         Connection con = null;
         try {
-            Class.forName("org.gjt.mm.mysql.Driver");
+            Class.forName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
             con = DriverManager.getConnection("jdbc:mysql://" + DB_HOST + "/" + DB_NAME, DB_USER, DB_PASSWORD);
 
             System.out.println(

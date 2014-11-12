@@ -44,6 +44,13 @@ public interface NamedConfigurationDAO extends TableCreatingDAO {
      * @return The currently active configuration.
      */
     NamedConfiguration readActiveConfiguration(int tenantId, int assocTypeId);
+    /**
+     * Get all currently active configurations for the tenantId.
+     * 
+     * @param tenantId id of the tenant to query
+     * @return list of active cnfigurations
+     */
+    List<NamedConfiguration> readActiveConfigurations(int tenantId);
 
     /**
      * Updates a configuration with the following semantics:

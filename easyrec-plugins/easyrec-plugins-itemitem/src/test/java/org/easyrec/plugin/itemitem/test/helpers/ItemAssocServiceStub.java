@@ -69,6 +69,7 @@ public class ItemAssocServiceStub implements ItemAssocService {
         return 0;
     }
 
+    
     public int insertOrUpdateItemAssoc(
             final ItemAssocVO<Integer,Integer> itemAssoc) {
         ItemAssocVO<Integer,Integer> clone;

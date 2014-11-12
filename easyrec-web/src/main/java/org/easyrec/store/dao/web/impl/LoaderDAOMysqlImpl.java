@@ -20,7 +20,7 @@ package org.easyrec.store.dao.web.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.dbcp.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.web.Operator;
@@ -51,6 +51,7 @@ import java.io.StringReader;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
+import javax.sql.DataSource;
 
 /**
  * @author szavrel
@@ -79,7 +80,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
                 .append("    (?,PASSWORD(?),?,?,?,?,?,?,?,?,?,?,?) ").toString();
     }
 
-    public LoaderDAOMysqlImpl(BasicDataSource dataSource, SqlScriptService sqlScriptService, Resource dbCreationFile,
+    public LoaderDAOMysqlImpl(DataSource dataSource, SqlScriptService sqlScriptService, Resource dbCreationFile,
                               Resource dbMigrateFolder) {
         setDataSource(dataSource);
         this.sqlScriptService = sqlScriptService;
@@ -90,8 +91,8 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     @Override
     public void testConnection(String url, String username, String password) throws Exception {
 
-        BasicDataSource bds = (BasicDataSource) getDataSource();
-        bds.setUrl(url);
+        HikariDataSource bds = (HikariDataSource) getDataSource();
+        bds.setJdbcUrl(url);
         bds.setUsername(username);
         bds.setPassword(password);
 
@@ -110,7 +111,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     @Override
     public void createDB() throws Exception {
 
-        BasicDataSource bds = (BasicDataSource) getDataSource();
+        HikariDataSource bds = (HikariDataSource) getDataSource();
         boolean tablesOk = false;
 
         DatabaseMetaDataCallback callback = new DatabaseMetaDataCallback() {
@@ -127,7 +128,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     @Override
     public void migrateDB() throws Exception {
 
-        BasicDataSource bds = (BasicDataSource) getDataSource();
+        HikariDataSource bds = (HikariDataSource) getDataSource();
         boolean tablesOk = false;
 
         DatabaseMetaDataCallback callback = new DatabaseMetaDataCallback() {
@@ -524,7 +525,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     @Override
     public Float checkVersion() throws Exception {
 
-        BasicDataSource bds = (BasicDataSource) getDataSource();
+        HikariDataSource bds = (HikariDataSource) getDataSource();
         float tableCount;
 
         DatabaseMetaDataCallback callback = new DatabaseMetaDataCallback() {
@@ -659,7 +660,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     }
 
     public void setDriver(String driver) {
-        BasicDataSource bds = (BasicDataSource) getDataSource();
+        HikariDataSource bds = (HikariDataSource) getDataSource();
         bds.setDriverClassName(driver);
     }
 

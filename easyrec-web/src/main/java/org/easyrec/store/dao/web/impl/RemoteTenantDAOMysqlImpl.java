@@ -39,6 +39,7 @@ import org.springframework.jdbc.core.RowMapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -405,24 +406,24 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
 
     private class RemoteTenantRowMapper implements RowMapper<RemoteTenant> {
         public RemoteTenant mapRow(ResultSet rs, int rowNum) throws SQLException {
-            String sTenantConfig = DaoUtils.getStringIfPresent(rs, DEFAULT_TENANT_CONFIG_COLUMN_NAME);
+            Blob sTenantConfig = DaoUtils.getBlobIfPresent(rs, DEFAULT_TENANT_CONFIG_COLUMN_NAME);
 
             Properties tenantConfig = new Properties();
             try {
                 if (sTenantConfig != null)
-                    tenantConfig.load(new ByteArrayInputStream(new StringBuffer(sTenantConfig).toString().getBytes()));
+                    tenantConfig.load(sTenantConfig.getBinaryStream());
 
             } catch (Exception ignored) {
                 logger.warn("An error occurred!", ignored);
             } // no tenantConfig available
-
-            String sTenantStatistic = DaoUtils.getStringIfPresent(rs, DEFAULT_TENANT_STATISTIC_COLUMN_NAME);
+         
+            Blob sTenantStatistic = DaoUtils.getBlobIfPresent(rs, DEFAULT_TENANT_STATISTIC_COLUMN_NAME);
 
             Properties tenantStatistic = new Properties();
             try {
                 if (sTenantStatistic != null)
                     tenantStatistic
-                            .load(new ByteArrayInputStream(new StringBuffer(sTenantStatistic).toString().getBytes()));
+                            .load(sTenantStatistic.getBinaryStream());
 
             } catch (Exception ignored) {
                 logger.warn("An error occurred!", ignored);

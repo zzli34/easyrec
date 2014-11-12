@@ -27,8 +27,6 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -279,6 +277,29 @@ public class DaoUtils {
             return null;
         }
         return rs.getString(colIndex);
+    }
+    
+        /**
+     * get a Blob object from a result set column with given name or null if no such
+     * column exists in the result set
+     *
+     * @param rs         rs
+     * @param columnName columnName
+     * @return the value, which may be <code>null</code>
+     * @throws SQLException SQLException
+     */
+    public static Blob getBlobIfPresent(ResultSet rs, String columnName) throws SQLException {
+        int colIndex;
+        try {
+            colIndex = rs.findColumn(columnName);
+        } catch (SQLException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "getBlob() failed for column '" + columnName + "'. ResultSet doesn't contain that column");
+            }
+            return null;
+        }
+        return rs.getBlob(colIndex);
     }
     // --------------------------------------------------------------------------
     // setter methods

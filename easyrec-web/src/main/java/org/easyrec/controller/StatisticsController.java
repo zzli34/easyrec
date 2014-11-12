@@ -83,7 +83,7 @@ public class StatisticsController extends AbstractController {
                 tenant = Integer.parseInt(request.getParameter("tenant"));
                 month = Integer.parseInt(request.getParameter("month"));
                 year = Integer.parseInt(request.getParameter("year"));
-                flot = Integer.parseInt(request.getParameter("flot")) == 0 ? false : true;
+                flot = Integer.parseInt(request.getParameter("flot")) != 0;
             } catch (Exception e) {
                 logger.warn(e);
                 return null;
@@ -139,7 +139,7 @@ public class StatisticsController extends AbstractController {
             // create datapoints that are rendered in the clients browser
             // return array or html side that renders array
             if (flot) {
-                boolean onlyData = (ServletUtils.getSafeParameter(request, "onlyData", 0) == 0) ? false : true;
+                boolean onlyData = (ServletUtils.getSafeParameter(request, "onlyData", 0) != 0);
                 if (onlyData) {
                     mav.setViewName("flot/dataOutput");
                 } else {
@@ -147,7 +147,7 @@ public class StatisticsController extends AbstractController {
                 }
                 mav.addObject("data", flotDataSet.toString());
                 mav.addObject("flotDataSet", flotDataSet.getData());
-                mav.addObject("noActions", flotDataSet.getData().size() == 0);
+                mav.addObject("noActions", flotDataSet.getData().isEmpty());
                 return mav;
 
                 // create a png

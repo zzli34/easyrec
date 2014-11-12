@@ -18,10 +18,7 @@
  */
 package org.easyrec.store.dao.core;
 
-import org.easyrec.model.core.web.Item;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
-import org.easyrec.model.core.web.RemoteTenant;
-import org.easyrec.model.core.web.statistic.ItemDetails;
 import org.easyrec.model.core.web.Item;
 import org.easyrec.model.core.web.RemoteTenant;
 import org.easyrec.model.core.web.statistic.ItemDetails;
@@ -141,8 +138,6 @@ public interface ItemDAO extends BasicDAO {
      * @param tenantId
      * @param itemId
      * @param itemType
-     *
-     * @return
      */
     public void activate(Integer tenantId, String itemId, String itemType);
 
@@ -152,8 +147,6 @@ public interface ItemDAO extends BasicDAO {
      * @param tenantId
      * @param itemId
      * @param itemType
-     *
-     * @return
      */
     public void deactivate(Integer tenantId, String itemId, String itemType);
 
@@ -163,8 +156,6 @@ public interface ItemDAO extends BasicDAO {
      * @param tenantId
      * @param itemId
      * @param itemType
-     *
-     * @return the item
      */
     public void remove(Integer tenantId, String itemId, String itemType);
 
@@ -185,7 +176,6 @@ public interface ItemDAO extends BasicDAO {
      * This functions removes all items to a tenant.
      *
      * @param tenantId
-     * @return
      */
     public void removeItems(Integer tenantId);
 
@@ -222,6 +212,7 @@ public interface ItemDAO extends BasicDAO {
      * Return the number of items with rules
      *
      * @param tenantId
+     * @param description
      *
      * @return number of items
      */
@@ -282,7 +273,6 @@ public interface ItemDAO extends BasicDAO {
      *                               creationDate.
      * @param hasRules              if true only items with rules are returned otherwise the number of rules is ignored.
      * @param rulesOfType
-     * @param active            if not {@code null} matches all items that are activated/deactivated.
      * @param sortColumn             this UNSAFE parameter hold the tablename for sorting set it to NULL for no sorting (don't pass unchecked user input here)
      * @param sortDESC               Set this parameter to true if you want to sort your result DESCENDING
      * @param offset                 The offset you want to use on your result set - e.g., ITEMS PER PAGE * PAGENUMBER
@@ -308,6 +298,8 @@ public interface ItemDAO extends BasicDAO {
      * @param active                 if not {@code null} matches all items with the active flag set to the specified value.
      * @param creationDateConstraint if not {@code null} matches all items matching the time constraint on the
      *                               creationDate.
+     * @param hasRules
+     * @param rulesOfType
      * @return List of all items matching the search criteria.
      */
     public int searchItemsTotalCount(int tenantId, String itemId, Iterable<String> itemTypes, String description,

@@ -82,10 +82,11 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * CLICK ON RECOMMENDATION 100[X] X...see actiontypes
      * e.g. 1001 CLICK ON RECOMMENDATION OTHER USERS ALSO VIEWED
      */
+    @Override
     public HashMap<Integer, HashMap<Integer, Integer>> getActionBundleMap(int tenant, long from, long to,
                                                                           Integer actionType, Integer assocType) {
 
-        HashMap<Integer, HashMap<Integer, Integer>> actionBundleMap = new HashMap<Integer, HashMap<Integer, Integer>>();
+        HashMap<Integer, HashMap<Integer, Integer>> actionBundleMap = new HashMap<>();
 
         SqlRowSet rs;
         StringBuilder sql = new StringBuilder();
@@ -97,11 +98,11 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
             if (actionType == null) {
                 // query actionbundles for all actions type is slower than to query
                 // action bundles for each action type.
-                List<Integer> actionTypes = new LinkedList<Integer>(
+                List<Integer> actionTypes = new LinkedList<>(
                         typeMappingService.getActionTypeMapping(tenant).values());
 
-                List<Object> lArgs = new ArrayList<Object>();
-                List<Integer> lArgTypes = new ArrayList<Integer>();
+                List<Object> lArgs = new ArrayList<>();
+                List<Integer> lArgTypes = new ArrayList<>();
 
                 for (int i = 0; i < actionTypes.size(); i++) {
                     Integer actionTypeId = actionTypes.get(i);
@@ -138,13 +139,9 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
                 sql = new StringBuilder().append(" SELECT ").append("    actionTypeId,     ")
                         .append("    DAY(actiontime) as unit, ").append("    COUNT(1) as cnt").append(" FROM ")
                         .append("    action  ").append(" WHERE ").append("    tenantId = ? AND   ")
-                        .append("    actionTime >= ? AND ").append("    actionTime <= ?     ");
-
-                if (actionType != null) {
-                    sql.append(" AND actionTypeId=").append(actionType);
-                }
-
-                sql.append(" GROUP BY ").append("   actiontypeid, ").append("   DAY(actiontime) ");
+                        .append("    actionTime >= ? AND ").append("    actionTime <= ?     ")
+                        .append(" AND actionTypeId=").append(actionType)
+                        .append(" GROUP BY ").append("   actiontypeid, ").append("   DAY(actiontime) ");
 
                 args = new Object[]{tenant, new Date(from), new Date(to)};
                 argTypes = new int[]{Types.INTEGER, Types.DATE, Types.DATE};
@@ -203,8 +200,13 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
 
 
     /**
-     * Get statistics about a given action and assocType (e.g. bought and bought_together)
+     * Get statistics about a given action and assocType (e.g.bought and bought_together)
+     * @param tenantId
+     * @param actionTypeId
+     * @param assocTypeId
+     * @return 
      */
+    @Override
     public AssocStatistic getAssocStatistics(int tenantId, int actionTypeId, int assocTypeId) {
 
         String sql = new StringBuilder().append(" SELECT * FROM ")
@@ -227,6 +229,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * recommendation_coverage: Number of total actions of items that are in the itemassoc table.
      * 10M entries/tenant: average computation time 4,5 minutes
      */
+    @Override
     public TenantStatistic getTenantStatistics(RemoteTenant remoteTenant) {
 
         Integer tenantId = remoteTenant.getId();
@@ -263,6 +266,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * Get Users Statistics for a given Tenant
      * !!! 10M actions --> about 1 hour to execute!!!
      */
+    @Override
     public UserStatistic getUserStatistics(int tenantId) {
         String sql = new StringBuilder().append(" SELECT ").append("     u1.users_with_1_action, ")
                 .append("     u2.users_with_2_actions, ").append("     u5_10.users_with_3_10_actions, ")
@@ -288,6 +292,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * Get Users Statistics for a given Tenant for the last X day.
      * The more day the longer the query need to execute.
      */
+    @Override
     public UserStatistic getUserStatistics(int tenantId, int days) {
 
         Date refDate = new Date(System.currentTimeMillis() - (days * 86400000l)); //convert days to millis
@@ -316,6 +321,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * Show the distribution of items with rules group by assocValue greater then
      * the given Parameters
      */
+    @Override
     public RuleMinerStatistic getRuleMinerStatistics(Integer tenantId, Integer minAssocValue1, Integer minAssocValue2,
                                                      Integer minAssocValue3, Integer minAssocValue4) {
 
@@ -341,7 +347,9 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
     /**
      * Return Conversion statistics = The number of item that where bought because
      * they were clicked in a recommendation before.
+     * @param buyActionTypeId
      */
+    @Override
     public ConversionStatistic getConversionStatistics(Integer tenantId, Integer buyActionTypeId) {
 
         if (tenantId != null && buyActionTypeId != null) {
@@ -367,6 +375,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
     /**
      * Returns the number of actions for the current month
      */
+    @Override
     public Integer getMonthlyActions(Integer tenantId) {
         if (tenantId != null) {
 
