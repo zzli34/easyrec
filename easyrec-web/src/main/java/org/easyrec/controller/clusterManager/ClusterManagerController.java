@@ -22,9 +22,9 @@ package org.easyrec.controller.clusterManager;
 import com.google.common.base.Strings;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.Tree;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONStringer;
-import org.codehaus.jettison.json.JSONWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import org.easyrec.exception.core.ClusterException;
 import org.easyrec.model.core.ClusterVO;
 import org.easyrec.model.core.ItemAssocVO;
@@ -46,6 +46,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.easyrec.model.web.ClusterNode;
+import org.easyrec.model.web.NodeAttributes;
 
 /**
  * This Controller is used to create the basic functionality of the cluster manager
@@ -336,67 +339,59 @@ public class ClusterManagerController extends MultiActionController {
         DelegateTree<ClusterVO, ItemAssocVO<Integer,Integer>>
                 clusterTree = clusterService.getClustersForTenant(remoteTenant.getId());
 
-        JsonTreeGraphWriter graphWriter = new JsonTreeGraphWriter();
-        JSONWriter jsonWriter = new JSONStringer();
-
+        ObjectMapper om = new ObjectMapper();
+        StringWriter sw = new StringWriter();
+        JsonTreeGraphWriterJackson converter = new JsonTreeGraphWriterJackson();
+        ClusterNode n = converter.convert(clusterTree);
         try {
-            graphWriter.save(clusterTree, jsonWriter);
-        } catch (JSONException e) {
-            logger.warn("failed to serialize cluster tree to JSON", e);
-            return mav;
+            om.writeValue(sw, n);
+        } catch (IOException ex) {
+           logger.warn("failed to serialize cluster tree to JSON", ex);
         }
+        String tree = sw.toString();
 
-        mav.addObject("treeJsonData", jsonWriter.toString());
+        mav.addObject("treeJsonData", tree);
 
         return mav;
     }
 
-    /**
-     * convert a JUNG tree to a format that can be handled by the jsonTree library
-     *
-     * @author pmarschik
-     */
-    private static class JsonTreeGraphWriter {
-        public void save(Tree<ClusterVO, ItemAssocVO<Integer,Integer>> tree,
-                         JSONWriter writer) throws JSONException {
+       
+    private static class JsonTreeGraphWriterJackson {
+        public ClusterNode convert(Tree<ClusterVO, ItemAssocVO<Integer,Integer>> tree) {
             ClusterVO root = tree.getRoot();
-
-            writeNode(tree, root, writer, root);
+            
+            return writeNode(tree, root, root);
         }
 
-        private void writeNode(Tree<ClusterVO, ItemAssocVO<Integer,Integer>> tree,
-                               ClusterVO node, JSONWriter writer, ClusterVO root) throws JSONException {
-            writer.object()
-                    .key("data").value(node.getName())
-                    .key("attr")
-                    .object()
-                    .key("id")
-                    .value(node.getName())
-                    .key("title")
-                    .value(node.getDescription() == null ? node.getName() : node.getDescription());
-
-            if (node == root)
-                writer.key("rel").value("root");
-
-            writer.endObject();
-
-            if (!Strings.isNullOrEmpty(node.getDescription()))
-                writer.key("description").value(node.getDescription());
-
-            Collection<ClusterVO> children = tree.getChildren(node);
-
-            if (children.size() > 0) {
-                writer.key("children")
-                        .array();
-
-                for (ClusterVO child : children) {
-                    writeNode(tree, child, writer, root);
-                }
-
-                writer.endArray();
+        private ClusterNode writeNode(Tree<ClusterVO, ItemAssocVO<Integer,Integer>> tree,
+                               ClusterVO node, ClusterVO root) {
+            
+            ClusterNode n = new ClusterNode();
+            n.setData(node.getName());
+            NodeAttributes na = new NodeAttributes(node.getName(), node.getDescription() == null ? node.getName() : node.getDescription());
+            n.setAttr(na);
+            
+            if (node == root) {
+                n.setRel("root");
             }
+            
+            if (!Strings.isNullOrEmpty(node.getDescription())) {
+                n.setDescription(node.getDescription());
+            }
+            
+            Collection<ClusterVO> children = tree.getChildren(node);
+            if (children.size() > 0) {
+                ArrayList<ClusterNode> childNodes = new ArrayList<>(); 
+            
+                for (ClusterVO child : children) {
+                    ClusterNode cn = writeNode(tree,child, root);
+                    childNodes.add(cn);
+                }
+                n.setChildren(childNodes);
+            }
+            
+            return n;
 
-            writer.endObject();
         }
     }
 }
