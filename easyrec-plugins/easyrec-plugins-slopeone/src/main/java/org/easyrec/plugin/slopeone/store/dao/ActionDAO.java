@@ -94,4 +94,6 @@ public interface ActionDAO extends TableCreatingDroppingDAO {
      * @return Number of actions inserted.
      */
     int insertActions(List<ActionVO<Integer, Integer>> actions);
+    
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun);
 }

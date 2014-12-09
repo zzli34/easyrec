@@ -200,7 +200,7 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
 
                         logger.info("Archiving actions older than " + days + " day(s)");
 
-                        generatorContainer.runGenerator(namedConfiguration);
+                        generatorContainer.runGenerator(namedConfiguration, true);
                     } else {
                         logger.info("Archiving disabled for tenant: "+ remoteTenant.getOperatorId() + ":" +
                                 remoteTenant.getStringId());
@@ -208,8 +208,8 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
 
                     logger.info("starting generator plugin for tenant: " + remoteTenant.getOperatorId() + ":" +
                             remoteTenant.getStringId());
-
-                    generatorContainer.runGeneratorsForTenant(remoteTenant.getId());
+                    
+                    generatorContainer.runGeneratorsForTenant(remoteTenant.getId(), false);
 
                     ///////////////////////////////////////
                     // TODO: insert logic here to trigger plugin generators

@@ -80,8 +80,10 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
      * Move actions to archive table if older than given days.
      *
      * @param tenantId
-     * @return
+     * @param days
+     * @throws java.lang.Exception
      */
+    @Override
     public void archive(Integer tenantId, Integer days) throws Exception {
 
 //
@@ -129,6 +131,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 //        }
     }
 
+    @Override
     public Integer getNumberOfBaskets(ARMConfigurationInt configuration) {
 
         if (configuration.getExcludeSingleItemBaskests()) {
@@ -139,28 +142,33 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
     }
 
 
+    @Override
     public Integer getNumberOfProducts(ARMConfigurationInt configuration) {
 
         return ruleminingActionDAO.getNumberOfProducts(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes());
     }
 
-    public Integer getNumberOfActions(ARMConfigurationInt configuration) {
+    @Override
+    public Integer getNumberOfActions(ARMConfigurationInt configuration, Date lastRun) {
 
-        return ruleminingActionDAO.getNumberOfActions(configuration.getTenantId(), configuration.getActionType());
+        return ruleminingActionDAO.getNumberOfActions(configuration.getTenantId(), configuration.getActionType(), lastRun);
     }
 
+    @Override
     public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration) {
 
 
         return ruleminingActionDAO.defineL1(configuration);
     }
 
+    @Override
     public List<TupleVO> defineL2(TObjectIntHashMap<ItemVO<Integer, Integer>> L1, TupleCounter tupleCounter, ARMConfigurationInt configuration, ARMStatistics stats) {
 
         return ruleminingActionDAO.defineL2(L1, tupleCounter, configuration, stats);
     }
 
 
+    @Override
     public ARMConfigurationInt mapTypesToConfiguration(ARMConfiguration configuration) throws Exception {
 
         ARMConfigurationInt ret;
@@ -181,12 +189,9 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 
         Integer actionId = typeMappingService.getIdOfActionType(configuration.getTenantId(), configuration.getActionType());
         if (actionId == null) {
-            StringBuilder sb = new StringBuilder("Action '").append(configuration.getActionType())
-                    .append("' not valid for Tenant '")
-                    .append(configuration.getTenantId())
-                    .append("'! Action will not be considered in Rulemining!");
-            logger.info(sb.toString());
-            throw new Exception(sb.toString());
+            String sb = "Action '" + configuration.getActionType() + "' not valid for Tenant '" + configuration.getTenantId() + "'! Action will not be considered in Rulemining!";
+            logger.info(sb);
+            throw new Exception(sb);
         }
         ret.setActionType(actionId);
 
@@ -200,22 +205,16 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
             }
         }
         if (ret.getItemTypes() == null) {
-            StringBuilder sb = new StringBuilder("No valid ItemTypes defined for Tenant '")
-                    .append(configuration.getTenantId())
-                    .append("'! Skipping this rulemining configuration!");
-            logger.info(sb.toString());
-            throw new Exception(sb.toString());
+            String sb = "No valid ItemTypes defined for Tenant '" + configuration.getTenantId() + "'! Skipping this rulemining configuration!";
+            logger.info(sb);
+            throw new Exception(sb);
         }
 
         Integer assocTypeId = typeMappingService.getIdOfAssocType(configuration.getTenantId(), configuration.getAssociationType());
         if (assocTypeId == null) {
-            StringBuilder sb = new StringBuilder("AssocType '")
-                    .append(configuration.getAssociationType())
-                    .append("' not valid for Tenant '")
-                    .append(configuration.getTenantId())
-                    .append("'! Skipping analysis!");
-            logger.info(sb.toString());
-            throw new Exception(sb.toString());
+            String sb = "AssocType '" + configuration.getAssociationType() + "' not valid for Tenant '" + configuration.getTenantId() + "'! Skipping analysis!";
+            logger.info(sb);
+            throw new Exception(sb);
         }
         ret.setAssocType(assocTypeId);
 
@@ -234,9 +233,11 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
      * @param tuples        Vector
      * @param L1            HashMap
      * @param configuration int
+     * @param stats
      * @param minConfidence minConfidence
      * @return Vector
      */
+    @Override
     public List<ItemAssocVO<Integer, Integer>> createRules(List<TupleVO> tuples,
                                                            TObjectIntHashMap<ItemVO<Integer, Integer>> L1,
                                                            ARMConfigurationInt configuration,
@@ -346,6 +347,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
         return ret;
     }
 
+    @Override
     public Collection<SortedSet<ItemAssocVO<Integer, Integer>>> createBestRules(
             List<TupleVO> tuples,
             TObjectIntHashMap<ItemVO<Integer, Integer>> L1,
@@ -483,6 +485,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
         return ret.values();
     }
 
+    @Override
     public void removeOldRules(ARMConfigurationInt configuration,
                                ARMStatistics stats) {
 
@@ -533,6 +536,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
      *
      * @return
      */
+    @Override
     public boolean isRunning() {
         return (currentRunningTenantId != null);
     }
@@ -542,6 +546,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
      *
      * @return
      */
+    @Override
     public Integer getRunningTenantId() {
         return currentRunningTenantId;
     }

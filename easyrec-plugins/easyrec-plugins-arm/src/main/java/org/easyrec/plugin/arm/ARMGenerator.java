@@ -23,12 +23,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.easyrec.plugin.generator.GeneratorConfiguration;
+import org.easyrec.plugin.generator.RunConditionEnabled;
 
 /**
  *
  * @author szavrel
  */
-public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMStatistics> {
+public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMStatistics> implements RunConditionEnabled {
 
     public static final String DISPLAY_NAME = "ARM";
     public static final Version VERSION = new Version("0.98");
@@ -48,6 +52,22 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
     @Override
     public ARMConfiguration newConfiguration() {
         return new ARMConfiguration();
+    }
+
+    @Override
+    public boolean evaluateRuncondition(Date lastRun) {
+        
+        if (lastRun == null) return true; // never run before so execute anyway+
+        ARMConfigurationInt intConfiguration;
+        try {
+            intConfiguration = assocRuleMiningService.mapTypesToConfiguration(getConfiguration());
+        } catch (Exception ex) {
+            logger.info("error in mapping configuration during evaluation of runcondition! Execution cancelled!");
+            intConfiguration = null;
+        }
+        if (intConfiguration == null) return false; // if configuration cannot be mapped, no execution necessary
+        int actionsSinceLastRun = assocRuleMiningService.getNumberOfActions(intConfiguration, lastRun);
+        return actionsSinceLastRun >= 1;
     }
 
     @Override
@@ -128,7 +148,7 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
                 stats.setNumberOfRulesCreated(count);
             }
             stats.setLastConf(configuration.getConfidencePrcnt());
-            stats.setNumberOfActionsConsidered(assocRuleMiningService.getNumberOfActions(intConfiguration));
+            stats.setNumberOfActionsConsidered(assocRuleMiningService.getNumberOfActions(intConfiguration, null));
                     // remove old Rules
             assocRuleMiningService.removeOldRules(intConfiguration, stats);
             //assocRuleMiningService.perform(configuration.getTenantId());

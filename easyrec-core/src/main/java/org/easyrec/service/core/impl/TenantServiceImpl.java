@@ -26,8 +26,8 @@ import org.easyrec.store.dao.core.AuthenticationDAO;
 import org.easyrec.store.dao.core.TenantDAO;
 import org.easyrec.store.dao.core.types.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 import java.util.List;
 import java.util.Properties;
 import org.easyrec.service.core.ClusterService;
@@ -234,10 +234,10 @@ public class TenantServiceImpl implements TenantService {
  
     @Override
     public Properties getTenantConfig(Integer tenantId) {
-        String config = tenantDAO.getTenantConfig(tenantId);
+        Blob config = tenantDAO.getTenantConfig(tenantId);
         Properties tenantConfig = new Properties();
         try {
-            tenantConfig.load(new ByteArrayInputStream(new StringBuffer(config).toString().getBytes()));
+            tenantConfig.load(config.getBinaryStream());
             //tenantConfig.load(new StringReader(config));
         } catch (Exception e) {
             logger.warn("An error occurred!", e);
@@ -274,10 +274,10 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Properties getTenantStatistic(Integer tenantId) {
-        String config = tenantDAO.getTenantStatistic(tenantId);
+        Blob config = tenantDAO.getTenantStatistic(tenantId);
         Properties tenantStatistic = new Properties();
         try {
-            tenantStatistic.load(new ByteArrayInputStream(new StringBuffer(config).toString().getBytes()));
+            tenantStatistic.load(config.getBinaryStream());
         } catch (Exception e) {
             logger.warn("An error occurred!", e);
             return null;

@@ -18,9 +18,9 @@
 package org.easyrec.plugin.arm.store.dao;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
+import java.util.Date;
 import org.easyrec.model.core.ItemVO;
 
-import java.util.HashMap;
 import java.util.List;
 import org.easyrec.plugin.arm.TupleCounter;
 import org.easyrec.plugin.arm.model.ARMConfigurationInt;
@@ -57,5 +57,5 @@ public interface RuleminingActionDAO {
                                   ARMConfigurationInt configuration,
                                   ARMStatistics stats);
    //public int getCount(String tableName, String keyA, String keyB);
-    public int getNumberOfActions(Integer tenantId, Integer actionType);
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun);
 }

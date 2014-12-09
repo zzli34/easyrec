@@ -41,6 +41,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.easyrec.plugin.generator.RunConditionEnabled;
 
 /**
  * Implementation of the Slope One algorithm [1] as an easyrec-Generator.
@@ -50,7 +51,7 @@ import java.util.Set;
  * [1] Lemire and Maclachlan 2005. Slope One Predictors for Online Rating-Base Collaborative Filtering. In SIAM Data
  * Mining (SDM'05), Newport Beach, California, April 21-23, 2005.
  */
-public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfiguration, SlopeOneStats> {
+public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfiguration, SlopeOneStats> implements RunConditionEnabled {
     public static final String DISPLAY_NAME = "SlopeOne";
     public static final Version VERSION = new Version("0.98");
     public static final URI ID = URI.create("http://www.easyrec.org/plugins/slopeone");
@@ -111,6 +112,15 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
     @Override
     protected void doCleanup() throws Exception {}
 
+    @Override
+    public boolean evaluateRuncondition(Date lastRun) {
+        if (lastRun == null) return true; // never run before so execute anyway+
+        Integer objActionTypeId = typeMappingService.getIdOfActionType(getConfiguration().getTenantId(), getConfiguration().getActionType());
+        if (objActionTypeId == null) return false; // error with configuration, so do not run
+        int actionsSinceLastRun = actionDAO.getNumberOfActions(getConfiguration().getTenantId(), objActionTypeId, lastRun);
+        return actionsSinceLastRun >= 1;
+    }
+    
     @Override
     protected void doExecute(final ExecutionControl control, SlopeOneStats stats) throws Exception {
         control.updateProgress(0, 4, "Started");

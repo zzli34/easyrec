@@ -283,6 +283,11 @@ public class ActionDAOMysqlImpl extends AbstractTableCreatingDroppingDAOImpl imp
 
     @Override
     public String getTableCreatingSQLScriptName() { return "classpath:sql/plugins/slopeone/SlopeOneAction.sql"; }
+    
+    @Override
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun) {
+        return actionDAO.getNumberOfActions(tenantId, actionType, lastRun);
+    }
 
     private int insertActionsBulk(final int bulkSize,
                                   final List<ActionVO<Integer, Integer>> thisBulk,

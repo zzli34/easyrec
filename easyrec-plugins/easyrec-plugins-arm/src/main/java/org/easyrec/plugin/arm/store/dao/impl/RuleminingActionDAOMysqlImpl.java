@@ -31,11 +31,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
-import javax.xml.bind.annotation.XmlElement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.easyrec.plugin.arm.TupleCounter;
 import org.easyrec.plugin.arm.model.ARMConfigurationInt;
@@ -101,6 +101,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         setDataSource(dataSource);
     }
 
+    @Override
     public Integer getNumberOfBaskets(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
@@ -140,9 +141,9 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
     /**
      * Number of baskets excluding single item baskets
      *
-     * @param analysis anlysis
      * @return int
      */
+    @Override
     public Integer getNumberOfBasketsESIB(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
@@ -179,6 +180,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         return getJdbcTemplate().queryForObject(query.toString(), args.toArray(), Ints.toArray(argt), Integer.class);
     }
 
+    @Override
     public int getNumberOfProducts(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
@@ -214,6 +216,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
     }
 
 
+    @Override
     public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration) {
         ActionResultSetExtractor rse = new ActionResultSetExtractor();
 
@@ -269,6 +272,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         return ret;
     }
 
+    @Override
     public List<TupleVO> defineL2(TObjectIntHashMap<ItemVO<Integer, Integer>> L1,
                                   TupleCounter tupleCounter,
                                   ARMConfigurationInt configuration,
@@ -399,15 +403,26 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         return getJdbcTemplate().queryForInt(query.toString(), args, argTypes);
     }
 
-    public int getNumberOfActions(Integer tenantId, Integer actionType) {
+    @Override
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun) {
+        List<Object> args = Lists.newArrayList();
+        List<Integer> argt = Lists.newArrayList();
+        
         StringBuilder query = new StringBuilder("SELECT count(1) as cnt FROM ");
         query.append(BaseActionDAO.DEFAULT_TABLE_NAME);
         query.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=? ")
                 .append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?");
+        args.add(tenantId);
+        args.add(actionType);
+        argt.add(Types.INTEGER);
+        argt.add(Types.INTEGER);
+        
+        if (lastRun != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
+            args.add(lastRun);
+            argt.add(Types.TIMESTAMP);
+        }
 
-        final Object[] args = {tenantId, actionType};
-        final int[] argTypes = {Types.INTEGER, Types.INTEGER};
-
-        return getJdbcTemplate().queryForInt(query.toString(), args, argTypes);
+        return getJdbcTemplate().queryForInt(query.toString(), args.toArray(), Ints.toArray(argt));
     }
 }

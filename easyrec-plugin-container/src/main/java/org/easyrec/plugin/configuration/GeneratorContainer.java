@@ -19,7 +19,7 @@ import org.easyrec.store.dao.plugin.NamedConfigurationDAO;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import org.easyrec.plugin.generator.RunConditionEnabled;
 
 public class GeneratorContainer {
 
@@ -38,13 +38,13 @@ public class GeneratorContainer {
     private LogEntryDAO logEntryDAO;
     private PluginRegistry registry;
 
-    public LogEntry runGenerator(NamedConfiguration namedConfiguration) {
-        return runGenerator(namedConfiguration, Predicates.<GeneratorStatistics>alwaysTrue());
+    public LogEntry runGenerator(NamedConfiguration namedConfiguration, boolean forceRun) {
+        return runGenerator(namedConfiguration, Predicates.<GeneratorStatistics>alwaysTrue(), forceRun);
     }
 
     public LogEntry runGenerator(NamedConfiguration namedConfiguration,
-                                 Predicate<GeneratorStatistics> writeLog) {
-        return runGenerator(namedConfiguration, writeLog, false);
+                                 Predicate<GeneratorStatistics> writeLog, boolean forceRun) {
+        return runGenerator(namedConfiguration, writeLog, false, forceRun);
     }
 
     /**
@@ -56,11 +56,12 @@ public class GeneratorContainer {
      * @param writeLogLast       If this flag is {@code true} the log entry is started only after the plugin was run (i.e.
      *                           the duration will not be correct but the AUTO_INCREMENT column in the DB will not be increased in case {@code
      *                           writeLog} evaluated to false..
+     * @param forceRun           forces the run of the generator regardless of the evaluation of the runCondition
      * @return The statistics returned by the generator or {@link StatisticsConstants.ExecutionFailedStatistics} if
      *         an exception was thrown by the generator.
      */
     public LogEntry runGenerator(NamedConfiguration namedConfiguration,
-                                 Predicate<GeneratorStatistics> writeLog, boolean writeLogLast) {
+                                 Predicate<GeneratorStatistics> writeLog, boolean writeLogLast, boolean forceRun) {
         Preconditions.checkNotNull(namedConfiguration);
         Preconditions.checkNotNull(namedConfiguration.getConfiguration());
         Preconditions.checkNotNull(namedConfiguration.getName());
@@ -74,54 +75,72 @@ public class GeneratorContainer {
         // is this needed? tenant should be set in the configuration stored in
         configuration.setTenantId(namedConfiguration.getTenantId());
         generator.setConfiguration(configuration);
+        
+        boolean doRun = true;
+        if (!forceRun) {
+            if (generator instanceof RunConditionEnabled) {
 
-        LogEntry logEntry = new LogEntry(namedConfiguration.getTenantId(), namedConfiguration.getPluginId(), new Date(),
-                namedConfiguration.getAssocTypeId(), configuration);
-        GeneratorStatistics statistics;
-
-        try {
-            if (!writeLogLast) logEntryDAO.startEntry(logEntry);
-
-            //switch classloader to the generator's own classloader so its exclusive classes are visible
-            ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-            ClassLoader generatorClassLoader = generator.getClass().getClassLoader();
-            Thread.currentThread().setContextClassLoader(generatorClassLoader);
-            statistics = generator.execute();
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-
-        } catch (Throwable e) {
-            logger.error(
-                    String.format("Running plugin %s with configuration \"%s\" for tenant %d with assocType %d failed",
-                            namedConfiguration.getPluginId(), namedConfiguration.getName(),
-                            namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId()), e);
-            statistics = new StatisticsConstants.ExecutionFailedStatistics(e);
+                // returns the newest entry for that tenant and assocType
+                List<LogEntry> lastRun = logEntryDAO.getLogEntriesForTenant(namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId(), 0, 1);
+                if ((lastRun != null) && (!lastRun.isEmpty())) {
+                    LogEntry le = lastRun.get(0);
+                    doRun = ((RunConditionEnabled) generator).evaluateRuncondition(le.getStartDate());
+                }
+            }
         }
+        if (doRun) {
+            LogEntry logEntry = new LogEntry(namedConfiguration.getTenantId(), namedConfiguration.getPluginId(), new Date(),
+                    namedConfiguration.getAssocTypeId(), configuration);
+            GeneratorStatistics statistics;
 
-        boolean doWriteLog = writeLog.apply(statistics);
+            try {
+                if (!writeLogLast) logEntryDAO.startEntry(logEntry);
 
-        logEntry.setStatistics(statistics);
-        logEntry.setEndDate(new Date());
+                //switch classloader to the generator's own classloader so its exclusive classes are visible
+                ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+                ClassLoader generatorClassLoader = generator.getClass().getClassLoader();
+                Thread.currentThread().setContextClassLoader(generatorClassLoader);
+                statistics = generator.execute();
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
 
-        if (doWriteLog) {
-            if (writeLogLast)
-                logEntryDAO.startEntry(logEntry);
-            logEntryDAO.endEntry(logEntry);
-        } else if (!writeLogLast)
-            logEntryDAO.deleteEntry(logEntry);
+            } catch (Throwable e) {
+                logger.error(
+                        String.format("Running plugin %s with configuration \"%s\" for tenant %d with assocType %d failed",
+                                namedConfiguration.getPluginId(), namedConfiguration.getName(),
+                                namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId()), e);
+                statistics = new StatisticsConstants.ExecutionFailedStatistics(e);
+            }
 
-        return logEntry;
+            boolean doWriteLog = writeLog.apply(statistics);
+
+            logEntry.setStatistics(statistics);
+            logEntry.setEndDate(new Date());
+
+            if (doWriteLog) {
+                if (writeLogLast)
+                    logEntryDAO.startEntry(logEntry);
+                logEntryDAO.endEntry(logEntry);
+            } else if (!writeLogLast)
+                logEntryDAO.deleteEntry(logEntry);
+
+            return logEntry;
+        } else {
+            logger.info("Nothing new since last run." + namedConfiguration.getPluginId().getUri() + " Skipping calculation for tenant " + namedConfiguration.getTenantId());
+           return null; 
+        }
+        
     }
 
-    public List<LogEntry> runGeneratorsForTenant(int tenantId) {
-        return runGeneratorsForTenant(tenantId, Predicates.<GeneratorStatistics>alwaysTrue());
+    public List<LogEntry> runGeneratorsForTenant(int tenantId, boolean forceRun) {
+        return runGeneratorsForTenant(tenantId, Predicates.<GeneratorStatistics>alwaysTrue(), forceRun);
     }
 
-    public List<LogEntry> runGeneratorsForTenant(int tenantId, Predicate<GeneratorStatistics> writeLog) {
-        return runGeneratorsForTenant(tenantId, writeLog, false);
+    public List<LogEntry> runGeneratorsForTenant(int tenantId, Predicate<GeneratorStatistics> writeLog, boolean forceRun) {
+        return runGeneratorsForTenant(tenantId, writeLog, false, forceRun);
     }
 
     public List<LogEntry> runGeneratorsForTenant(int tenantId, Predicate<GeneratorStatistics> writeLog,
-                                                 boolean writeLogLast) {
+                                                 boolean writeLogLast, boolean forceRun) {
 
         List<NamedConfiguration> configurations = namedConfigurationDAO.readActiveConfigurations(tenantId);
         List<LogEntry> result = Lists.newArrayList();
@@ -129,7 +148,8 @@ public class GeneratorContainer {
         for (NamedConfiguration namedConfiguration : configurations) {
             if (namedConfiguration == null) continue;
 
-            result.add(runGenerator(namedConfiguration, writeLog, writeLogLast));
+            LogEntry le = runGenerator(namedConfiguration, writeLog, writeLogLast, forceRun);
+            if (le != null) result.add(le);
         }
 
         return result;

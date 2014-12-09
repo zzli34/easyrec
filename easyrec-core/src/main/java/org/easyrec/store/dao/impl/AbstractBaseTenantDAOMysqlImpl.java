@@ -18,6 +18,7 @@
  */
 package org.easyrec.store.dao.impl;
 
+import java.sql.Blob;
 import org.easyrec.model.core.TenantVO;
 import org.easyrec.store.dao.BaseTenantDAO;
 import org.easyrec.utils.spring.cache.annotation.LongCacheable;
@@ -190,7 +191,7 @@ public abstract class AbstractBaseTenantDAOMysqlImpl extends AbstractTableCreati
 
     }
 
-    public String getTenantConfig(Integer tenantId) {
+    public Blob getTenantConfig(Integer tenantId) {
 
         if (tenantId == null) {
             throw new IllegalArgumentException("tenantId must not be 'null'!");
@@ -214,7 +215,7 @@ public abstract class AbstractBaseTenantDAOMysqlImpl extends AbstractTableCreati
         args = new Object[]{tenantId};
         argTypes = new int[]{Types.INTEGER};
 
-        return getJdbcTemplate().queryForObject(sqlString.toString(), args, argTypes, String.class);
+        return getJdbcTemplate().queryForObject(sqlString.toString(), args, argTypes, Blob.class);
     }
 
     public int storeTenantConfig(Integer tenantId, String tenantConfig) {
@@ -242,7 +243,7 @@ public abstract class AbstractBaseTenantDAOMysqlImpl extends AbstractTableCreati
         return getJdbcTemplate().update(factory.newPreparedStatementCreator(args));
     }
 
-    public String getTenantStatistic(Integer tenantId) {
+    public Blob getTenantStatistic(Integer tenantId) {
 
         if (tenantId == null) {
             throw new IllegalArgumentException("tenantId must not be 'null'!");
@@ -266,7 +267,7 @@ public abstract class AbstractBaseTenantDAOMysqlImpl extends AbstractTableCreati
         args = new Object[]{tenantId};
         argTypes = new int[]{Types.INTEGER};
 
-        return getJdbcTemplate().queryForObject(sqlString.toString(), args, argTypes, String.class);
+        return getJdbcTemplate().queryForObject(sqlString.toString(), args, argTypes, Blob.class);
     }
 
     public int storeTenantStatistic(Integer tenantId, String tenantStatistic) {

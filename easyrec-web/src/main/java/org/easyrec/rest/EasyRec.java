@@ -1684,6 +1684,9 @@ public class EasyRec {
      * @param token    security toke you get from the user interface or via login API call
      * @param tenantId id of the tenant whose plugins should be started
      * @param callback
+     * @param apiKey
+     * @param forceRun
+     * @return 
      * @throws EasyRecException
      */
 
@@ -1693,15 +1696,16 @@ public class EasyRec {
                                  @QueryParam("token") String token,
                                  @QueryParam("tenantid") String tenantId,
                                  @QueryParam("callback") String callback,
-                                 @QueryParam("apikey") String apiKey)
+                                 @QueryParam("apikey") String apiKey,
+                                 @QueryParam("forceRun") final boolean forceRun)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_START_PLUGINS);
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> successMessages = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> successMessages = new ArrayList<>();
 
         if (easyrecSettings.getSecuredAPIMethods().contains("startplugins")) {
             Operator o = operatorDAO.getOperatorFromToken(token);
@@ -1748,10 +1752,10 @@ public class EasyRec {
 
                                     return archivePseudoStatistics.getNumberOfArchivedActions() > 0;
                                 }
-                            }, true);
+                            }, true, true);
                 }
 
-                generatorContainer.runGeneratorsForTenant(coreTenantId);
+                generatorContainer.runGeneratorsForTenant(coreTenantId, forceRun);
             }
         };
 

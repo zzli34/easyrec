@@ -17,6 +17,7 @@
  */
 package org.easyrec.store.dao;
 
+import java.sql.Blob;
 import org.easyrec.model.core.TenantVO;
 
 import java.util.List;
@@ -61,11 +62,11 @@ public interface BaseTenantDAO {
 
     public List<TenantVO> getAllTenants();
 
-    public String getTenantConfig(Integer tenantId);
+    public Blob getTenantConfig(Integer tenantId);
 
     public int storeTenantConfig(Integer tenantId, String tenantConfig);
 
-    public String getTenantStatistic(Integer tenantId);
+    public Blob getTenantStatistic(Integer tenantId);
 
     public int storeTenantStatistic(Integer tenantId, String tenantConfig);
 

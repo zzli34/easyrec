@@ -151,7 +151,7 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
         // deactivate the profileSimilarity plugin by default
         namedConfigurationDAO.deactivateByPlugin(profileDukePluginId);
 
-        generatorContainer.runGeneratorsForTenant(tenantId);
+        generatorContainer.runGeneratorsForTenant(tenantId, true);
 
         remoteTenantService.updateTenantStatistics(tenantId);
     }

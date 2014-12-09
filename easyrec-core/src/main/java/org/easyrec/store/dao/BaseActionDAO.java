@@ -165,4 +165,6 @@ public interface BaseActionDAO<A, RI, AT, IT, I, RAT, T, U> extends TableCreatin
 
     // HINT: implement method that retrieves aggregated item ratings (using ActionToRatingAggregator) (Mantis Issue: #692)
     // public List<RAT> getAggregatedItemRatings(T tenant, U user, String sessionId, IT itemType, Integer numberOfResults, TimeConstraintVO timeRange, Boolean sortDescending, Boolean goodRatingsOnly);
+    
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun);
 }

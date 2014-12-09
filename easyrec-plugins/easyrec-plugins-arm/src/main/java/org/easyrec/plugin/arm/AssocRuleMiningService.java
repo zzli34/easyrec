@@ -19,6 +19,7 @@ package org.easyrec.plugin.arm;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.Collection;
+import java.util.Date;
 
 import java.util.List;
 import java.util.SortedSet;
@@ -62,7 +63,7 @@ public interface AssocRuleMiningService {
 
     public Integer getNumberOfProducts(ARMConfigurationInt configuration);
 
-    public Integer getNumberOfActions(ARMConfigurationInt configuration);
+    public Integer getNumberOfActions(ARMConfigurationInt configuration, Date lastRun);
 
     public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration);
 

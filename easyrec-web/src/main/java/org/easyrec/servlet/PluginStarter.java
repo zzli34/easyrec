@@ -287,10 +287,10 @@ public class PluginStarter extends javax.servlet.http.HttpServlet implements jav
 
                             return archivePseudoStatistics.getNumberOfArchivedActions() > 0;
                         }
-                    }, true);
+                    }, true, true);
         }
 
-        List<LogEntry> generatorRuns = generatorContainer.runGeneratorsForTenant(remoteTenant.getId());
+        List<LogEntry> generatorRuns = generatorContainer.runGeneratorsForTenant(remoteTenant.getId(), true);
 
         List<GeneratorResponse> responses = Lists.transform(generatorRuns, new Function<LogEntry, GeneratorResponse>() {
             public GeneratorResponse apply(LogEntry input) {

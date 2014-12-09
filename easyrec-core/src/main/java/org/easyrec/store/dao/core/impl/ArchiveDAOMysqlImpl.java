@@ -71,7 +71,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
                 actualArchiveTableName = (String) getJdbcTemplate()
                         .queryForObject("SHOW TABLES LIKE 'actionarchive" + i + "'", String.class);
             } catch (Exception e) {
-                logger.warn("An error occurred!", e);
+                logger.warn("ArchiveDAO stopped looking for archive tables at index " + i);
                 actualArchiveTableName = "";
             }
 

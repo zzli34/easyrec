@@ -18,6 +18,7 @@
  */
 package org.easyrec.store.dao.impl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.primitives.Ints;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
@@ -158,6 +159,30 @@ public abstract class AbstractBaseActionDAOMysqlImpl<A, RI, AT, IT, I, RAT, T, U
         return query.toString();
     }
 
+    
+    @Override
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun) {
+        List<Object> args = Lists.newArrayList();
+        List<Integer> argt = Lists.newArrayList();
+        
+        StringBuilder query = new StringBuilder("SELECT count(1) as cnt FROM ");
+        query.append(BaseActionDAO.DEFAULT_TABLE_NAME);
+        query.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=? ")
+                .append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?");
+        args.add(tenantId);
+        args.add(actionType);
+        argt.add(Types.INTEGER);
+        argt.add(Types.INTEGER);
+        
+        if (lastRun != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
+            args.add(lastRun);
+            argt.add(Types.TIMESTAMP);
+        }
+
+        return getJdbcTemplate().queryForInt(query.toString(), args.toArray(), Ints.toArray(argt));
+    }
+    
     private class DateResultSetExtractor implements ResultSetExtractor<Date> {
         public Date extractData(ResultSet rs) {
             try {
