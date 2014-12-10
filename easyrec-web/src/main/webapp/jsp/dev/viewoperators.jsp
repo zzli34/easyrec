@@ -24,11 +24,15 @@
     <h1>Operators</h1>
 
     <div id="status"><br/></div>
+    <form name="searchForm">
+        <input id="searchString" name="searchString" type="text" value="${searchString}"/>
+        <input type="button" value="Search" onclick="selectPageSearch('${url}?tenantId=${tenantId}&operatorId=${operatorId}', document.searchForm.searchString.value)"/> 
+    </form> 
 
     <div id="operators">
         <table width="100%">
             <tr>
-                <th/>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th>Operator</th>

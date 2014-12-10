@@ -29,6 +29,10 @@
                    onclick="toggleFilterDemoTenants()" <c:if test="${filterDemoTenants}">checked</c:if>>
             <label for="filterDemoTenants">filter demo tenants</label>
         </div>
+        <form name="searchForm">
+            <input id="searchString" name="searchString" type="text" value="${searchString}"/>
+            <input type="button" value="Search" onclick="selectPageSearch('${url}?tenantId=${tenantId}&operatorId=${operatorId}', document.searchForm.searchString.value)"/> 
+        </form> 
         <c:choose>
             <c:when test="${remoteTenants!=null}">
                 <div id="status"><br/></div>

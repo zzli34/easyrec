@@ -86,7 +86,7 @@ public class PageStringGenerator {
     /**
      * Returns the Html String displayed on top or the bottom of a table grid.
      *
-     * @param numberOfPages
+     * @param itemCount
      * @param selectedSiteNumber
      * @return
      */

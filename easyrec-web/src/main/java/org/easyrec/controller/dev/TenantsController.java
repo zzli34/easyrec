@@ -209,6 +209,7 @@ public class TenantsController extends MultiActionController {
     public ModelAndView viewalltenants(HttpServletRequest request, HttpServletResponse httpServletResponse) {
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
+        String searchString = ServletUtils.getSafeParameter(request, "searchString", "");
 
         int siteNumber = ServletUtils.getSafeParameter(request, "siteNumber", 0);
         boolean filterDemoTenants = (ServletUtils.getSafeParameter(request, "filterDemoTenants", 1) == 1);
@@ -219,7 +220,8 @@ public class TenantsController extends MultiActionController {
 
         mav.addObject("operatorId", operatorId);
         mav.addObject("tenantId", tenantId);
-        mav.addObject("filterDemoTenants", filterDemoTenants);
+        mav.addObject("searchString", searchString);
+        mav.addObject("url", request.getRequestURL());
 
 
         if (Security.isDeveloper(request)) {
@@ -227,12 +229,12 @@ public class TenantsController extends MultiActionController {
                     request.getRequestURL() + "?" + request.getQueryString());
 
             List<RemoteTenant> remoteTenants = remoteTenantDAO.getTenants(siteNumber * psg.getNumberOfItemsPerPage(),
-                    psg.getNumberOfItemsPerPage(), filterDemoTenants);
+                    psg.getNumberOfItemsPerPage(), filterDemoTenants, searchString);
 
             if (remoteTenants.isEmpty()) {
                 remoteTenants = remoteTenantDAO.getTenants(siteNumber * psg.getNumberOfItemsPerPage(),
-                        psg.getNumberOfItemsPerPage(), false);
-                mav.addObject("filterDemoTenants", false);
+                        psg.getNumberOfItemsPerPage(), false, searchString);
+                filterDemoTenants = false;
             }
 
             List<Integer> runningTenants = logEntryDAO.getRunningTenants();
@@ -240,7 +242,8 @@ public class TenantsController extends MultiActionController {
 
             mav.addObject("runningTenantId", runningTenantId);
 
-            int remoteTenantsTotal = remoteTenantDAO.count();
+            int remoteTenantsTotal = remoteTenantDAO.count(filterDemoTenants, searchString);
+            mav.addObject("filterDemoTenants", filterDemoTenants);
             mav.addObject("remoteTenantsTotal", remoteTenantsTotal);
             mav.addObject("pageMenuString", psg.getPageMenuString(remoteTenantsTotal, siteNumber));
 
