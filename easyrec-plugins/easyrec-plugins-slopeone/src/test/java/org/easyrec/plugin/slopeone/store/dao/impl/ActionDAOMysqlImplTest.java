@@ -114,7 +114,7 @@ public class ActionDAOMysqlImplTest {
 
     private RatingVO<Integer, Integer> createRating(int itemId, int userId, int ratingValue,
                                                                       String actionTime) {
-        return new RatingVO<>(new ItemVO<>(1, itemId, 1),
+        return new RatingVO<Integer, Integer>(new ItemVO<Integer, Integer>(1, itemId, 1),
                 (double) ratingValue, 0, createDate(actionTime), userId);
     }
 
@@ -149,7 +149,7 @@ public class ActionDAOMysqlImplTest {
 
     @Test
     public void insertAction_shouldStoreActionOnce() {
-        final long ID = 100;
+        final int ID = 100;
         final int TENANT = 1;
         final int ITEM = 10;
         final int ITEMTYPE = 1;
@@ -158,8 +158,8 @@ public class ActionDAOMysqlImplTest {
         TIntSet itemTypeIds = new TIntHashSet(new int[]{ITEMTYPE});
 
         ActionVO<Integer, Integer> action =
-                new ActionVO<>(
-                        ID, TENANT, USER, null, null, new ItemVO<>(TENANT, ITEM, ITEMTYPE), 2,
+                new ActionVO<Integer, Integer>(
+                        ID, TENANT, USER, null, null, new ItemVO<Integer, Integer>(TENANT, ITEM, ITEMTYPE), 2,
                         RATINGVALUE, true, 10, null, createDate("2007-04-15 13:01:00.0"));
 
         int rowsModified = actionDAO.insertAction(action);
@@ -182,7 +182,7 @@ public class ActionDAOMysqlImplTest {
     @Test
     public void insertActions_canStoreMoreThan100() {
         // 100 is the bulk size used in the mysqlimpl
-        final long ID = 100;
+        final int ID = 100;
         final int TENANT = 1;
         final int ITEM = 10;
         final int ITEMTYPE = 1;
@@ -193,22 +193,22 @@ public class ActionDAOMysqlImplTest {
         TIntSet itemTypeIds = new TIntHashSet(new int[]{ITEMTYPE});
 
         List<ActionVO<Integer, Integer>> actions =
-                new ArrayList<>(
+                new ArrayList<ActionVO<Integer, Integer>>(
                         202);
         List<RatingVO<Integer, Integer>> expectedRatingsList =
-                new ArrayList<>(
+                new ArrayList<RatingVO<Integer, Integer>>(
                         NR_OF_ITEMS);
 
         for (int i = 0; i < NR_OF_ITEMS; i++) {
             String strTime = "2007-04-15 13:" + (((i % 60) < 10) ? "0" : "") + (i % 60) + ":00.0";
             Date time = createDate(strTime);
-            ItemVO<Integer, Integer> item = new ItemVO<>(TENANT, ITEM + i, ITEMTYPE);
+            ItemVO<Integer, Integer> item = new ItemVO<Integer, Integer>(TENANT, ITEM + i, ITEMTYPE);
 
             actions.add(
-                    new ActionVO<>(ID + i, TENANT, USER, null, null, item, 2,
+                    new ActionVO<Integer, Integer>(ID + i, TENANT, USER, null, null, item, 2,
                             RATINGVALUE + i, true, 10, null, time));
             expectedRatingsList
-                    .add(new RatingVO<>(item, (double) RATINGVALUE + i, 0, time, USER,
+                    .add(new RatingVO<Integer, Integer>(item, (double) RATINGVALUE + i, 0, time, USER,
                             null));
         }
 
@@ -228,7 +228,7 @@ public class ActionDAOMysqlImplTest {
     @Test
     @SuppressWarnings({"unchecked"})
     public void insertActions_shouldStoreActionsOnce() {
-        final long ID = 100;
+        final int ID = 100;
         final int TENANT = 1;
         final int ITEM = 10;
         final int ITEMTYPE = 1;
@@ -237,19 +237,19 @@ public class ActionDAOMysqlImplTest {
         TIntSet itemTypeIds = new TIntHashSet(new int[]{1});
 
         ActionVO<Integer, Integer> action1 =
-                new ActionVO<>(
+                new ActionVO<Integer, Integer>(
                         ID + 1, TENANT, USER, null, null,
-                        new ItemVO<>(TENANT, ITEM + 1, ITEMTYPE), 2,
+                        new ItemVO<Integer, Integer>(TENANT, ITEM + 1, ITEMTYPE), 2,
                         RATINGVALUE + 1, true, 10, null, createDate("2007-04-15 13:01:00.0"));
         ActionVO<Integer, Integer> action2 =
-                new ActionVO<>(
+                new ActionVO<Integer, Integer>(
                         ID + 2, TENANT, USER, null, null,
-                        new ItemVO<>(TENANT, ITEM + 2, ITEMTYPE), 2,
+                        new ItemVO<Integer, Integer>(TENANT, ITEM + 2, ITEMTYPE), 2,
                         RATINGVALUE + 2, true, 10, null, createDate("2007-04-15 13:02:00.0"));
         ActionVO<Integer, Integer> action3 =
-                new ActionVO<>(
+                new ActionVO<Integer, Integer>(
                         ID + 3, TENANT, USER, null, null,
-                        new ItemVO<>(TENANT, ITEM + 1, ITEMTYPE), 2,
+                        new ItemVO<Integer, Integer>(TENANT, ITEM + 1, ITEMTYPE), 2,
                         RATINGVALUE + 3, true, 10, null, createDate("2007-04-15 13:03:00.0"));
         List<ActionVO<Integer, Integer>> actions = Arrays.asList(action1, action2, action3);
 

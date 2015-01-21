@@ -19,7 +19,6 @@
 
 package org.easyrec.store.dao.web.impl;
 
-import com.google.common.base.Strings;
 import org.easyrec.model.core.web.RemoteTenant;
 import org.easyrec.plugin.Plugin.LifecyclePhase;
 import org.easyrec.plugin.configuration.ConfigurationHelper;
@@ -39,6 +38,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,7 +74,6 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
     private static final String SQL_GET_TENANTS;
     private static final String SQL_GET_TENANTS_FROM_OPERATOR;
     private static final String SQL_GET_ALL_TENANTS;
-    private static final String SQL_GET_TENANTS_SEARCH;
     private static final String SQL_GET_TENANTS_BY_EXECUTIONTIME;
 
     private static final int[] ARGTYPES_KEY = {Types.VARCHAR, Types.VARCHAR};
@@ -100,16 +99,11 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
                 .append(DEFAULT_STRINGID_COLUMN_NAME)
                 .append(", OPERATORID, URL, DESCRIPTION, CREATIONDATE, TENANTCONFIG, TENANTSTATISTIC ").append(" FROM ")
                 .append(DEFAULT_TABLE_NAME).append(" WHERE STRINGID != ? ").append(" ORDER BY  CREATIONDATE DESC  LIMIT ?,?").toString();
-        
-        SQL_GET_TENANTS_SEARCH = new StringBuilder().append(" SELECT ").append(DEFAULT_TABLE_KEY).append(", ")
-                .append(DEFAULT_STRINGID_COLUMN_NAME)
-                .append(", OPERATORID, URL, DESCRIPTION, CREATIONDATE, TENANTCONFIG, TENANTSTATISTIC ").append(" FROM ")
-                .append(DEFAULT_TABLE_NAME).append(" WHERE STRINGID != ? AND STRINGID LIKE ?").append(" ORDER BY  CREATIONDATE DESC  LIMIT ?,?").toString();
 
         SQL_GET_ALL_TENANTS = new StringBuilder().append(" SELECT ").append(DEFAULT_TABLE_KEY).append(", ")
                 .append(DEFAULT_STRINGID_COLUMN_NAME).append(", OPERATORID, URL, DESCRIPTION, CREATIONDATE, TENANTCONFIG, TENANTSTATISTIC FROM ")
                 .append(DEFAULT_TABLE_NAME).append(" ORDER BY CREATIONDATE DESC ").toString();
-        
+
         SQL_GET_TENANTS_FROM_OPERATOR = new StringBuilder().append(" SELECT ").append(DEFAULT_TABLE_KEY).append(", ")
                 .append(DEFAULT_STRINGID_COLUMN_NAME)
                 .append(", OPERATORID, URL, DESCRIPTION, CREATIONDATE, TENANTCONFIG, TENANTSTATISTIC ").append(" FROM ")
@@ -327,35 +321,6 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
         }
     }
 
-        /*
-     * (non-Javadoc)
-     * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO
-     */
-    @Override
-    public List<RemoteTenant> getTenants(int offset, int limit, boolean filterDemoTenants, String searchString) {
-        try {
-            String filter = "";
-
-            if (Strings.isNullOrEmpty(searchString)) {
-                searchString = "%";
-            } else {
-                searchString = "%" + searchString + "%";
-            }
-            
-            if (filterDemoTenants) {
-                filter = "EASYREC_DEMO";
-            }
-
-            Object[] args = {filter, searchString, offset, limit};
-            int[] argTypes = {Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER};
-            return getJdbcTemplate()
-                    .query(SQL_GET_TENANTS_SEARCH, args, argTypes, remoteTenantRowMapper);
-
-        } catch (Exception e) {
-            logger.warn("An error occurred!", e);
-            return null;
-        }
-    }
 
     @Override
     public List<RemoteTenant> getTenantsByExecutionTime(String propertyKey, String executionTime) {
@@ -431,30 +396,6 @@ public class RemoteTenantDAOMysqlImpl extends BasicDAOMysqlImpl implements Remot
         getJdbcTemplate().update("UPDATE tenant SET tenantStatistic='' WHERE id=" + tenantId);
     }
 
-    @Override
-    public int count(boolean filterDemoTenants, String stringId) {
-        
-        String filter = "";
-        String sql = " SELECT Count(1) FROM " + DEFAULT_TABLE_NAME + " WHERE " + DEFAULT_STRINGID_COLUMN_NAME + "!= ? AND " + DEFAULT_STRINGID_COLUMN_NAME + " LIKE ?";
-        if (Strings.isNullOrEmpty(stringId)) {
-            stringId = "%";
-        } else {
-            stringId = "%" + stringId + "%";
-        }
-        
-        if (filterDemoTenants) {
-            filter = "EASYREC_DEMO";
-        }
-        
-        try {
-            return getJdbcTemplate().queryForInt(sql, new Object[]{filter, stringId}, new int[]{Types.VARCHAR, Types.VARCHAR});
-        } catch (Exception e) {
-            logger.debug(e);
-            return 0;
-        }
-        
-    }
-    
 
     /******************************************************************************************/
     /************************************** Rowmappers ****************************************/

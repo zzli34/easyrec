@@ -146,7 +146,7 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
     public void initTasks() {
 
 
-        List<Operator> operators = operatorDAO.getOperators("", 0, Integer.MAX_VALUE);
+        List<Operator> operators = operatorDAO.getOperators(0, Integer.MAX_VALUE);
         for (Operator operator : operators) {
 
             List<RemoteTenant> tenants = remoteTenantDAO.getTenantsFromOperator(operator.getOperatorId());

@@ -68,7 +68,6 @@ public interface OperatorDAO extends BasicDAO {
      * @param operatorId
      * @return
      */
-    @Override
     public boolean exists(String operatorId);
 
 
@@ -160,6 +159,7 @@ public interface OperatorDAO extends BasicDAO {
      * from the database.
      *
      * @param operatorId
+     * @return
      */
     public void remove(String operatorId);
 
@@ -183,7 +183,6 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param apiKey
-     * @return 
      */
     public boolean activate(String operatorId, String apiKey);
 
@@ -191,7 +190,6 @@ public interface OperatorDAO extends BasicDAO {
      * This function deactivates an Operator.
      *
      * @param operatorId
-     * @return 
      */
     public boolean deactivate(String operatorId);
 
@@ -202,17 +200,13 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param password
-     * @return 
      */
     public Operator signIn(String operatorId, String password);
 
     /**
-     * @param operatorId
-     * @param offset
-     * @param limit
      * @return Operators for a given offest and count.
      */
-    public List<Operator> getOperators(String operatorId, int offset, int limit);
+    public List<Operator> getOperators(int offset, int limit);
 
     /**
      * This function updates the password for an operator
@@ -229,7 +223,6 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param password
-     * @return 
      */
     public boolean correctPassword(String operatorId, String password);
 
@@ -240,12 +233,5 @@ public interface OperatorDAO extends BasicDAO {
      */
     public int getToken();
 
-    /**
-     * 
-     * 
-     * @param operatorId
-     * @return 
-     */
-    public int count(String operatorId);
 
 }

@@ -53,9 +53,9 @@ import java.util.List;
 
 
 public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorDAO {
-    private HashMap<String, Operator> operatorCache = new HashMap<>();
-    private HashMap<String, Operator> tokenCache = new HashMap<>();
-    private final HashMap<String, Integer> operatorTenantCache = new HashMap<String, Integer>();
+    private HashMap<String, Operator> operatorCache = new HashMap<String, Operator>();
+    private HashMap<String, Operator> tokenCache = new HashMap<String, Operator>();
+    private HashMap<String, Integer> operatorTenantCache = new HashMap<String, Integer>();
 
     private OperatorRowMapper operatorRowMapper = new OperatorRowMapper();
 
@@ -142,7 +142,7 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
                 .append(" , PASSWORD, FIRSTNAME, LASTNAME, ")
                 .append("    EMAIL, PHONE, COMPANY, ADDRESS, APIKEY, IP, ACTIVE, ")
                 .append("    CREATIONDATE, ACCESSLEVEL, ").append("    LOGINCOUNT, LASTLOGIN ").append(" FROM ")
-                .append(DEFAULT_TABLE_NAME).append(" WHERE ").append(DEFAULT_OPERATORID_COLUMN_NAME).append(" LIKE ? ").append("ORDER BY CREATIONDATE DESC LIMIT ?,? ").toString();
+                .append(DEFAULT_TABLE_NAME).append(" ORDER BY CREATIONDATE DESC LIMIT ?,? ").toString();
     }
 
     public OperatorDAOMysqlImpl(DataSource dataSource) {
@@ -157,7 +157,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * @see at.researchstudio.sat.recommender.remote.store.dao.ItemDAO#addTenant(java.lang.String,
      *      java.lang.String)
      */
-    @Override
     public void add(String id, String password, String firstName, String lastName, String email, String phone,
                     String company, String address, String apiKey, String ip) {
 
@@ -182,7 +181,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      *      java.lang.String, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String, java.lang.String)
      */
-    @Override
     public boolean update(String operatorId, String firstName, String lastName, String email, String phone,
                           String company, String address, String apiKey, String ip) {
         if (exists(operatorId)) {
@@ -210,7 +208,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     * (non-Javadoc)
     * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#updatePassword(java.lang.String, java.lang.String)
     */
-    @Override
     public void updatePassword(String operatorId, String password) {
         if (exists(operatorId)) {
 
@@ -232,7 +229,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * 
      * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#getOperator(java.lang.String)
      */
-    @Override
     public Operator get(String id) {
         Operator o = operatorCache.get(id);
         if (o != null) {
@@ -257,7 +253,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     * (non-Javadoc)
     * @see at.researchstudio.sat.recommender.remote.store.dao.RemoteTenantDAO#access(java.lang.String, java.lang.String)
     */
-    @Override
     public Integer getTenantId(String apiKey, String tenantId) {
         String s = new StringBuilder().
                 append(apiKey).
@@ -292,7 +287,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     *
     * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#removeOperator(java.lang.String)
     */
-    @Override
     public void remove(String id) {
 
         Object[] args = {id};
@@ -313,7 +307,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     * (non-Javadoc)
     * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#hasTenants(java.lang.String)
     */
-    @Override
     public boolean hasTenants(String operatorId) {
         Object[] args = {operatorId};
         int[] argTypes = {Types.VARCHAR};
@@ -332,7 +325,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#setApiKey(java.lang.String,
     *      java.lang.String)
     */
-    @Override
     public boolean activate(String id, String apiKey) {
         Operator o = get(id);
 
@@ -361,7 +353,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * 
      * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#deactivate(java.lang.String)
      */
-    @Override
     public boolean deactivate(String operatorId) {
         Operator o = get(operatorId);
 
@@ -389,7 +380,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * @see at.researchstudio.sat.recommender.remote.store.dao.OperatorDAO#signedIn(java.lang.String,
      *      java.lang.String)
      */
-    @Override
     public Operator signIn(String operatorId, String password) {
         try {
             if (getJdbcTemplate().queryForInt(SQL_SIGN_IN_OPERATOR, new Object[]{operatorId, password},
@@ -412,16 +402,10 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * 
      * @see at.researchstudio.sat.recommender.remote.store.dao.CoreTenantDAO#getTenants()
      */
-    @Override
-    public List<Operator> getOperators(String operatorId, int offset, int limit) {
+    public List<Operator> getOperators(int offset, int limit) {
         try {
-            if (Strings.isNullOrEmpty(operatorId)) {
-                operatorId = "%";
-            } else {
-                operatorId = "%" + operatorId + "%";
-            }
             return getJdbcTemplate()
-                    .query(SQL_GET_OPERATORS, new Object[]{operatorId,offset, limit}, new int[]{Types.VARCHAR, Types.INTEGER, Types.INTEGER},
+                    .query(SQL_GET_OPERATORS, new Object[]{offset, limit}, new int[]{Types.INTEGER, Types.INTEGER},
                             operatorRowMapper);
         } catch (Exception e) {
             logger.debug(e);
@@ -429,30 +413,10 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
         }
     }
 
-    @Override
-    public int count(String operatorId) {
-        String sql = " SELECT Count(1) FROM " + DEFAULT_TABLE_NAME + " WHERE " + DEFAULT_OPERATORID_COLUMN_NAME + " LIKE ?";
-        if (Strings.isNullOrEmpty(operatorId)) {
-            operatorId = "%";
-        } else {
-            operatorId = "%" + operatorId + "%";
-        }
-        try {
-            return getJdbcTemplate().queryForInt(sql, new Object[]{operatorId}, new int[]{Types.VARCHAR});
-        } catch (Exception e) {
-            logger.debug(e);
-            return 0;
-        }
-        
-    }
-
-    
-    
     /**
      * This function returns true if the given passwort matches to the password
      * of the given operatorid
      */
-    @Override
     public boolean correctPassword(String operatorId, String password) {
         try {
             return (getJdbcTemplate()
@@ -468,7 +432,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * Gets an operator for a given security token.
      * A token is genrated if an operator signs in and stays valid until signed out.
      */
-    @Override
     public Operator getOperatorFromToken(String token) {
         Operator o = tokenCache.get(token);
         if (o != null) {
@@ -492,7 +455,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     /**
      * Sets a security token for the given operator.
      */
-    @Override
     public void setTokenForOperator(String token, String operatorId) {
 
         if (!Strings.isNullOrEmpty(operatorId)) {
@@ -514,7 +476,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
      * Removes the security token from the given operator.
      * This method may be called, when a session invalidates.
      */
-    @Override
     public void removeTokenFromOperator(String operatorId) {
         setTokenForOperator(null, operatorId);
     }
@@ -522,7 +483,6 @@ public class OperatorDAOMysqlImpl extends BasicDAOMysqlImpl implements OperatorD
     /**
      * gets a Token based on the number of actions.
      */
-    @Override
     public int getToken() {
         return getJdbcTemplate().queryForInt("SELECT COUNT(1) FROM action");
     }

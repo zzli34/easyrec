@@ -142,19 +142,6 @@ public interface RemoteTenantDAO extends BasicDAO {
      * @return
      */
     public List<RemoteTenant> getTenants(int offset, int limit,boolean filterDemoTenants);
-    
-     /**
-     * Get a list of all tenants for a given offset and limit where the stringId matches the supplied searchString,
-     * with filterDemoTenants you can filter out the automatically
-     * created demo tenants. This method is called by getTenants
-     * which basically just sets  filterDemoTenants to false.
-     * @param offset
-     * @param limit
-     * @param filterDemoTenants
-     * @param searchString
-     * @return 
-     */
-    public List<RemoteTenant> getTenants(int offset, int limit,boolean filterDemoTenants, String searchString);
 
     /**
      * Get a list of tenants that are assigned to an operator
@@ -186,13 +173,4 @@ public interface RemoteTenantDAO extends BasicDAO {
      * @return 
      */
     public List<RemoteTenant> getTenantsByExecutionTime(String propertyKey, String executionTime);
-    
-    /**
-     * 
-     * 
-     * @param filterDemoTenants
-     * @param stringId
-     * @return 
-     */
-    public int count(boolean filterDemoTenants, String stringId);
 }

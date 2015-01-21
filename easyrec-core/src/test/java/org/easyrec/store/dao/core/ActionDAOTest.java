@@ -83,11 +83,11 @@ public class ActionDAOTest {
         assertTrue(action.getId() == null);
         actionDAO.insertAction(action, false);
 
-        assertThat(action.getId(), is(not(1l)));
-        assertThat(action.getId(), is(not(2l)));
-        assertThat(action.getId(), is(not(3l)));
-        assertThat(action.getId(), is(not(4l)));
-        assertThat(action.getId(), is(not(5l)));
+        assertThat(action.getId(), is(not(1)));
+        assertThat(action.getId(), is(not(2)));
+        assertThat(action.getId(), is(not(3)));
+        assertThat(action.getId(), is(not(4)));
+        assertThat(action.getId(), is(not(5)));
     }
 
     @Test

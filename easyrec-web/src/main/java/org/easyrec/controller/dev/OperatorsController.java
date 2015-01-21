@@ -39,7 +39,6 @@ public class OperatorsController  extends MultiActionController {
 
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
         String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
-        String searchString = ServletUtils.getSafeParameter(request, "searchString", "");
 
 
         int siteNumber = ServletUtils.getSafeParameter(request, "siteNumber", 0);
@@ -50,15 +49,13 @@ public class OperatorsController  extends MultiActionController {
 
         mav.addObject("operatorId", operatorId);
         mav.addObject("tenantId", tenantId);
-        mav.addObject("searchString", searchString);
-        mav.addObject("url", request.getRequestURL());
 
         if (Security.isDeveloper(request)) {
-            int operatorsTotal = operatorDAO.count(searchString);
+            int operatorsTotal = operatorDAO.count();
             mav.addObject("operatorsTotal", operatorsTotal);
             mav.addObject("pageMenuString", psg.getPageMenuString(operatorsTotal, siteNumber));
 
-            List<Operator> operators = operatorDAO.getOperators(searchString, siteNumber * psg.getNumberOfItemsPerPage(), psg.getNumberOfItemsPerPage());
+            List<Operator> operators = operatorDAO.getOperators(siteNumber * psg.getNumberOfItemsPerPage(), psg.getNumberOfItemsPerPage());
 
             mav.setViewName("dev/page");
             mav.addObject("page", "viewoperators");

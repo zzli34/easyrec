@@ -184,7 +184,7 @@ public class OperatorController extends MultiActionController {
         String apiKey = ServletUtils.getSafeParameter(request, "apiKey", "");
         String ip = request.getRemoteAddr();
 
-        List<Message> messages = new ArrayList<>();
+        List<Message> messages = new ArrayList<Message>();
         ModelAndView mav = security(request);
 
         Operator operator = operatorDAO.get(operatorId);

@@ -195,7 +195,7 @@ public class ActionDAOMysqlImpl extends
         int rowsAffected = getJdbcTemplate().update(PS_INSERT_ACTION.newPreparedStatementCreator(args), keyHolder);
 
         // retrieve auto increment id, and set to VO
-        action.setId(keyHolder.getKey().longValue());
+        action.setId(keyHolder.getKey().intValue());
 
         return rowsAffected;
     }
@@ -836,7 +836,7 @@ public class ActionDAOMysqlImpl extends
                 throws SQLException {
             ActionVO<Integer, Integer> actionVO =
                     new ActionVO<Integer, Integer>(
-                            DaoUtils.getLong(rs, DEFAULT_ID_COLUMN_NAME),
+                            DaoUtils.getInteger(rs, DEFAULT_ID_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_USER_COLUMN_NAME),
                             DaoUtils.getStringIfPresent(rs, DEFAULT_SESSION_COLUMN_NAME),

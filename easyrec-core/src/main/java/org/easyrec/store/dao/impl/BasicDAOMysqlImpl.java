@@ -103,11 +103,12 @@ public class BasicDAOMysqlImpl extends JdbcDaoSupport implements BasicDAO {
      * 
      * @see at.researchstudio.sat.recommender.remote.store.dao.BasicDAO#count()
      */
-    @Override
     public int count() {
-        String sql = " SELECT Count(1) FROM " + tableName;
+        StringBuilder sql = new StringBuilder().
+                append(" SELECT Count(1) FROM ").
+                append(tableName);
         try {
-            return getJdbcTemplate().queryForInt(sql, null, null);
+            return getJdbcTemplate().queryForInt(sql.toString(), null, null);
         } catch (Exception e) {
             logger.debug(e);
             return 0;
@@ -119,15 +120,15 @@ public class BasicDAOMysqlImpl extends JdbcDaoSupport implements BasicDAO {
      * 
      * @see at.researchstudio.sat.recommender.remote.store.dao.BasicDAO#exists(java.lang.String)
      */
-    @Override
     public boolean exists(String stringId) {
-        String sql = " SELECT Count(1) FROM " + tableName + " WHERE " + tableStringId + "  = ? ";
+        StringBuilder sql = new StringBuilder().append(" SELECT Count(1) FROM ").append(tableName).append(" WHERE ")
+                .append(tableStringId).append("  = ? ");
 
         Object[] args = {stringId};
         int[] argTypes = {Types.VARCHAR};
 
         try {
-            return getJdbcTemplate().queryForInt(sql, args, argTypes) > 0;
+            return getJdbcTemplate().queryForInt(sql.toString(), args, argTypes) > 0;
         } catch (Exception e) {
             logger.debug(e);
             return false;
