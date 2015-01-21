@@ -42,6 +42,7 @@
         <property name="jdbcUrl" value="$easyrec-db{db.easyrec.url}"/>
         <property name="username" value="$easyrec-db{db.easyrec.username}"/>
         <property name="password" value="$easyrec-db{db.easyrec.password}"/>
+        <property name="poolName" value="easyrecPool"/>
         <property name="dataSourceProperties">
             <props>
                 <prop key="url">$easyrec-db{db.easyrec.url}</prop>

@@ -13,7 +13,7 @@
     <!-- This file contains all spring bean definitions that all easyrec features need in common -->
 
     <import resource="classpath:spring/utils/aop/DAO.xml"/>
-    <import resource="classpath:spring/utils/aop/Cache.xml"/>
+    <import resource="classpath:spring/web/common/Cache.xml"/>
     <import resource="classpath:spring/utils/aop/MapThrowableToException.xml"/>
     <import resource="classpath:spring/core/PropertyPlaceholderConfigurerEasyrec.xml"/>
     <import resource="classpath:spring/pluginContainer/LogEntryDAO.xml"/>

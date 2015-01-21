@@ -881,6 +881,8 @@ public class ItemAssocDAOMysqlImpl extends
      * load an ItemAssocVO using the unique key
      * <p/>
      * unique key: (tenantId, itemFromId, itemToId, itemFromTypeId, itemToTypeId, assocTypeId, sourceTypeId, sourceInfo)
+     * @param itemAssoc
+     * @return 
      */
     @Override
     public ItemAssocVO<Integer,Integer> loadItemAssocByUniqueKey(
@@ -1050,6 +1052,7 @@ public class ItemAssocDAOMysqlImpl extends
         return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
     }
 
+    @Override
     public int removeItemAssocByTenant(Integer tenantId, Integer assocType, Integer sourceType, Date changeDate) {
 
         if (tenantId == null) {
@@ -1098,12 +1101,10 @@ public class ItemAssocDAOMysqlImpl extends
             argt.add(Types.TIMESTAMP);
         }
 
-        // remove trailing " AND "
-        sqlString.delete(sqlString.length(), sqlString.length());
-
         return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
     }
 
+    @Override
     public int removeItemAssocByTenantAndThreshold(Integer tenantId, Integer assocType, Integer sourceType,
                                                    Date changeDate, double threshold) {
 
@@ -1158,9 +1159,6 @@ public class ItemAssocDAOMysqlImpl extends
 
         args.add(threshold);
         argt.add(Types.DOUBLE);
-
-        // remove trailing " AND "
-        sqlString.delete(sqlString.length(), sqlString.length());
 
         return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
     }

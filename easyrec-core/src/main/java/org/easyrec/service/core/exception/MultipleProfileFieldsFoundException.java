@@ -17,10 +17,6 @@
  */
 package org.easyrec.service.core.exception;
 
-import org.easyrec.model.core.web.Message;
-
-import java.util.List;
-
 /**
  * Exception thrown at the ProfileService if an XPath expression points
  * unexpectedly to more than one nodes.
@@ -28,6 +24,7 @@ import java.util.List;
  * @author Fabian Salcher
  */
 public class MultipleProfileFieldsFoundException extends Exception {
+    private static final long serialVersionUID = 7078318277243304886L;
 
     public MultipleProfileFieldsFoundException(String message) {
         super(message);

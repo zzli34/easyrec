@@ -18,6 +18,8 @@
 package org.easyrec.utils.io;
 
 import com.google.common.base.Strings;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * This class manipulates mysql query strings.
@@ -62,5 +64,24 @@ public class MySQL {
         if (offset < 0 || number <= 0) return sql;
 
         return sql.append(" LIMIT ").append(offset).append(", ").append(number);
+    }
+    
+    /**
+     * Method for compensating for MySQL rounding behaviour for date types since version 5.6.4 and above.
+     * Unfortunately MySQL behaves differently when inserting date types and when using them for comparison in
+     * queries. On insert, date types are rounded to the nearest second when the field is not specified as a fractional
+     * second field (e.g. datetime(6) vs. just datetime). However, when passing date types as a parameter for a query
+     * comparison it uses the exact value without rounding, thus leading to undesired results. This method rounds to 
+     * nearest second. Use when passing date types to queries for comparisons.
+     * 
+     * @param date the date to round
+     * @return the rounded date
+     */
+    public static Date sanitzeForMysql56(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MILLISECOND, 500);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 }

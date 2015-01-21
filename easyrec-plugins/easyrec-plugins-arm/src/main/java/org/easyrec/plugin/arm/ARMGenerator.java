@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.easyrec.plugin.generator.GeneratorConfiguration;
 import org.easyrec.plugin.generator.RunConditionEnabled;
+import org.easyrec.utils.io.MySQL;
 
 /**
  *
@@ -78,7 +79,7 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
         ARMConfiguration configuration = getConfiguration();
         ARMConfigurationInt intConfiguration;
 
-        Date start = new Date();
+        Date start = MySQL.sanitzeForMysql56(new Date());
         stats.setStartDate(start);
 
         try {
@@ -155,7 +156,7 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
 
             control.updateProgress(6, 6, "Finished");
         } // TODO: else write logoutput 
-        stats.setEndDate(new Date());
+        stats.setEndDate(MySQL.sanitzeForMysql56(new Date()));
         stats.setDuration((stats.getEndDate().getTime() - stats.getStartDate().getTime())/1000);
     }
 

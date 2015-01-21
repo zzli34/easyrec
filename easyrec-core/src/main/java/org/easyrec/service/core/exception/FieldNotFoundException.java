@@ -24,6 +24,7 @@ package org.easyrec.service.core.exception;
  * @author Fabian Salcher
  */
 public class FieldNotFoundException extends Exception {
+    private static final long serialVersionUID = 7264468102082481530L;
 
     public FieldNotFoundException(String message) {
         super(message);
