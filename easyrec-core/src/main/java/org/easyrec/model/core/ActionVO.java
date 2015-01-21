@@ -52,7 +52,7 @@ public class ActionVO<I extends Comparable<I>, T extends Comparable<T>>
     public static final int CSV_NUMBER_OF_COLUMNS = 11;
     /////////////////////////////////////////////////////////////////////////
     // members
-    private Integer id;
+    private Long id;
     private I tenant;
     private I user;
     private String sessionId;
@@ -128,7 +128,7 @@ public class ActionVO<I extends Comparable<I>, T extends Comparable<T>>
      * @param description        a description for the action
      * @param actionTime         time the action was performed
      */
-    public ActionVO(Integer id, I tenant, I user, String sessionId, String ip, ItemVO<I,T> item, T actionType,
+    public ActionVO(Long id, I tenant, I user, String sessionId, String ip, ItemVO<I,T> item, T actionType,
                     Integer ratingValue, Boolean searchSucceeded, Integer numberOfFoundItems, String description,
                     Date actionTime) {
         this.id = id;
@@ -146,11 +146,11 @@ public class ActionVO<I extends Comparable<I>, T extends Comparable<T>>
     }
 
     // getter/setter
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

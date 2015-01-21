@@ -214,7 +214,7 @@ public class TypedActionDAOMysqlImpl extends
             Integer tenantId = DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME);
 
             return new ActionVO<Integer, String>(
-                    DaoUtils.getInteger(rs, DEFAULT_ID_COLUMN_NAME), tenantId,
+                    DaoUtils.getLong(rs, DEFAULT_ID_COLUMN_NAME), tenantId,
                     DaoUtils.getInteger(rs, DEFAULT_USER_COLUMN_NAME),
                     DaoUtils.getStringIfPresent(rs, DEFAULT_SESSION_COLUMN_NAME),
                     DaoUtils.getStringIfPresent(rs, DEFAULT_IP_COLUMN_NAME),
