@@ -144,6 +144,7 @@ public class TenantsController extends MultiActionController {
     private static final String STORE_BACKTRACKING = "storeBackTracking";
     private static final String STORE_MAXACTIONS = "storeMaxActions";
     private static final String STORE_ARCHIVE = "storeArchive";
+    private static final String SESSION_MAPPING = "sessionMapping";
     private static final String STORE_PLUGIN_CONFIG = "storePluginConfig";
     private static final String STORE_PLUGINS_ACTIVE = "storePluginsActive";
 
@@ -316,6 +317,7 @@ public class TenantsController extends MultiActionController {
                     mav.addObject("backtrackingURL", tenantConfig.getProperty(RemoteTenant.BACKTRACKING_URL));
                     mav.addObject("archivingEnabled", tenantConfig.getProperty(RemoteTenant.AUTO_ARCHIVER_ENABLED));
                     mav.addObject("archivingTime", tenantConfig.getProperty(RemoteTenant.AUTO_ARCHIVER_TIME_RANGE));
+                    mav.addObject("sessionToUserMappingEnabled", tenantConfig.getProperty(RemoteTenant.SESSION_TO_USER_MAPPING_ENABLED));
                     mav.addObject("maxActions", tenantConfig.getProperty(RemoteTenant.MAXACTIONS));
                     logger.info("DevController - view generators config - tenantConfig found!!!!!!!!!!!!!!!!");
                     mav.addObject("selectedPlugin", tenantConfig.getProperty(PluginRegistry.GENERATOR_PROP));
@@ -484,6 +486,32 @@ public class TenantsController extends MultiActionController {
         }
     }
 
+    public ModelAndView storesessionmapping(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");
+        String operatorId = ServletUtils.getSafeParameter(request, "operatorId", "");
+        String sessionmapping = ServletUtils.getSafeParameter(request, "sessionmapping", "");
+
+        ModelAndView mav = new ModelAndView("page");
+
+        mav.addObject("title", "easyrec :: administration");
+
+        mav.addObject("operatorId", operatorId);
+        mav.addObject("tenantId", tenantId);
+
+        if (Security.isDeveloper(request)) {
+            RemoteTenant r = remoteTenantDAO.get(operatorId, tenantId);
+            if (r != null) {
+
+                r.setSessionMapping(sessionmapping);
+                tenantService.storeTenantConfig(r.getId(), r.getTenantConfigProperties());
+
+            }
+            return MessageBlock.createSingle(mav, MSG.SESSIONMAPPING_CONFIG_CHANGED, SESSION_MAPPING, MSG.SUCCESS);
+        } else {
+            return MessageBlock.createSingle(mav, MSG.NOT_SIGNED_IN, SESSION_MAPPING, MSG.ERROR);
+        }
+    }
+    
 
     public ModelAndView viewpluginconfigdetails(HttpServletRequest request, HttpServletResponse httpServletResponse) {
         String tenantId = ServletUtils.getSafeParameter(request, "tenantId", "");

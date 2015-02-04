@@ -17,14 +17,14 @@
  */
 package org.easyrec.store.dao.core;
 
+import java.util.Date;
+import java.util.Iterator;
 import org.easyrec.model.core.ActionVO;
 import org.easyrec.model.core.ItemVO;
 import org.easyrec.model.core.RankedItemVO;
 import org.easyrec.model.core.RatingVO;
-import org.easyrec.model.core.transfer.TimeConstraintVO;
 import org.easyrec.store.dao.BaseActionDAO;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -44,7 +44,11 @@ import java.util.List;
  * @author Roman Cerny
  */
 public interface ActionDAO extends
-        BaseActionDAO<ActionVO<Integer, Integer>, RankedItemVO<Integer, Integer>, Integer, Integer, ItemVO<Integer, Integer>, RatingVO<Integer, Integer>, Integer, Integer> {
+    BaseActionDAO<ActionVO<Integer, Integer>, RankedItemVO<Integer, Integer>, Integer, Integer, ItemVO<Integer, Integer>, RatingVO<Integer, Integer>, Integer, Integer> {
 
-
+    public Iterator<String> getMultiUserSessions(Integer tenantId, Date lastRun, boolean staticOffset);
+    
+    public List<Integer> getUserIdsOfSession(Integer tenantId, Date lastRun, String sessionId);
+    
+    public int updateActionsOfSession(Integer tenantId, Date lastRun, String sessionId, Integer newUserId);
 }

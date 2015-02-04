@@ -162,6 +162,34 @@
     </tr>
 </table>
 
+<h2>session to user mapping</h2>
+<table class="configtable">
+    <tr>
+        <th class="configparam">enabled</th>
+        <td class="configedit">
+            <a id="sessionmapping" href="javascript:sessionmapping('${operatorId}', '${tenantId}');">change</a>
+        </td>
+        <td class="configvalue" id="edit-sessionmapping">
+            <div>${sessionToUserMappingEnabled}</div>
+        </td>
+        <td class="confighelpbutton">
+            <img class="clickable" alt="help" src="${webappPath}/img/button_help.png"
+                 onclick="$('#div_sessionmapping_help').slideToggle('slow')"/>
+        </td>
+        <td rowspan="2">
+            <div class="pluginconfig_help" id="div_sessionmapping_help">
+                In a typical webshop scenario users perform actions first anonymously and later
+                log in e.g. to buy something. This happens within on session. If actions are sent
+                to easyrec the proper way i.e. sending no userId for anonymous users and sending
+                a userId whenever a user can be identified, you can enable this mechanism to improve
+                user tracking. It will try to map all actions within a session to a specific user, thus
+                turning previously anonymous actions into useful information. However, this can slow down
+                rule generation especially in environments with a big number of daily usersessions.
+            </div>
+        </td>
+    </tr>
+</table>                   
+                   
 <h2>limit actions</h2>
 <table class="configtable">
     <tr id="layer-maxactions" style="display:table-row">

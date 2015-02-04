@@ -81,6 +81,7 @@ public abstract class AbstractBaseActionDAOMysqlImpl<A, RI, AT, IT, I, RAT, T, U
     }
 
     // interface 'BaseActionDAO<A>' implementation
+    @Override
     public Date getNewestActionDate() {
         StringBuilder query = new StringBuilder("SELECT ");
         query.append(DEFAULT_ACTION_TIME_COLUMN_NAME);
@@ -94,27 +95,37 @@ public abstract class AbstractBaseActionDAOMysqlImpl<A, RI, AT, IT, I, RAT, T, U
     }
 
     // abstract generic method definition of 'BaseActionDAO<A, RI, AT, IT, I, RAT, T, U>' interface
+    @Override
     public abstract Date getNewestActionDate(T tenant, U user, String sessionId);
 
+    @Override
     public abstract int insertAction(A action, boolean useDateFromVO);
 
+    @Override
     public abstract int removeActionsByTenant(T tenant);
 
+    @Override
     public abstract Iterator<A> getActionIterator(int bulkSize);
 
+    @Override
     public abstract Iterator<A> getActionIterator(int bulkSize, TimeConstraintVO timeConstraints);
 
+    @Override
     public abstract List<A> getActionsFromUser(T tenant, U user, String sessionId);
 
+    @Override
     public abstract List<RI> getRankedItemsByActionType(T tenant, AT actionType, IT itemType, Integer numberOfResults,
                                                         TimeConstraintVO timeConstraints, Boolean sortDesc);
 
+    @Override
     public abstract List<I> getItemsByUserActionAndType(T tenant, U user, String sessionId, AT consideredActionType,
                                                         IT consideredItemType, Integer numberOfLastActionsConsidered);
 
+    @Override
     public abstract List<I> getItemsByUserActionAndType(T tenant, U user, String sessionId, AT consideredActionType,
                                                         IT consideredItemType, Double ratingThreshold, Integer numberOfLastActionsConsidered);
 
+    @Override
     public abstract List<RAT> getDirectItemRatings(T tenant, U user, String sessionId, IT itemType,
                                                    Integer numberOfResults, TimeConstraintVO timeRange,
                                                    Boolean sortDescending, Boolean goodRatingsOnly,

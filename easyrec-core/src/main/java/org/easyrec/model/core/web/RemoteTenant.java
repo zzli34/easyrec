@@ -84,6 +84,8 @@ public class RemoteTenant {
     public static final String AUTO_ARCHIVER_TIME_RANGE = "AUTO_ARCHIVER.timeRange";
     public static final String AUTO_ARCHIVER_DEFAULT_TIME_RANGE = "1825"; // 5 years = 365*5
 
+    public static final String SESSION_TO_USER_MAPPING_ENABLED = "SESSION_TO_USER_MAPPING.enabled";
+    
     public static final String TENANT_ACTIONS = "TENANT.actions";
     public static final String TENANT_USERS = "TENANT.users";
     public static final String TENANT_ITEMS = "TENANT.items";
@@ -499,6 +501,15 @@ public class RemoteTenant {
     public boolean autoArchivingEnabled() {
         return ENABLED.equals(tenantConfigProperties.getProperty(AUTO_ARCHIVER_ENABLED));
     }
+    
+    /**
+     * Returns true if archiving is enabled
+     *
+     * @return boolean
+     */
+    public boolean sessionMappingEnabled() {
+        return ENABLED.equals(tenantConfigProperties.getProperty(SESSION_TO_USER_MAPPING_ENABLED));
+    }
 
     /**
      * Returns true if autorulemining is enabled
@@ -697,6 +708,18 @@ public class RemoteTenant {
         }
     }
 
+    /**
+     * Enable/Disable the sessionmapping function for this tenant.
+     *
+     * @param value true, false
+     */
+    public void setSessionMapping(String value) {
+        if (tenantConfigProperties.getProperty(SESSION_TO_USER_MAPPING_ENABLED) == null) {
+            tenantConfigProperties.put(SESSION_TO_USER_MAPPING_ENABLED, value);
+        } else {
+            tenantConfigProperties.setProperty(SESSION_TO_USER_MAPPING_ENABLED, value);
+        }
+    }
 
     /**
      * Returns the number of all actions for this tenant

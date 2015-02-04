@@ -23,9 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.easyrec.plugin.generator.GeneratorConfiguration;
 import org.easyrec.plugin.generator.RunConditionEnabled;
 import org.easyrec.utils.io.MySQL;
 

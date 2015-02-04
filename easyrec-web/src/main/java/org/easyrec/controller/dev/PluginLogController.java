@@ -123,6 +123,8 @@ public class PluginLogController extends MultiActionController {
                     String assocType = "";
                     if (input.getAssocTypeId() == 0) { // special handling for assocType "Archive"
                         assocType = "ARCHIVE";
+                    } else if (input.getAssocTypeId() == -1) {
+                        assocType = "SESSION_USER_MAPPING";
                     } else {
                         assocType = typeMappingService.getAssocTypeById(input.getTenantId(), input.getAssocTypeId());
                     }

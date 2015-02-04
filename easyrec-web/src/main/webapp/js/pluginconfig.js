@@ -104,6 +104,27 @@ function archiving(operatorId, tenantId) {
     $('#archiving').html("change");
 }
 
+/*
+ * Enables or Disables session to user mapping
+ */
+function sessionmapping(operatorId, tenantId) {
+    if ($('#edit-sessionmapping div').html() == "false") {
+        $('#edit-sessionmapping div').html("true");
+    } else {
+        $('#edit-sessionmapping div').html("false");
+    }
+
+    $('#sessionmapping').html(waitingImage);
+
+    $.ajax({
+        url:webappPath + "dev/storesessionmapping?operatorId=" + operatorId + "&tenantId=" + tenantId + "&sessionmapping=" +
+                $('#edit-sessionmapping div').html(),
+        cache: false
+    });
+
+    $('#sessionmapping').html("change");
+}
+
 /**
  * Change the execution time for a tenant.
  */
@@ -175,7 +196,7 @@ function changeArchivingTime(operatorId, tenantId) {
 
         $.ajax({
             url:webappPath + "dev/storearchive?operatorId=" + operatorId + "&tenantId=" + tenantId + "&archiving=" +
-                    $('#edit-archiving').html() + "&archivingtime=" + $('#edit-archivingtime').val(),
+                    $('#edit-archiving div').html() + "&archivingtime=" + $('#edit-archivingtime').val(),
             cache: false
         });
 

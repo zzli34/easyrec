@@ -229,7 +229,8 @@ public class RemoteTenantController extends MultiActionController {
 
                 tenantService.updateConfigProperty(iTenantId, RemoteTenant.AUTO_ARCHIVER_TIME_RANGE,
                         RemoteTenant.AUTO_ARCHIVER_DEFAULT_TIME_RANGE);
-
+                //disable session to user mapping
+                tenantService.updateConfigProperty(iTenantId, RemoteTenant.SESSION_TO_USER_MAPPING_ENABLED, "false");
 
                 // enable backtracking by default
                 tenantService.updateConfigProperty(iTenantId, RemoteTenant.BACKTRACKING, "true");

@@ -88,6 +88,7 @@
                 <prop key="/dev/viewtenants">tenantsController</prop>
                 <prop key="/dev/viewpluginconfig">tenantsController</prop>
                 <prop key="/dev/storearchive">tenantsController</prop>
+                <prop key="/dev/storesessionmapping">tenantsController</prop>
                 <prop key="/dev/storebacktracking">tenantsController</prop>
                 <prop key="/dev/storemaxactions">tenantsController</prop>
                 <prop key="/dev/scheduler">tenantsController</prop>

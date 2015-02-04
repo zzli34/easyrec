@@ -58,14 +58,17 @@ public abstract class PluginSupport implements Plugin {
      */
     protected void doCleanup() throws Exception {}
 
+    @Override
     public String getDisplayName() {
         return displayName;
     }
 
+    @Override
     public PluginId getId() {
         return id;
     }
 
+    @Override
     public final void cleanup() {
         // valid call states: INITIALIZED, INIT_FAILED, CLEANUP_FAILED
         if (!this.lifecyclePhase.isCleanupAllowed()) {
@@ -86,6 +89,7 @@ public abstract class PluginSupport implements Plugin {
         }
     }
 
+    @Override
     public final void initialize() {
         // valid call states: INSTALLED, INIT_FAILED, CLEANUP_FAILED
         if (!this.lifecyclePhase.isInitializeAllowed()) {
@@ -108,6 +112,7 @@ public abstract class PluginSupport implements Plugin {
         }
     }
 
+    @Override
     public final void install(boolean executeInstall) throws PluginException {
         // valid call states: NOT_INSTALLED, INSTALL_FAILED, UNINSTALL_FAILED
         if (!this.lifecyclePhase.isInstallAllowed()) {
@@ -130,6 +135,7 @@ public abstract class PluginSupport implements Plugin {
         }
     }
 
+    @Override
     public final void uninstall() throws PluginException {
         // valid call states: INSTALLED, INSTALL_FAILED, UNINSTALL_FAILED
         if (!this.lifecyclePhase.isUninstallAllowed()) {
@@ -150,10 +156,12 @@ public abstract class PluginSupport implements Plugin {
         }
     }
 
+    @Override
     public ObserverRegistry<Plugin> getPluginObserverRegistry() {
         return pluginObserverRegistry;
     }
 
+    @Override
     public LifecyclePhase getLifecyclePhase() {
         return this.lifecyclePhase;
     }

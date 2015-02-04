@@ -39,6 +39,12 @@
           init-method="init">
         <property name="archiveDAO" ref="archiveDAO"/>
     </bean>
+    
+    <bean id="sessionToUserMappingPseudoGenerator" class="org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator"
+          init-method="init">
+        <property name="actionDAO" ref="actionDAO"/>
+        <property name="iDMappingDAO" ref="idMappingDAO"/>
+    </bean>
 
     <bean id="pluginRegistry" class="org.easyrec.plugin.container.PluginRegistry" init-method="init">
         <!--            <constructor-arg value="easyrec-plugins-slopeone-0.95.jar" />-->
@@ -52,6 +58,11 @@
                 <entry value-ref="archivePseudoGenerator">
                     <key>
                         <util:constant static-field="org.easyrec.model.plugin.archive.ArchivePseudoGenerator.ID"/>
+                    </key>
+                </entry>
+                <entry value-ref="sessionToUserMappingPseudoGenerator">
+                    <key>
+                        <util:constant static-field="org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator.ID"/>
                     </key>
                 </entry>
             </map>

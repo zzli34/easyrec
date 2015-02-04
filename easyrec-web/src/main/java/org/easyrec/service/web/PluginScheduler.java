@@ -18,6 +18,9 @@
  */
 package org.easyrec.service.web;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.web.Operator;
@@ -38,6 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.easyrec.model.plugin.LogEntry;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
 
 /**
  * This class schedules plugins for each tenant.
@@ -195,7 +201,7 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
                         final int days = Integer.parseInt(daysString);
                         ArchivePseudoConfiguration configuration = new ArchivePseudoConfiguration(days);
                         configuration.setAssociationType("ARCHIVE");
-                        NamedConfiguration namedConfiguration = new NamedConfiguration(remoteTenant.getId(), 0,
+                        NamedConfiguration namedConfiguration = new NamedConfiguration(remoteTenant.getId(), ArchivePseudoGenerator.ASSOCTYPE,
                                 ArchivePseudoGenerator.ID, "Archive", configuration, true);
 
                         logger.info("Archiving actions older than " + days + " day(s)");
@@ -203,6 +209,35 @@ public class PluginScheduler implements InitializingBean, DisposableBean {
                         generatorContainer.runGenerator(namedConfiguration, true);
                     } else {
                         logger.info("Archiving disabled for tenant: "+ remoteTenant.getOperatorId() + ":" +
+                                remoteTenant.getStringId());
+                    }
+                    
+                    if ("true".equals(tenantConfig.getProperty(RemoteTenant.SESSION_TO_USER_MAPPING_ENABLED))) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date lastRun;
+                        try {
+                            lastRun = sdf.parse(remoteTenant.getCreationDate());
+                        } catch (ParseException ex) {
+                            logger.error("Error parsing Tenant creationDate! Using fallback.");
+                            lastRun = new Date(System.currentTimeMillis() - (365 * 86400000l)); //fallback one year
+                        }
+                        List<LogEntry> lastRunEntry = logEntryDAO.getLogEntriesForTenant(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE, 0, 1);
+                        
+                        if ((lastRunEntry != null) && (!lastRunEntry.isEmpty())) {
+                            LogEntry le = lastRunEntry.get(0);
+                            lastRun = le.getStartDate();
+                        }
+                        
+                        SessionToUserMappingConfiguration configuration = new SessionToUserMappingConfiguration(lastRun);
+                        configuration.setAssociationType("SESSION_USER_MAPPING");
+                        NamedConfiguration namedConfiguration = new NamedConfiguration(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE,
+                                SessionToUserMappingGenerator.ID, "Session-to-User-mapping", configuration, true);
+
+                        logger.info("Mapping Sessions to users since lastRun: " + lastRun);
+
+                        generatorContainer.runGenerator(namedConfiguration, true);
+                    } else {
+                        logger.info("Session-to-User-mapping disabled for tenant: "+ remoteTenant.getOperatorId() + ":" +
                                 remoteTenant.getStringId());
                     }
 

@@ -85,6 +85,9 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
 
     //the RowMapper that creates the result type
     protected RowMapper<T> rowMapper = null;
+    
+    // class to use for queryForList calls instead of RowMapper
+    protected Class<T> clazz = (Class<T>) Object.class;
 
     //the jdbcTemplate used to acces the db
     protected JdbcTemplate jdbcTemplate = null;
@@ -100,6 +103,9 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
 
     //remember if call to init() has been made
     protected boolean isInitialized = false;
+    
+    // always keeps offset at 0; usefull in case the resultset changes between bulk loads
+    protected boolean staticOffset = false;
 
     /**
      * create the result set iterator.
@@ -135,6 +141,42 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         this(ds, bulkSize, sql, null, null, rowMapper);
     }
 
+    /**
+     * create the result set iterator.
+     *
+     * @param ds        a DataSource
+     * @param bulkSize  number of result rows to fetch each time a query is sent to the db
+     * @param sql       sql
+     * @param args      args
+     * @param types     types
+     * @param clazz     type for the result list
+     * @param staticOffset always keeps offset at 0; usefull in case the resultset changes between bulk loads
+     */
+    public ResultSetIteratorMysql(DataSource ds, int bulkSize, String sql, Object[] args, int[] types,
+                                  Class<T> clazz, boolean staticOffset) {
+        this.bulkSize = bulkSize;
+        this.currentIterator = null;
+        this.jdbcTemplate = new JdbcTemplate(ds);
+        this.clazz = clazz;
+        this.staticOffset = staticOffset;
+        this.sql = sql + " limit ?, ?";
+        this.args = ObjectArrays.concat(firstNonNull(args, new Object[0]), new Object[]{0, bulkSize}, Object.class);
+        this.types = Ints.concat(firstNonNull(types, new int[0]), new int[]{Types.INTEGER, Types.INTEGER});
+        init();
+    }
+    
+    /**
+     * create the result set iterator without arguments to the sql statement
+     *
+     * @param ds        a DataSource
+     * @param bulkSize  number of result rows to fetch each time a query is sent to the db
+     * @param sql       the sql string (without 'limit' clause!)
+     * @param clazz     type used for the result list
+     */
+    public ResultSetIteratorMysql(DataSource ds, int bulkSize, String sql, Class<T> clazz) {
+        this(ds, bulkSize, sql, null, null, clazz, false);
+    }
+    
     protected void init() {
         this.isInitialized = true;
         loadNextBulkIfPossible();
@@ -149,6 +191,7 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         if (!isInitialized) throw new IllegalStateException("init() has not been called by implementing class");
     }
 
+    @Override
     public T next() {
         checkInitialized();
         if (currentIterator == null) {
@@ -157,6 +200,7 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         return currentIterator.next();
     }
 
+    @Override
     public boolean hasNext() {
         checkInitialized();
         if (currentIterator == null) {
@@ -168,6 +212,7 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         return currentIterator.hasNext();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("This iterator does not support removal");
     }
@@ -177,8 +222,12 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         if (logger.isDebugEnabled()) {
             logger.debug("loading next bulk. offset= " + offsetInResult + ", bulkSize=" + bulkSize);
         }
-        offsetInResult += bulkSize;
-        this.currentBulk = jdbcTemplate.query(sql, args, types, rowMapper);
+        if (!staticOffset) offsetInResult += bulkSize;
+        if (rowMapper != null) {
+            this.currentBulk = jdbcTemplate.query(sql, args, types, rowMapper);
+        } else {
+            this.currentBulk = jdbcTemplate.queryForList(sql, args, types, clazz);
+        }
         if (currentBulk != null && currentBulk.size() > 0) {
             currentIterator = currentBulk.iterator();
         }

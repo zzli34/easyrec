@@ -78,6 +78,9 @@ public class ActionDAOMysqlImpl extends
     private static final int[] ARG_TYPES_INSERT;
     private static final String SQL_INSERT_ACTION;
     private static final String SQL_REMOVE_ACTIONS;
+    private static final String SQL_MULTIUSER_SESSIONS;
+    private static final String SQL_USERIDSPERSESSION;
+    private static final String SQL_UPDATE_ACTION_BY_SESSIONID;
     private static final PreparedStatementCreatorFactory PS_INSERT_ACTION;
 
     // members
@@ -109,7 +112,16 @@ public class ActionDAOMysqlImpl extends
 
         SQL_REMOVE_ACTIONS = new StringBuilder("DELETE FROM ").append(DEFAULT_TABLE_NAME).append(" WHERE ")
                 .append(DEFAULT_TENANT_COLUMN_NAME).append("=? ").toString();
+        
+        SQL_MULTIUSER_SESSIONS = "SELECT " + DEFAULT_SESSION_COLUMN_NAME + " FROM " + DEFAULT_TABLE_NAME + " WHERE " +
+                DEFAULT_TENANT_COLUMN_NAME + "=? AND " + DEFAULT_ACTION_TIME_COLUMN_NAME + ">? GROUP BY " + DEFAULT_SESSION_COLUMN_NAME + " HAVING COUNT(DISTINCT(" + DEFAULT_USER_COLUMN_NAME + "))>1";
+        
+        SQL_USERIDSPERSESSION = "SELECT DISTINCT(" + DEFAULT_USER_COLUMN_NAME + ") FROM " + DEFAULT_TABLE_NAME + " WHERE " +
+                DEFAULT_TENANT_COLUMN_NAME + "=? AND " + DEFAULT_ACTION_TIME_COLUMN_NAME + ">? AND " + DEFAULT_SESSION_COLUMN_NAME + "=?";
 
+        SQL_UPDATE_ACTION_BY_SESSIONID = "UPDATE " + DEFAULT_TABLE_NAME + " SET " + DEFAULT_USER_COLUMN_NAME + "=? WHERE " + DEFAULT_TENANT_COLUMN_NAME + "=? AND " +
+                DEFAULT_USER_COLUMN_NAME + "!=? AND " + DEFAULT_ACTION_TIME_COLUMN_NAME + ">? AND " + DEFAULT_SESSION_COLUMN_NAME + "=?";
+        
     }
 
     // constructor
@@ -217,7 +229,7 @@ public class ActionDAOMysqlImpl extends
 
     @Override
     public Iterator<ActionVO<Integer, Integer>> getActionIterator(int bulkSize) {
-        return new ResultSetIteratorMysql<ActionVO<Integer, Integer>>(getDataSource(),
+        return new ResultSetIteratorMysql<>(getDataSource(),
                 bulkSize, getActionIteratorQueryString(), actionVORowMapper);
     }
 
@@ -233,7 +245,7 @@ public class ActionDAOMysqlImpl extends
         DaoUtils.ArgsAndTypesHolder holder = new DaoUtils.ArgsAndTypesHolder(args, argTypes);
         String s = getActionIteratorQueryString(timeConstraints, holder);
 
-        return new ResultSetIteratorMysql<ActionVO<Integer, Integer>>(getDataSource(),
+        return new ResultSetIteratorMysql<>(getDataSource(),
                 bulkSize, s, holder.getArgs(), holder.getArgTypes(), actionVORowMapper);
     }
 
@@ -802,6 +814,61 @@ public class ActionDAOMysqlImpl extends
     }
 
 
+    /**
+     * Returns a list of sessions that had more than one userid attached to it.
+     * This means a login/logout event happened during the session.
+     * 
+     * @param tenantId tenant which's actions to consider
+     * @param lastRun the date since when actions will be considered until now
+     * @param staticOffset always keeps offset at 0; usefull in case the resultset changes between bulk loads
+     * @return a list of session strings with more than one userid
+     */
+    @Override
+    public Iterator<String> getMultiUserSessions(Integer tenantId, Date lastRun, boolean staticOffset) {
+
+        Object[] args = {tenantId, lastRun};
+        int[] argt = {Types.INTEGER, Types.TIMESTAMP};
+        
+        return new ResultSetIteratorMysql<>(getDataSource(),
+                5000, SQL_MULTIUSER_SESSIONS, args, argt, String.class, staticOffset);
+
+    }
+    
+    /**
+     * Returns a list of userIds associated with a session.
+     * 
+     * @param tenantId tenant which's sessions are considered
+     * @param lastRun
+     * @param sessionId the sessionId to look for
+     * @return list of userIds for the given session 
+     */
+    @Override
+    public List<Integer> getUserIdsOfSession(Integer tenantId, Date lastRun, String sessionId) {
+        Object[] args = {tenantId, lastRun, sessionId};
+        int[] argt = {Types.INTEGER, Types.TIMESTAMP, Types.VARCHAR};
+               
+        return getJdbcTemplate().queryForList(SQL_USERIDSPERSESSION, args, argt, Integer.class);
+    }
+    
+    /**
+     * Updates the userId of actions to newUserId for the given session. Actions already matching newUSerId get not updated.
+     * 
+     * @param tenantId tenant which's actions get updated
+     * @param lastRun
+     * @param sessionId session of the actions to update
+     * @param newUserId new value for the userId column of those actions
+     * @return number of rows updated
+     */
+    @Override
+    public int updateActionsOfSession(Integer tenantId, Date lastRun, String sessionId, Integer newUserId) {
+        
+        Object[] args = {newUserId, tenantId, newUserId, lastRun, sessionId};
+        int[] argt = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.TIMESTAMP, Types.VARCHAR};
+        
+        return getJdbcTemplate().update(SQL_UPDATE_ACTION_BY_SESSIONID, args, argt);
+    }
+    
+    
     ///////////////////////////////////////////////////////////////////////////
     // private methods
     private void validateNonEmptyFields(ActionVO<Integer, Integer> action,

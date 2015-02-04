@@ -227,6 +227,8 @@ public class MSG {
             906, "Could not parse date!");
     public static final Message ARCHIVE_CONFIG_CHANGED = new SuccessMessage(
             907, "Archive Config changed successfully.");
+    public static final Message SESSIONMAPPING_CONFIG_CHANGED = new SuccessMessage(
+            908, "Session Mapping Config changed successfully.");
     public static final Message MAXIMUM_ACTIONS_EXCEEDED = new ErrorMessage(
             909, "Maximum limit of actions per month exceeded!");
     public static final Message WRONG_TOKEN = new ErrorMessage(

@@ -61,9 +61,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
+import org.easyrec.store.dao.plugin.LogEntryDAO;
 
 /**
  * Servlet implementation class for Servlet: PluginStarter
@@ -79,6 +85,7 @@ public class PluginStarter extends javax.servlet.http.HttpServlet implements jav
     private EasyRecSettings easyrecSettings;
     private PluginRegistry pluginRegistry;
     private GeneratorContainer generatorContainer;
+    private LogEntryDAO logEntryDAO;
     private boolean initialized = false;
     // logging
     private final Log logger = LogFactory.getLog(this.getClass());
@@ -100,6 +107,7 @@ public class PluginStarter extends javax.servlet.http.HttpServlet implements jav
         this.easyrecSettings = context.getBean("easyrecSettings", EasyRecSettings.class);
         this.pluginRegistry = context.getBean("pluginRegistry", PluginRegistry.class);
         this.generatorContainer = context.getBean("generatorContainer", GeneratorContainer.class);
+        this.logEntryDAO = context.getBean("logEntryDAO", LogEntryDAO.class);
 
         initialized = true;
     }
@@ -290,6 +298,34 @@ public class PluginStarter extends javax.servlet.http.HttpServlet implements jav
                     }, true, true);
         }
 
+        if ("true".equals(tenantConfig.getProperty(RemoteTenant.SESSION_TO_USER_MAPPING_ENABLED))) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date lastRun;
+            try {
+                lastRun = sdf.parse(remoteTenant.getCreationDate());
+            } catch (ParseException ex) {
+                logger.error("Error parsing Tenant creationDate! Using fallback.");
+                lastRun = new Date(System.currentTimeMillis() - (365 * 86400000l)); //fallback one year
+            }
+            List<LogEntry> lastRunEntry = logEntryDAO.getLogEntriesForTenant(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE, 0, 1);
+
+            if ((lastRunEntry != null) && (!lastRunEntry.isEmpty())) {
+                LogEntry le = lastRunEntry.get(0);
+                lastRun = le.getStartDate();
+            }
+
+            SessionToUserMappingConfiguration configuration = new SessionToUserMappingConfiguration(lastRun);
+            configuration.setAssociationType("SESSION_USER_MAPPING");
+            NamedConfiguration namedConfiguration = new NamedConfiguration(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE,
+                    SessionToUserMappingGenerator.ID, "Session-to-User-mapping", configuration, true);
+
+            logger.info("Mapping Sessions to users since lastRun: " + lastRun);
+
+            generatorContainer.runGenerator(namedConfiguration, true);
+        } else {
+            logger.info("Session-to-User-mapping disabled for tenant: "+ remoteTenant.getOperatorId() + ":" +
+                    remoteTenant.getStringId());
+        }
         List<LogEntry> generatorRuns = generatorContainer.runGeneratorsForTenant(remoteTenant.getId(), true);
 
         List<GeneratorResponse> responses = Lists.transform(generatorRuns, new Function<LogEntry, GeneratorResponse>() {
