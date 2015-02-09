@@ -237,4 +237,10 @@ public class ResultSetIteratorMysql<T> implements Iterator<T> {
         args[args.length - 2] = offset;
         args[args.length - 1] = count;
     }
+
+    public void incOffsetInResult() {
+        this.offsetInResult++;
+    }
+    
+    
 }

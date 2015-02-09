@@ -24,6 +24,7 @@ import org.easyrec.plugin.model.PluginId;
 import org.easyrec.plugin.support.GeneratorPluginSupport;
 import org.easyrec.store.dao.IDMappingDAO;
 import org.easyrec.store.dao.core.ActionDAO;
+import org.easyrec.utils.spring.store.ResultSetIteratorMysql;
 
 /**
  *
@@ -71,8 +72,11 @@ public class SessionToUserMappingGenerator extends GeneratorPluginSupport<Sessio
             }
             if (newId != null) {
                 actionCount += actionDAO.updateActionsOfSession(getConfiguration().getTenantId(), getConfiguration().getLastRun(), session, newId);
+            } else {
+                // if no userId matches the sessionid, we cannot map. To avoid an endless loop with the iterator we move the offset for the next iterator
+                // bulk call up by one because the session we just found will remain in the result set and should then be ignored.
+                ((ResultSetIteratorMysql<String>) sessions).incOffsetInResult();
             }
-            // TODO: consider special case: what if there are more then 2 userIds attached to one session?
             
         }
         stats.setLastRun(getConfiguration().getLastRun());
