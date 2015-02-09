@@ -95,7 +95,7 @@ public class ActionDAOMysqlImpl extends
     static {
 
         ARG_TYPES_INSERT = new int[]{Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
-                Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.BOOLEAN, Types.INTEGER, Types.VARCHAR,
+                Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR,
                 Types.TIMESTAMP};
 
         SQL_INSERT_ACTION = new StringBuilder("INSERT INTO ").append(DEFAULT_TABLE_NAME).append(" SET ")
@@ -103,8 +103,7 @@ public class ActionDAOMysqlImpl extends
                 .append(DEFAULT_SESSION_COLUMN_NAME).append("=?, ").append(DEFAULT_IP_COLUMN_NAME).append("=?, ")
                 .append(DEFAULT_ITEM_COLUMN_NAME).append("=?, ").append(DEFAULT_ITEM_TYPE_COLUMN_NAME).append("=?, ")
                 .append(DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?, ").append(DEFAULT_RATING_VALUE_COLUMN_NAME)
-                .append("=?, ").append(DEFAULT_SEARCH_SUCCEEDED_COLUMN_NAME).append("=?, ")
-                .append(DEFAULT_NUMBER_OF_FOUND_ITEMS).append("=?, ").append(DEFAULT_DESCRIPTION_COLUMN_NAME)
+                .append("=?, ").append(DEFAULT_ACTIONINFO_COLUMN_NAME)
                 .append("=?, ").append(DEFAULT_ACTION_TIME_COLUMN_NAME).append("=? ").toString();
 
         PS_INSERT_ACTION = new PreparedStatementCreatorFactory(SQL_INSERT_ACTION, ARG_TYPES_INSERT);
@@ -198,8 +197,8 @@ public class ActionDAOMysqlImpl extends
         Object[] args = {action.getTenant(), action.getUser(), action.getSessionId(), action.getIp(),
                 ((action.getItem() != null) ? action.getItem().getItem() : null),
                 ((action.getItem() != null) ? action.getItem().getType() : null), action.getActionType(),
-                action.getRatingValue(), action.getSearchSucceeded(), action.getNumberOfFoundItems(),
-                action.getDescription(), ((useDateFromVO && action.getActionTime() != null) ? action.getActionTime() :
+                action.getRatingValue(), 
+                action.getActionInfo(), ((useDateFromVO && action.getActionTime() != null) ? action.getActionTime() :
                                           new Date(System.currentTimeMillis()))};
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -902,20 +901,18 @@ public class ActionDAOMysqlImpl extends
         public ActionVO<Integer, Integer> mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             ActionVO<Integer, Integer> actionVO =
-                    new ActionVO<Integer, Integer>(
+                    new ActionVO<>(
                             DaoUtils.getLong(rs, DEFAULT_ID_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_USER_COLUMN_NAME),
                             DaoUtils.getStringIfPresent(rs, DEFAULT_SESSION_COLUMN_NAME),
                             DaoUtils.getStringIfPresent(rs, DEFAULT_IP_COLUMN_NAME),
-                            new ItemVO<Integer, Integer>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
+                            new ItemVO<>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                                     DaoUtils.getInteger(rs, DEFAULT_ITEM_COLUMN_NAME),
                                     DaoUtils.getInteger(rs, DEFAULT_ITEM_TYPE_COLUMN_NAME)),
                             DaoUtils.getInteger(rs, DEFAULT_ACTION_TYPE_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_RATING_VALUE_COLUMN_NAME),
-                            DaoUtils.getBoolean(rs, DEFAULT_SEARCH_SUCCEEDED_COLUMN_NAME),
-                            DaoUtils.getInteger(rs, DEFAULT_NUMBER_OF_FOUND_ITEMS),
-                            DaoUtils.getStringIfPresent(rs, DEFAULT_DESCRIPTION_COLUMN_NAME),
+                            DaoUtils.getStringIfPresent(rs, DEFAULT_ACTIONINFO_COLUMN_NAME),
                             DaoUtils.getDate(rs, DEFAULT_ACTION_TIME_COLUMN_NAME));
             return actionVO;
         }
@@ -924,8 +921,8 @@ public class ActionDAOMysqlImpl extends
     private class RankedItemVORowMapper implements RowMapper<RankedItemVO<Integer, Integer>> {
         public RankedItemVO<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
             RankedItemVO<Integer, Integer> rankedItem =
-                    new RankedItemVO<Integer, Integer>(
-                            new ItemVO<Integer, Integer>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
+                    new RankedItemVO<>(
+                            new ItemVO<>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                                     DaoUtils.getInteger(rs, DEFAULT_ITEM_COLUMN_NAME),
                                     DaoUtils.getInteger(rs, DEFAULT_ITEM_TYPE_COLUMN_NAME)),
                             DaoUtils.getInteger(rs, DEFAULT_ACTION_TYPE_COLUMN_NAME), rowNum + 1,
@@ -936,7 +933,7 @@ public class ActionDAOMysqlImpl extends
 
     private class ItemVORowMapper implements RowMapper<ItemVO<Integer, Integer>> {
         public ItemVO<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ItemVO<Integer, Integer> item = new ItemVO<Integer, Integer>(
+            ItemVO<Integer, Integer> item = new ItemVO<>(
                     DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                     DaoUtils.getInteger(rs, DEFAULT_ITEM_COLUMN_NAME),
                     DaoUtils.getInteger(rs, DEFAULT_ITEM_TYPE_COLUMN_NAME));
@@ -946,8 +943,8 @@ public class ActionDAOMysqlImpl extends
 
     private class RatingVORowMapper implements RowMapper<RatingVO<Integer, Integer>> {
         public RatingVO<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-            RatingVO<Integer, Integer> rating = new RatingVO<Integer, Integer>(
-                    new ItemVO<Integer, Integer>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
+            RatingVO<Integer, Integer> rating = new RatingVO<>(
+                    new ItemVO<>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_ITEM_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_ITEM_TYPE_COLUMN_NAME)),
                     DaoUtils.getDouble(rs, DEFAULT_RATING_ALIAS_NAME),

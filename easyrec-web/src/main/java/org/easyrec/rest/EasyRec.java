@@ -25,6 +25,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
+import java.io.IOException;
 import org.easyrec.exception.core.ClusterException;
 import org.easyrec.model.core.ClusterVO;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
@@ -61,6 +62,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * @author szavrel
@@ -88,6 +90,7 @@ public class EasyRec {
     private EasyRecSettings easyrecSettings;
     private PluginRegistry pluginRegistry;
     private GeneratorContainer generatorContainer;
+    private ObjectMapper objectMapper;
 
 
     // Jamon Loggers
@@ -125,7 +128,8 @@ public class EasyRec {
                    EasyRecSettings easyrecSettings,
                    PluginRegistry pluginRegistry,
                    GeneratorContainer generatorContainer,
-                   String dateFormatString) {
+                   String dateFormatString,
+                   ObjectMapper objectMapper) {
         this.operatorDAO = operatorDAO;
         this.remoteTenantDAO = remoteTenantDAO;
         this.shopRecommenderService = shopRecommenderService;
@@ -140,6 +144,7 @@ public class EasyRec {
         this.easyrecSettings = easyrecSettings;
         this.pluginRegistry = pluginRegistry;
         this.generatorContainer = generatorContainer;
+        this.objectMapper = objectMapper;
     }
 
     @GET
@@ -150,7 +155,7 @@ public class EasyRec {
                          @QueryParam("itemdescription") String itemDescription, @QueryParam("itemurl") String itemUrl,
                          @QueryParam("itemimageurl") String itemImageUrl, @QueryParam("actiontime") String actionTime,
                          @QueryParam("itemtype") String itemType, @QueryParam("callback") String callback,
-                         @QueryParam("token") String token)
+                         @QueryParam("token") String token, @QueryParam("actioninfo") String actionInfo)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_VIEW);
@@ -165,7 +170,7 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
 
@@ -173,7 +178,7 @@ public class EasyRec {
         //            messages.add(Message.MAXIMUM_ACTIONS_EXCEEDED);
         //        }
 
-        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, messages);
+        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, actionInfo, messages);
         Date actionDate = null;
 
         if (actionTime != null) {
@@ -195,7 +200,7 @@ public class EasyRec {
         itemType = checkItemType(itemType, type, coreTenantId, tenantId, WS.ACTION_VIEW, callback);
         Session session = new Session(sessionId, request.getRemoteAddr());
         Item item = shopRecommenderService.viewItem(r, userId, itemId, itemType, itemDescription,
-                itemUrl, itemImageUrl, actionDate, session);
+                itemUrl, itemImageUrl, actionDate, session, actionInfo);
 
         ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_VIEW, userId, sessionId, null, item);
         mon.stop();
@@ -219,7 +224,7 @@ public class EasyRec {
                          @QueryParam("itemdescription") String itemDescription, @QueryParam("itemurl") String itemUrl,
                          @QueryParam("itemimageurl") String itemImageUrl, @QueryParam("actiontime") String actionTime,
                          @QueryParam("itemtype") String itemType, @QueryParam("callback") String callback,
-                         @QueryParam("token") String token)
+                         @QueryParam("token") String token, @QueryParam("actioninfo") String actionInfo)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_RATE);
@@ -234,13 +239,13 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
 
 
 
-        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, messages);
+        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, actionInfo, messages);
 
         Date actionDate = null;
 
@@ -279,7 +284,7 @@ public class EasyRec {
         Session session = new Session(sessionId, request.getRemoteAddr());
 
         Item item = shopRecommenderService.rateItem(r, userId, itemId, itemType, itemDescription,
-                itemUrl, itemImageUrl, rateValue, actionDate, session);
+                itemUrl, itemImageUrl, rateValue, actionDate, session, actionInfo);
 
         ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_RATE, userId, sessionId, ratingValue, item);
 
@@ -303,7 +308,7 @@ public class EasyRec {
                         @QueryParam("itemdescription") String itemDescription, @QueryParam("itemurl") String itemUrl,
                         @QueryParam("itemimageurl") String itemImageUrl, @QueryParam("actiontime") String actionTime,
                         @QueryParam("itemtype") String itemType, @QueryParam("callback") String callback,
-                        @QueryParam("token") String token)
+                        @QueryParam("token") String token, @QueryParam("actioninfo") String actionInfo)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_BUY);
@@ -318,11 +323,11 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
 
-        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, messages);
+        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, actionInfo, messages);
 
         Date actionDate = null;
 
@@ -350,7 +355,7 @@ public class EasyRec {
         Session session = new Session(sessionId, request.getRemoteAddr());
 
         Item item = shopRecommenderService.purchaseItem(r, userId, itemId, itemType, itemDescription,
-                itemUrl, itemImageUrl, actionDate, session);
+                itemUrl, itemImageUrl, actionDate, session, actionInfo);
 
         ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_BUY, userId, sessionId, null, item);
 
@@ -374,7 +379,7 @@ public class EasyRec {
                                @QueryParam("itemdescription") String itemDescription, @QueryParam("itemurl") String itemUrl,
                                @QueryParam("itemimageurl") String itemImageUrl, @QueryParam("actiontime") String actionTime,
                                @QueryParam("itemtype") String itemType, @QueryParam("callback") String callback,
-                               @QueryParam("token") String token)
+                               @QueryParam("token") String token, @QueryParam("actioninfo") String actionInfo)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_ACTION);
@@ -389,11 +394,11 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
 
         Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
 
-        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, messages);
+        checkParams(coreTenantId, itemId, itemDescription, itemUrl, sessionId, actionInfo, messages);
         Integer actValue = -1;
         if (Strings.isNullOrEmpty(actionType)) {
             messages.add(MSG.MISSING_ACTIONTYPE);
@@ -442,7 +447,7 @@ public class EasyRec {
         Session session = new Session(sessionId, request.getRemoteAddr());
 
         Item item = shopRecommenderService.sendAction(r, userId, itemId, itemType, itemDescription,
-                itemUrl, itemImageUrl, actionType, actValue, actionDate, session);
+                itemUrl, itemImageUrl, actionType, actValue, actionDate, session, actionInfo);
 
         ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_SENDACTION, userId, sessionId, actionValue, item);
 
@@ -1823,6 +1828,26 @@ public class EasyRec {
 
         if (Strings.isNullOrEmpty(sessionId))
             messages.add(MSG.USER_NO_SESSION_ID);
+    }
+    
+    private void checkParams(Integer coreTenantId, String itemId, String itemDescription, String itemUrl,
+                             String sessionId, String actionInfo, List<Message> messages) throws EasyRecException {
+        checkParameters(coreTenantId, itemId, itemDescription, itemUrl, messages);
+
+        if (Strings.isNullOrEmpty(sessionId))
+            messages.add(MSG.USER_NO_SESSION_ID);
+        
+        if (!Strings.isNullOrEmpty(actionInfo)) {
+            if (actionInfo.length() > 500) {
+                messages.add(MSG.ACTION_INFO_TOO_LONG);
+            } else {
+                try {
+                    objectMapper.readTree(actionInfo);
+                } catch (IOException ex) {
+                    messages.add(MSG.INVALID_JSON);
+                }
+            }
+        }
     }
 
     private String checkItemType(String itemType, String type, Integer coreTenantId, String tenantId, String operation,

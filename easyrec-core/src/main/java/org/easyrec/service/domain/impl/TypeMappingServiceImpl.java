@@ -70,11 +70,11 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ActionVO<Integer, String>(
+        return new ActionVO<>(
                 action.getId(), action.getTenant(), action.getUser(), action.getSessionId(), action.getIp(),
                 convertItemVO(tenantId, action.getItem()), actionTypeDAO.getTypeById(tenantId, action.getActionType()),
-                action.getRatingValue(), action.getSearchSucceeded(), action.getNumberOfFoundItems(),
-                action.getDescription(), action.getActionTime());
+                action.getRatingValue(),
+                action.getActionInfo(), action.getActionTime());
     }
 
     @Override
@@ -84,11 +84,11 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ActionVO<Integer, Integer>(
+        return new ActionVO<>(
                 typedAction.getId(), typedAction.getTenant(), typedAction.getUser(), typedAction.getSessionId(),
                 typedAction.getIp(), convertTypedItemVO(tenantId, typedAction.getItem()),
                 actionTypeDAO.getIdOfType(tenantId, typedAction.getActionType()), typedAction.getRatingValue(),
-                typedAction.getSearchSucceeded(), typedAction.getNumberOfFoundItems(), typedAction.getDescription(),
+                typedAction.getActionInfo(),
                 typedAction.getActionTime());
     }
 
@@ -99,7 +99,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new AssociatedItemVO<Integer, String>(
+        return new AssociatedItemVO<>(
                 convertItemVO(tenantId, associatedItem.getItem()), associatedItem.getAssocValue(),
                 associatedItem.getItemAssocId(), assocTypeDAO.getTypeById(tenantId, associatedItem.getAssocType()));
     }
@@ -111,7 +111,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new AssociatedItemVO<Integer, Integer>(
+        return new AssociatedItemVO<>(
                 convertTypedItemVO(tenantId, typedAssociatedItem.getItem()), typedAssociatedItem.getAssocValue(),
                 typedAssociatedItem.getItemAssocId(),
                 assocTypeDAO.getIdOfType(tenantId, typedAssociatedItem.getAssocType()));

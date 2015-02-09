@@ -154,4 +154,29 @@ public class ItemAssocServiceStub implements ItemAssocService {
             final Integer tenant, final ItemVO<Integer, Integer> itemFrom, final Integer numberOfResults) {
         return null;
     }
+
+    @Override
+    public int removeItemAssoc(Long itemAssocId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isActiveItemAssoc(Long itemAssocId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int activateItemAssoc(Long itemAssocId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int deactivateItemAssoc(Long itemAssocId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ItemAssocVO<Integer, Integer> loadItemAssoc(Long itemAssocId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

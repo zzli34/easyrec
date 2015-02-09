@@ -127,7 +127,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Override
     public Item purchaseItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                              String itemDescription, String itemUrl, String itemImageUrl, Date actionTime,
-                             Session session) {
+                             Session session, String actionInfo) {
         Item item = itemDAO.get(remoteTenant, itemId, itemType);
 
         if (item == null) {
@@ -158,14 +158,14 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 domainActionService
                         .purchaseItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                                 session.getIp(),
-                                new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                        itemType), itemDescription);
+                                new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                        itemType), actionInfo);
             } else {
                 domainActionService
                         .purchaseItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                                 session.getIp(),
-                                new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                        itemType), itemDescription, actionTime);
+                                new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                        itemType), actionInfo, actionTime);
             }
 
 
@@ -198,7 +198,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Override
     public Item viewItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                          String itemDescription, String itemUrl, String itemImageUrl, Date actionTime,
-                         Session session) {
+                         Session session, String actionInfo) {
         Item item = itemDAO.get(remoteTenant, itemId, itemType);
 
         if (item == null) {
@@ -227,13 +227,13 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
             if (actionTime == null) {
                 domainActionService.viewItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), itemDescription);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), actionInfo);
             } else {
                 domainActionService.viewItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), itemDescription, actionTime);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), actionInfo, actionTime);
 
             }
 
@@ -269,7 +269,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Override
     public Item rateItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                          String itemDescription, String itemUrl, String itemImageUrl, Integer ratingValue,
-                         Date actionTime, Session session) {
+                         Date actionTime, Session session, String actionInfo) {
         Item item = itemDAO.get(remoteTenant, itemId, itemType);
 
         if (item == null) {
@@ -300,13 +300,13 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
             if (actionTime == null) {
                 domainActionService.rateItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), ratingValue, itemDescription);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), ratingValue, actionInfo);
             } else {
                 domainActionService.rateItem(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), ratingValue, itemDescription, actionTime);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), ratingValue, actionInfo, actionTime);
             }
 
             monCore.stop();
@@ -340,7 +340,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Override
     public Item sendAction(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                          String itemDescription, String itemUrl, String itemImageUrl, String actionType, Integer actionValue,
-                         Date actionTime, Session session) {
+                         Date actionTime, Session session, String actionInfo) {
         Item item = itemDAO.get(remoteTenant, itemId, itemType);
 
         if (item == null) {
@@ -371,13 +371,13 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
             if (actionTime == null) {
                 domainActionService.insertAction(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), actionType, actionValue, itemDescription);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), actionType, actionValue, actionInfo);
             } else {
                 domainActionService.insertAction(remoteTenant.getId(), idMappingDAO.lookup(userId), session.getSessionId(),
                         session.getIp(),
-                        new ItemVO<Integer, String>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
-                                itemType), actionType, actionValue, itemDescription, actionTime);
+                        new ItemVO<>(remoteTenant.getId(), idMappingDAO.lookup(itemId),
+                                itemType), actionType, actionValue, actionInfo, actionTime);
             }
 
             monCore.stop();
@@ -447,7 +447,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoBoughtItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<Integer, String>(tenantId, idMappingDAO.lookup(itemId),
+                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
                                                 itemType),
                                         requestedItemType);
                 monCore.stop();
@@ -495,7 +495,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoViewedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<Integer, String>(tenantId, idMappingDAO.lookup(itemId),
+                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
                                                 itemType),
                                         requestedItemType);
                 monCore.stop();
@@ -544,7 +544,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoGoodRatedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<Integer, String>(tenantId, idMappingDAO.lookup(itemId),
+                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
                                                 itemType),
                                         requestedItemType);
                 monCore.stop();
@@ -1016,7 +1016,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                     domainRecommenderService
                             .getAlsoActedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
                                     AssocTypeDAO.ASSOCTYPE_USER_TO_ITEM,
-                                    new ItemVO<Integer, String>(tenantId, idMappingDAO.lookup(userId),
+                                    new ItemVO<>(tenantId, idMappingDAO.lookup(userId),
                                             TypeMappingService.ITEM_TYPE_USER), null,
                                     requestedItemType);
 
@@ -1083,7 +1083,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                     domainRecommenderService
                             .getAlsoActedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
                                     assocType,
-                                    new ItemVO<Integer, String>(tenantId, idMappingDAO.lookup(itemId),
+                                    new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
                                             itemType), null,
                                     requestedItemType);
 
@@ -1145,7 +1145,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     public List<ItemAssocVO<String, String>> getRules(Item item) {
         List<ItemAssocVO<String, String>> rules;
 
-        ItemVO<Integer, String> itemFrom = new ItemVO<Integer, String>(item.getTenantId(),
+        ItemVO<Integer, String> itemFrom = new ItemVO<>(item.getTenantId(),
                 idMappingDAO.lookup(item.getItemId()), item.getItemType());
 
         List<ItemAssocVO<Integer, String>> itemAssocs = domainItemAssocService

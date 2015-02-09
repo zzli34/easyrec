@@ -102,7 +102,7 @@ public class TypedActionDAOMysqlImpl extends
 
     @Override
     public Iterator<ActionVO<Integer, String>> getActionIterator(int bulkSize) {
-        return new ResultSetIteratorMysql<ActionVO<Integer, String>>(getDataSource(),
+        return new ResultSetIteratorMysql<>(getDataSource(),
                 bulkSize, getActionIteratorQueryString(), actionVORowMapper);
     }
 
@@ -118,7 +118,7 @@ public class TypedActionDAOMysqlImpl extends
         DaoUtils.ArgsAndTypesHolder holder = new DaoUtils.ArgsAndTypesHolder(args, argTypes);
         String s = getActionIteratorQueryString(timeConstraints, holder);
 
-        return new ResultSetIteratorMysql<ActionVO<Integer, String>>(getDataSource(),
+        return new ResultSetIteratorMysql<>(getDataSource(),
                 bulkSize, s, holder.getArgs(), holder.getArgTypes(), actionVORowMapper);
     }
 
@@ -156,6 +156,7 @@ public class TypedActionDAOMysqlImpl extends
     }
 
 
+    @Override
     public List<ItemVO<Integer, String>> getItemsOfTenant(final Integer tenant,
                                                                    final String consideredItemType) {
         return typeMappingService.convertListOfItemVOs(tenant,
@@ -213,21 +214,19 @@ public class TypedActionDAOMysqlImpl extends
                 throws SQLException {
             Integer tenantId = DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME);
 
-            return new ActionVO<Integer, String>(
+            return new ActionVO<>(
                     DaoUtils.getLong(rs, DEFAULT_ID_COLUMN_NAME), tenantId,
                     DaoUtils.getInteger(rs, DEFAULT_USER_COLUMN_NAME),
                     DaoUtils.getStringIfPresent(rs, DEFAULT_SESSION_COLUMN_NAME),
                     DaoUtils.getStringIfPresent(rs, DEFAULT_IP_COLUMN_NAME),
-                    new ItemVO<Integer, String>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
+                    new ItemVO<>(DaoUtils.getInteger(rs, DEFAULT_TENANT_COLUMN_NAME),
                             DaoUtils.getInteger(rs, DEFAULT_ITEM_COLUMN_NAME), typeMappingService
                             .getItemTypeById(tenantId, DaoUtils.getInteger(rs, DEFAULT_ITEM_TYPE_COLUMN_NAME))),
                     typeMappingService
                             .getActionTypeById(tenantId,
                                     DaoUtils.getInteger(rs, DEFAULT_ACTION_TYPE_COLUMN_NAME)),
                     DaoUtils.getInteger(rs, DEFAULT_RATING_VALUE_COLUMN_NAME),
-                    DaoUtils.getBoolean(rs, DEFAULT_SEARCH_SUCCEEDED_COLUMN_NAME),
-                    DaoUtils.getInteger(rs, DEFAULT_NUMBER_OF_FOUND_ITEMS),
-                    DaoUtils.getStringIfPresent(rs, DEFAULT_DESCRIPTION_COLUMN_NAME),
+                    DaoUtils.getStringIfPresent(rs, DEFAULT_ACTIONINFO_COLUMN_NAME),
                     DaoUtils.getDate(rs, DEFAULT_ACTION_TIME_COLUMN_NAME));
         }
     }

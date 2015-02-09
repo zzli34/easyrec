@@ -65,11 +65,12 @@ public interface ShopRecommenderService {
      * @param itemImageUrl    TODO
      * @param actionTime      TODO
      * @param session         optional session id
+     * @param actionInfo      supplemental information to the action; JSON format
      * @return TODO
      */
     public Item purchaseItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                              String itemDescription, String itemUrl, String itemImageUrl, Date actionTime,
-                             Session session);
+                             Session session, String actionInfo);
 
     /**
      * storing a 'view item' action in the recommender storage
@@ -83,10 +84,12 @@ public interface ShopRecommenderService {
      * @param itemImageUrl    TODO
      * @param actionTime      TODO
      * @param session         optional session id
+     * @param actionInfo      supplemental information to the action; JSON format
      * @return TODO
      */
     public Item viewItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
-                         String itemDescription, String itemUrl, String itemImageUrl, Date actionTime, Session session);
+                         String itemDescription, String itemUrl, String itemImageUrl, Date actionTime, 
+                         Session session, String actionInfo);
 
     /**
      * storing a 'rate item' action in the recommender storage
@@ -101,11 +104,12 @@ public interface ShopRecommenderService {
      * @param ratingValue     TODO
      * @param actionTime      TODO
      * @param session         optional session id
+     * @param actionInfo      supplemental information to the action; JSON format
      * @return TODO
      */
     public Item rateItem(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                          String itemDescription, String itemUrl, String itemImageUrl, Integer ratingValue,
-                         Date actionTime, Session session);
+                         Date actionTime, Session session, String actionInfo);
     /**
      * storing a 'search item' action in the recommender storage
      *
@@ -134,11 +138,12 @@ public interface ShopRecommenderService {
      * @param actionValue
      * @param actionTime      TODO
      * @param session         required session id
+     * @param actionInfo      supplemental information to the action; JSON format
      * @return TODO
      */
     public Item sendAction(RemoteTenant remoteTenant, String userId, String itemId, String itemType,
                          String itemDescription, String itemUrl, String itemImageUrl, String actionType, Integer actionValue,
-                         Date actionTime, Session session);
+                         Date actionTime, Session session, String actionInfo);
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Rankings

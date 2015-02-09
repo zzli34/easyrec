@@ -100,31 +100,31 @@ public class MusicActionServiceImpl extends DomainActionServiceImpl implements M
     }
 
     public void searchArtist(Integer tenant, Integer user, String sessionId, String ip, Integer artistId,
-                             Boolean searchSucceeded, Integer numberOfFoundArtists, String description) {
+                             String description) {
         searchItem(tenant, user, sessionId, ip,
-                new ItemVO<Integer, String>(tenant, artistId, TypeMappingService.ITEM_TYPE_ARTIST),
-                searchSucceeded, numberOfFoundArtists, description);
+                new ItemVO<>(tenant, artistId, TypeMappingService.ITEM_TYPE_ARTIST), description);
     }
 
     public void searchTrack(Integer tenant, Integer user, String sessionId, String ip, Integer trackId,
-                            Boolean searchSucceeded, Integer numberOfFoundTracks, String description) {
+                            String description) {
         searchItem(tenant, user, sessionId, ip,
-                new ItemVO<Integer, String>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK),
-                searchSucceeded, numberOfFoundTracks, description);
+                new ItemVO<>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK), description);
     }
 
+    @Override
     public void previewTrack(Integer tenant, Integer user, String sessionId, String ip, Integer trackId,
                              String description) {
-        insertAction(new ActionVO<Integer, String>(tenant, user, sessionId, ip,
-                new ItemVO<Integer, String>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK),
-                TypeMappingService.ACTION_TYPE_PREVIEW, null, null, null, description));
+        insertAction(new ActionVO<>(tenant, user, sessionId, ip,
+                new ItemVO<>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK),
+                TypeMappingService.ACTION_TYPE_PREVIEW, null, description));
     }
 
+    @Override
     public void addTrackToPlaylist(Integer tenant, Integer user, String sessionId, String ip, Integer trackId,
                                    String description) {
-        insertAction(new ActionVO<Integer, String>(tenant, user, sessionId, ip,
-                new ItemVO<Integer, String>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK),
-                TypeMappingService.ACTION_TYPE_ADD_TO_PLAYLIST, null, null, null, description));
+        insertAction(new ActionVO<>(tenant, user, sessionId, ip,
+                new ItemVO<>(tenant, trackId, TypeMappingService.ITEM_TYPE_TRACK),
+                TypeMappingService.ACTION_TYPE_ADD_TO_PLAYLIST, null, description));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

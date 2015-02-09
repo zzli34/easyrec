@@ -58,11 +58,9 @@ public interface MusicActionService extends DomainActionService {
     public void rateTrack(Integer tenant, Integer user, String sessionId, String ip, Integer track, Integer ratingValue,
                           String description);
 
-    public void searchArtist(Integer tenant, Integer user, String sessionId, String ip, Integer artist,
-                             Boolean searchSucceeded, Integer numberOfFoundArtists, String description);
+    public void searchArtist(Integer tenant, Integer user, String sessionId, String ip, Integer artist, String description);
 
-    public void searchTrack(Integer tenant, Integer user, String sessionId, String ip, Integer track,
-                            Boolean searchSucceeded, Integer numberOfFoundTracks, String description);
+    public void searchTrack(Integer tenant, Integer user, String sessionId, String ip, Integer track, String description);
 
     public void previewTrack(Integer tenant, Integer user, String sessionId, String ip, Integer track,
                              String description);

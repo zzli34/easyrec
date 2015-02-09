@@ -52,38 +52,38 @@ public interface DomainActionService extends
     // Actions
     ///////////////////////////////////////////////////////////////////////////////////////////////   
     public void purchaseItem(Integer tenant, Integer user, String sessionId, String ip,
-                             ItemVO<Integer, String> item, String description);
+                             ItemVO<Integer, String> item, String actionInfo);
 
     public void purchaseItem(Integer tenant, Integer user, String sessionId, String ip,
-                             ItemVO<Integer, String> item, String description, Date actionTime);
+                             ItemVO<Integer, String> item, String actionInfo, Date actionTime);
 
     public void viewItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String description);
+                         ItemVO<Integer, String> item, String actionInfo);
 
     public void viewItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String description, Date actionTime);
+                         ItemVO<Integer, String> item, String actionInfo, Date actionTime);
 
     public void rateItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, Integer ratingValue, String description);
+                         ItemVO<Integer, String> item, Integer ratingValue, String actionInfo);
 
     public void rateItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, Integer ratingValue, String description,
+                         ItemVO<Integer, String> item, Integer ratingValue, String actionInfo,
                          Date actionTime);
     
     public void insertAction(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String description);
+                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String actionInfo);
     
     public void insertAction(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String description,
+                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String actionInfo,
                          Date actionTime);
 
     public void searchItem(Integer tenant, Integer user, String sessionId, String ip,
-                           ItemVO<Integer, String> item, Boolean searchSucceeded, Integer numberOfFoundItems,
-                           String description);
+                           ItemVO<Integer, String> item,
+                           String actionInfo);
 
     public void searchItem(Integer tenant, Integer user, String sessionId, String ip,
-                           ItemVO<Integer, String> item, Boolean searchSucceeded, Integer numberOfFoundItems,
-                           String description, Date actionTime);
+                           ItemVO<Integer, String> item,
+                           String actionInfo, Date actionTime);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Rankings

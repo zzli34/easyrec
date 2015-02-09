@@ -75,8 +75,8 @@ public class ActionDAOTest {
     public void testInsertAction() {
         ActionVO<Integer, Integer> action = null;
         try {
-            action = new ActionVO<Integer, Integer>(2, 2, "abc5", "127.0.0.1",
-                    new ItemVO<Integer, Integer>(2, 1, 1), 1, null, null, null, null);
+            action = new ActionVO<>(2, 2, "abc5", "127.0.0.1",
+                    new ItemVO<>(2, 1, 1), 1, null, null);
         } catch (Exception e) {
             fail("caught exception: " + e);
         }
@@ -103,28 +103,11 @@ public class ActionDAOTest {
     @ExpectedDataSet(DATA_FILENAME_SOME_MORE_WITH_ALL_FIELDS_SET)
     public void testInsertActionAllFieldsSet() {
         ActionVO<Integer, Integer> action = null;
-        // search (failed)
-        try {
-            action = new ActionVO<Integer, Integer>(2, 2, "abc6", "192.168.124.1",
-                    new ItemVO<Integer, Integer>(2, null, 2), 4, null, false, 0, "modana");
-        } catch (Exception e) {
-            fail("caught exception: " + e);
-        }
-        actionDAO.insertAction(action, false);
-
-        // search (succeeded)
-        try {
-            action = new ActionVO<Integer, Integer>(2, 2, "abc6", "192.168.124.2",
-                    new ItemVO<Integer, Integer>(2, 13, 2), 4, null, true, 1, "madonna");
-        } catch (Exception e) {
-            fail("caught exception: " + e);
-        }
-        actionDAO.insertAction(action, false);
 
         // ratingValue set
         try {
-            action = new ActionVO<Integer, Integer>(2, 2, "abc6", "192.168.124.3",
-                    new ItemVO<Integer, Integer>(2, 19, 1), 3, 7, null, null, null);
+            action = new ActionVO<>(2, 2, "abc6", "192.168.124.3",
+                    new ItemVO<>(2, 19, 1), 3, 7, null);
         } catch (Exception e) {
             fail("caught exception: " + e);
         }
@@ -136,8 +119,8 @@ public class ActionDAOTest {
     public void testInsertActionMissingConstraint() {
         ActionVO<Integer, Integer> action = null;
         try {
-            action = new ActionVO<Integer, Integer>(2, 2, "abc5", "127.0.0.1",
-                    new ItemVO<Integer, Integer>(2, 1, 1), null, null, null, null, null);
+            action = new ActionVO<>(2, 2, "abc5", "127.0.0.1",
+                    new ItemVO<>(2, 1, 1), null, null, null);
             actionDAO.insertAction(action, false);
             fail("exception should be thrown, since 'actionTypeId' is missing");
         } catch (Exception e) {

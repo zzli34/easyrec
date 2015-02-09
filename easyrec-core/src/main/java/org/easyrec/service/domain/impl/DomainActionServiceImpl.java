@@ -63,48 +63,58 @@ public class DomainActionServiceImpl implements DomainActionService {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // interface "ActionService" implementation
 
+    @Override
     public Iterator<ActionVO<Integer, String>> getActionIterator(int bulkSize) {
         return typedActionDAO.getActionIterator(bulkSize);
     }
 
+    @Override
     public Iterator<ActionVO<Integer, String>> getActionIterator(int bulkSize,
-                                                                                           TimeConstraintVO timeConstraints) {
+                                                TimeConstraintVO timeConstraints) {
         return typedActionDAO.getActionIterator(bulkSize, timeConstraints);
     }
 
+    @Override
     public List<ActionVO<Integer, String>> getActionsFromUser(Integer tenantId,
-                                                                                        Integer userId,
-                                                                                        String sessionId) {
+                                                            Integer userId,
+                                                            String sessionId) {
         return typedActionDAO.getActionsFromUser(tenantId, userId, sessionId);
     }
 
+    @Override
     public int insertAction(ActionVO<Integer, String> rating) {
         return typedActionDAO.insertAction(rating, false);
     }
 
+    @Override
     public int insertAction(ActionVO<Integer, String> rating, boolean usedateFromVO) {
         return typedActionDAO.insertAction(rating, usedateFromVO);
     }
 
+    @Override
     public int removeActionsByTenant(Integer tenant) {
         return typedActionDAO.removeActionsByTenant(tenant);
     }
 
+    @Override
     public void importActionsFromCSV(String fileName) {
         importActionsFromCSV(fileName, null);
     }
 
+    @Override
     public void importActionsFromCSV(String fileName, ActionVO<Integer, String> defaults) {
         actionService.importActionsFromCSV(fileName,
                 typeMappingService.convertTypedActionVO(defaults.getTenant(), defaults));
     }
 
+    @Override
     public List<ItemVO<Integer, String>> getItemsOfTenant(final Integer tenant,
                                                                    final String consideredItemType) {
         return typeMappingService.convertListOfItemVOs(tenant,
                 actionService.getItemsOfTenant(tenant, typeMappingService.getIdOfItemType(tenant, consideredItemType)));
     }
 
+    @Override
     public List<ItemVO<Integer, String>> getItemsByUserActionAndType(Integer tenant, Integer user,
                                                                               String sessionId,
                                                                               String consideredActionType,
@@ -123,88 +133,99 @@ public class DomainActionServiceImpl implements DomainActionService {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Actions
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
     public void purchaseItem(Integer tenant, Integer user, String sessionId, String ip,
-                             ItemVO<Integer, String> item, String description) {
+                             ItemVO<Integer, String> item, String actionInfo) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_BUY, null, null, null, description), false);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_BUY, null, actionInfo), false);
     }
 
+    @Override
     public void purchaseItem(Integer tenant, Integer user, String sessionId, String ip,
-                             ItemVO<Integer, String> item, String description, Date actionTime) {
+                             ItemVO<Integer, String> item, String actionInfo, Date actionTime) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_BUY, null, null, null, description, actionTime), true);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_BUY, null, actionInfo, actionTime), true);
     }
 
+    @Override
     public void viewItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String description) {
+                         ItemVO<Integer, String> item, String actionInfo) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_VIEW, null, null, null, description), false);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_VIEW, null, actionInfo), false);
     }
 
+    @Override
     public void viewItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String description, Date actionTime) {
+                         ItemVO<Integer, String> item, String actionInfo, Date actionTime) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_VIEW, null, null, null, description, actionTime), true);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_VIEW, null, actionInfo, actionTime), true);
     }
 
+    @Override
     public void rateItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, Integer ratingValue, String description) {
+                         ItemVO<Integer, String> item, Integer ratingValue, String actionInfo) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_RATE, ratingValue, null, null, description), false);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_RATE, ratingValue, actionInfo), false);
     }
 
+    @Override
     public void rateItem(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, Integer ratingValue, String description,
+                         ItemVO<Integer, String> item, Integer ratingValue, String actionInfo,
                          Date actionTime) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_RATE, ratingValue, null, null, description, actionTime), true);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_RATE, ratingValue, actionInfo, actionTime), true);
     }
     
+    @Override
     public void insertAction(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String description) {
+                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String actionInfo) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        actionType, actionValue, null, null, description), false);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        actionType, actionValue, actionInfo), false);
     }
     
     
+    @Override
     public void insertAction(Integer tenant, Integer user, String sessionId, String ip,
-                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String description,
+                         ItemVO<Integer, String> item, String actionType, Integer actionValue, String actionInfo,
                          Date actionTime) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        actionType, actionValue, null, null, description, actionTime), true);
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        actionType, actionValue, actionInfo, actionTime), true);
     }
 
     
     
+    @Override
     public void searchItem(Integer tenant, Integer user, String sessionId, String ip,
-                           ItemVO<Integer, String> item, Boolean searchSucceeded, Integer numberOfFoundItems,
-                           String description) {
+                           ItemVO<Integer, String> item,
+                           String actionInfo) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_SEARCH, null, searchSucceeded, numberOfFoundItems, description),
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_SEARCH, null, actionInfo),
                 false);
     }
 
+    @Override
     public void searchItem(Integer tenant, Integer user, String sessionId, String ip,
-                           ItemVO<Integer, String> item, Boolean searchSucceeded, Integer numberOfFoundItems,
-                           String description, Date actionTime) {
+                           ItemVO<Integer, String> item, 
+                           String actionInfo, Date actionTime) {
         typedActionDAO.insertAction(
-                new ActionVO<Integer, String>(tenant, user, sessionId, ip, item,
-                        TypeMappingService.ACTION_TYPE_SEARCH, null, searchSucceeded, numberOfFoundItems, description,
+                new ActionVO<>(tenant, user, sessionId, ip, item,
+                        TypeMappingService.ACTION_TYPE_SEARCH, null, actionInfo,
                         actionTime), true);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Rankings
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
     public List<RankedItemVO<Integer, String>> mostBoughtItems(Integer tenant, String itemType,
                                                                Integer cluster, Integer numberOfResults,
                                                                TimeConstraintVO timeRange,
@@ -220,6 +241,7 @@ public class DomainActionServiceImpl implements DomainActionService {
         }
     }
 
+    @Override
     public List<RankedItemVO<Integer, String>> mostViewedItems(Integer tenant, String itemType,
                                                                Integer cluster, Integer numberOfResults,
                                                                TimeConstraintVO timeRange,
@@ -236,6 +258,7 @@ public class DomainActionServiceImpl implements DomainActionService {
         }
     }
 
+    @Override
     public List<RankedItemVO<Integer, String>> mostRatedItems(Integer tenant, String itemType,
                                                               Integer cluster, Integer numberOfResults,
                                                               TimeConstraintVO timeRange,
@@ -251,6 +274,7 @@ public class DomainActionServiceImpl implements DomainActionService {
         }
     }
 
+    @Override
     public List<RankedItemVO<Integer, String>> mostSearchedItems(Integer tenant, String itemType,
                                                                  Integer cluster, Integer numberOfResults,
                                                                  TimeConstraintVO timeRange,
@@ -270,6 +294,7 @@ public class DomainActionServiceImpl implements DomainActionService {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Ratings
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
     public List<RatingVO<Integer, String>> itemRatings(Integer tenant, Integer user, String sessionId,
                                                                          String itemType, Integer numberOfResults,
                                                                          TimeConstraintVO timeRange) {
@@ -278,6 +303,7 @@ public class DomainActionServiceImpl implements DomainActionService {
                         typeMappingService.getIdOfActionType(tenant, TypeMappingService.ACTION_TYPE_RATE));
     }
 
+    @Override
     public List<RatingVO<Integer, String>> badItemRatings(Integer tenant, Integer user,
                                                                             String sessionId, String itemType,
                                                                             Integer numberOfResults,
@@ -287,6 +313,7 @@ public class DomainActionServiceImpl implements DomainActionService {
                         typeMappingService.getIdOfActionType(tenant, TypeMappingService.ACTION_TYPE_RATE));
     }
 
+    @Override
     public List<RatingVO<Integer, String>> goodItemRatings(Integer tenant, Integer user,
                                                                              String sessionId, String itemType,
                                                                              Integer numberOfResults,
@@ -296,6 +323,7 @@ public class DomainActionServiceImpl implements DomainActionService {
                         typeMappingService.getIdOfActionType(tenant, TypeMappingService.ACTION_TYPE_RATE));
     }
 
+    @Override
     public List<RatingVO<Integer, String>> lastGoodItemRatings(Integer tenant, Integer user,
                                                                                  String sessionId, String itemType,
                                                                                  Integer numberOfResults) {

@@ -325,26 +325,9 @@ public class ActionServiceImpl implements ActionService {
                         }
                     }
 
-                    // parse 'searchSucceeded'
-                    if (!"".equals(elementsOfLine[8])) {
-                        action.setSearchSucceeded(Boolean.parseBoolean(elementsOfLine[8]));
-                    }
-
-                    // parse 'numberOfFoundItems'
-                    if (!"".equals(elementsOfLine[9])) {
-                        try {
-                            action.setNumberOfFoundItems(Integer.parseInt(elementsOfLine[9]));
-                        } catch (NumberFormatException nfe) {
-                            AutoImportUtils.logSkippedLine(logger, lineCounter, line,
-                                    "value for field 'numberOfFoundItems' is no valid 'Integer'");
-                            skippedCounter++;
-                            continue;
-                        }
-                    }
-
                     // parse 'description'
-                    if (!"".equals(elementsOfLine[10])) {
-                        action.setDescription(elementsOfLine[10]);
+                    if (!"".equals(elementsOfLine[8])) {
+                        action.setActionInfo(elementsOfLine[8]);
                     }
 
                     try {
@@ -437,8 +420,8 @@ public class ActionServiceImpl implements ActionService {
                         "value object 'ActionVO' does not support .clone() anymore, check that!!");
             }
         } else {
-            action = new ActionVO<Integer, Integer>(null, null, null, null,
-                    new ItemVO<Integer, Integer>(null, null, null), null, null, null, null, null);
+            action = new ActionVO<>(null, null, null, null,
+                    new ItemVO<Integer, Integer>(null, null, null), null, null, null);
         }
 
         // parse 'tenantId'
@@ -522,28 +505,10 @@ public class ActionServiceImpl implements ActionService {
             }
         }
 
-        // parse 'searchSucceeded'
+        // parse 'description'
         defaultValue = AutoImportUtils.getDefaultFromHeaderPart(elementsOfHeader[8]);
         if (defaultValue != null) {
-            action.setSearchSucceeded(Boolean.parseBoolean(defaultValue));
-        }
-
-        // parse 'numberOfFoundItems'
-        defaultValue = AutoImportUtils.getDefaultFromHeaderPart(elementsOfHeader[9]);
-        if (defaultValue != null) {
-            try {
-                action.setNumberOfFoundItems(Integer.parseInt(defaultValue));
-            } catch (NumberFormatException nfe) {
-                logger.warn(
-                        "the default value for 'numberOfFoundItems' in the CSV header is no valid 'Integer', passed type='" +
-                                defaultValue + "'; the passed type will be ignored!");
-            }
-        }
-
-        // parse 'description'
-        defaultValue = AutoImportUtils.getDefaultFromHeaderPart(elementsOfHeader[10]);
-        if (defaultValue != null) {
-            action.setDescription(defaultValue);
+            action.setActionInfo(defaultValue);
         }
 
         return action;

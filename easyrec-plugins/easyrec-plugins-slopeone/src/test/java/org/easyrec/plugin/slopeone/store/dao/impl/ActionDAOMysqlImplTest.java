@@ -160,7 +160,7 @@ public class ActionDAOMysqlImplTest {
         ActionVO<Integer, Integer> action =
                 new ActionVO<>(
                         ID, TENANT, USER, null, null, new ItemVO<>(TENANT, ITEM, ITEMTYPE), 2,
-                        RATINGVALUE, true, 10, null, createDate("2007-04-15 13:01:00.0"));
+                        RATINGVALUE, null, createDate("2007-04-15 13:01:00.0"));
 
         int rowsModified = actionDAO.insertAction(action);
 
@@ -206,7 +206,7 @@ public class ActionDAOMysqlImplTest {
 
             actions.add(
                     new ActionVO<>(ID + i, TENANT, USER, null, null, item, 2,
-                            RATINGVALUE + i, true, 10, null, time));
+                            RATINGVALUE + i, null, time));
             expectedRatingsList
                     .add(new RatingVO<>(item, (double) RATINGVALUE + i, 0, time, USER,
                             null));
@@ -240,17 +240,17 @@ public class ActionDAOMysqlImplTest {
                 new ActionVO<>(
                         ID + 1, TENANT, USER, null, null,
                         new ItemVO<>(TENANT, ITEM + 1, ITEMTYPE), 2,
-                        RATINGVALUE + 1, true, 10, null, createDate("2007-04-15 13:01:00.0"));
+                        RATINGVALUE + 1, null, createDate("2007-04-15 13:01:00.0"));
         ActionVO<Integer, Integer> action2 =
                 new ActionVO<>(
                         ID + 2, TENANT, USER, null, null,
                         new ItemVO<>(TENANT, ITEM + 2, ITEMTYPE), 2,
-                        RATINGVALUE + 2, true, 10, null, createDate("2007-04-15 13:02:00.0"));
+                        RATINGVALUE + 2, null, createDate("2007-04-15 13:02:00.0"));
         ActionVO<Integer, Integer> action3 =
                 new ActionVO<>(
                         ID + 3, TENANT, USER, null, null,
                         new ItemVO<>(TENANT, ITEM + 1, ITEMTYPE), 2,
-                        RATINGVALUE + 3, true, 10, null, createDate("2007-04-15 13:03:00.0"));
+                        RATINGVALUE + 3, null, createDate("2007-04-15 13:03:00.0"));
         List<ActionVO<Integer, Integer>> actions = Arrays.asList(action1, action2, action3);
 
         int rowsModified = actionDAO.insertActions(actions);

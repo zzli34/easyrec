@@ -206,7 +206,7 @@ public class Movielens1MImporter extends AbstractDependencyInjectionSpringCLI {
             Movie movie = movies.get(movieId);
 
             shopRecommenderService.rateItem(remoteTenant, "" + userId, "" + movieId, Item.DEFAULT_STRING_ITEM_TYPE,
-                    movie.getName() + "\nGenres: " + movie.getGenres(), "", "", rating, timestamp, session);
+                    movie.getName() + "\nGenres: " + movie.getGenres(), "", "", rating, timestamp, session, null);
         } while (ratings.hasNextInt());
     }
 }

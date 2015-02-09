@@ -254,11 +254,11 @@ public class Movielens100kImporter extends AbstractDependencyInjectionSpringCLI 
 
             shopRecommenderService.rateItem(remoteTenant, "" + userId, "" + movieId, itemType,
                     movie.getName() + " Genres: " + movie.getGenres(), movie.getImdbUrl(), movie.getGeneratedImageUrl(),
-                    rating, timestamp, session);           
+                    rating, timestamp, session, null);           
             // always also view with type item
             shopRecommenderService.viewItem(remoteTenant, "" + userId, "" + movieId, Item.DEFAULT_STRING_ITEM_TYPE,
                     movie.getName() + " Genres: " + movie.getGenres(), movie.getImdbUrl(), movie.getGeneratedImageUrl(),
-                    timestamp, session);
+                    timestamp, session, null);
 //           use generic sendAction method for view actions for testing 
 //            shopRecommenderService.sendAction(remoteTenant, "" + userId, "" + movieId, Item.DEFAULT_STRING_ITEM_TYPE, 
 //                        movie.getName() + " Genres: " + movie.getGenres(), movie.getImdbUrl(), movie.getGeneratedImageUrl(),

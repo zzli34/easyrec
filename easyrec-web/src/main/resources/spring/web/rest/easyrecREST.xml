@@ -3,6 +3,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    
+    <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper"/>
+    
     <bean id="easyRecRest" class="org.easyrec.rest.EasyRec">
         <constructor-arg ref="operatorDAO"/>
         <constructor-arg ref="remoteTenantDAO"/>
@@ -18,5 +21,6 @@
         <constructor-arg ref="pluginRegistry" />
         <constructor-arg ref="generatorContainer" />
         <constructor-arg value="$easyrec{easyrec.dateFormat}"/>
+        <constructor-arg ref="objectMapper" />
     </bean>
 </beans>

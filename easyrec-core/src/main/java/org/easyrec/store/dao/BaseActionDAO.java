@@ -17,8 +17,6 @@
  */
 package org.easyrec.store.dao;
 
-import org.easyrec.model.core.ItemVO;
-import org.easyrec.model.core.RankedItemVO;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
 import org.easyrec.utils.spring.store.dao.TableCreatingDAO;
 
@@ -59,9 +57,7 @@ public interface BaseActionDAO<A, RI, AT, IT, I, RAT, T, U> extends TableCreatin
     public final static String DEFAULT_ITEM_TYPE_COLUMN_NAME = "itemTypeId";
     public final static String DEFAULT_ACTION_TYPE_COLUMN_NAME = "actionTypeId";
     public final static String DEFAULT_RATING_VALUE_COLUMN_NAME = "ratingValue";
-    public final static String DEFAULT_SEARCH_SUCCEEDED_COLUMN_NAME = "searchSucceeded";
-    public final static String DEFAULT_NUMBER_OF_FOUND_ITEMS = "numberOfFoundItems";
-    public final static String DEFAULT_DESCRIPTION_COLUMN_NAME = "description";
+    public final static String DEFAULT_ACTIONINFO_COLUMN_NAME = "actionInfo";
     public final static String DEFAULT_ACTION_TIME_COLUMN_NAME = "actionTime";
 
     ///////////////////////////////////////////////////////////////////////////

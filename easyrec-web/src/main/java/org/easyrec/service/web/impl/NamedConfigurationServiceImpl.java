@@ -100,31 +100,33 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
     }
 
 
+    @Override
     public void setupDefaultTenant(int tenantId, String ip) {
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         shopRecommenderService.viewItem(remoteTenant, "A", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initA", ip), "");
         shopRecommenderService.viewItem(remoteTenant, "B", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initB", ip), "");
         shopRecommenderService.viewItem(remoteTenant, "A", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initA", ip), "");
         shopRecommenderService.viewItem(remoteTenant, "B", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initB", ip), "");
         shopRecommenderService.viewItem(remoteTenant, "A", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initA", ip), "");
         shopRecommenderService.viewItem(remoteTenant, "B", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("init", ip));
+                new Session("initB", ip), "");
 
         setupDefaultConfiguration(tenantId);
     }
 
+    @Override
     public void setupDefaultConfiguration(int tenantId) {
         PluginId armPluginId = new PluginId("http://www.easyrec.org/plugins/ARM", easyrecSettings.getVersion());
         Generator<GeneratorConfiguration, GeneratorStatistics> generator =
@@ -156,6 +158,7 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
         remoteTenantService.updateTenantStatistics(tenantId);
     }
 
+    @Override
     public NamedConfiguration createDefaultConfiguration(PluginId pluginId, int tenantId, int assocTypeId) {
         Preconditions.checkNotNull(pluginId);
 
