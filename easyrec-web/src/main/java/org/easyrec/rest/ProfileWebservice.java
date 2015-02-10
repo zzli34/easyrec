@@ -91,7 +91,7 @@ public class ProfileWebservice {
      * @param itemID       the itemID if the item where the profile will be stored
      * @param itemType     the itemType of the item where the profile will be stored
      * @param profile      the XML profile which will be stored
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing information about the success of the operation
      */
@@ -148,7 +148,7 @@ public class ProfileWebservice {
      * @param tenantID     the tenantID of the item whose profile will be deleted
      * @param itemID       the itemID if the item whose profile will be deleted
      * @param itemType     the itemType of the item whose profile will be deleted
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing information about the success of the operation
      */
@@ -205,7 +205,7 @@ public class ProfileWebservice {
      * @param tenantID     the tenantID of the item whose profile will be returned
      * @param itemID       the itemID if the item whose profile will be returned
      * @param itemType     the itemType of the item whose profile will be returned
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing the wanted profile
      */
@@ -267,7 +267,7 @@ public class ProfileWebservice {
      * @param field        an XPath expression pointing to the field
      *                     where the value will be saved
      * @param value        the value which will be saved in the field
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing information about the success of the operation
      */
@@ -345,7 +345,7 @@ public class ProfileWebservice {
      * @param itemType     the itemType of the addressed item
      * @param field        an XPath expression pointing to the field
      *                     which will be deleted
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing information about the success of the operation
      */
@@ -423,7 +423,7 @@ public class ProfileWebservice {
      * @param itemType     the itemType of the addressed item
      * @param field        an XPath expression pointing to the field(s)
      *                     whose value will be returned
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a response object containing the value of the field.
      * @see ResponseProfileField
@@ -503,7 +503,7 @@ public class ProfileWebservice {
      * @param messages     a list of <code>Message</code> objects which contain
      *                     error messages of the API request
      * @param responseType defines the format of the <code>Response</code> object
-     * @param callback     if set and responseType is jason the result will be returned
+     * @param callback     if set and responseType is json the result will be returned
      *                     via this javascript callback function (optional)
      * @return a <code>Response</code> object containing the <code>responseData</code>
      *         in the format defined with <code>responseType</code>
