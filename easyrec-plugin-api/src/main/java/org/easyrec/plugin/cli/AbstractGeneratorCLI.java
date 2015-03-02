@@ -71,13 +71,8 @@ public abstract class AbstractGeneratorCLI<GC extends GeneratorConfiguration, GS
         String[] generatorConfigurations = getConfigurations();
 
         return ObjectArrays.concat(generatorConfigurations,
-                new String[]{"classpath:spring/core/spring.easyrec-core.PropertyPlaceholderConfigurerDB.xml",
-                        "classpath:spring/core/easyrecDataSource.xml", "classpath:spring/core/ItemAssocDAO.xml",
-                        "classpath:spring/core/AuthenticationDAO.xml", "classpath:spring/core/TenantConfig_DEFAULT.xml",
-                        "classpath:spring/core/TenantDAO.xml",
-                        "classpath:spring/core/spring.easyrec-core.SQLScriptServiceSatRecommenderDS.xml",
-                        "classpath:spring/core/TenantService.xml", "classpath:spring/core/ActionDAO.xml",
-                        "classpath:spring/core/ItemAssocDAO.xml", "easyrec-plugin.xml"}, String.class);
+                new String[]{
+                        "classpath:spring/core/TenantService_AllInOne.xml", "classpath:spring/core/dao/ActionDAO.xml", "easyrec-plugin.xml"}, String.class);
     }
 
     public abstract String[] getConfigurations();
