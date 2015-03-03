@@ -35,9 +35,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByName;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author fsalcher
@@ -92,82 +90,6 @@ public class ProfileServiceTest {
     }
 
     @Test
-    public void testGetSimpleDimensionValue() {
-        String valueExpected = "profileItem";
-        String valueActual = profileService.getSimpleDimensionValue(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE, "/profile/name");
-        Assert.assertEquals(valueExpected, valueActual);
-    }
-
-    @Test
-    public void testGetMultiDimensionValue() {
-        Set<String> valueExpected = new HashSet<String>();
-        valueExpected.add("g1");
-        valueExpected.add("g2");
-        valueExpected.add("g3");
-
-        Set<String> valueActual = profileService.getMultiDimensionValue(
-                TENANT_ID, ITEM_ID_MULTI_VALUE, ITEM_TYPE, "/profile/genre");
-        Assert.assertEquals(valueExpected, valueActual);
-    }
-
-    @Test
-    @DataSet("/dbunit/core/service/profile.xml")
-    public void testInsertOrUpdateSimpleDimension() {
-        String updatePath = "/profile/name";
-        String insertPath = "/profile/id";
-
-        String updatedValueExpected = "my new name";
-        String insertedValueExpected = "id 1";
-
-        profileService.insertOrUpdateSimpleDimension(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE, updatePath, updatedValueExpected);
-        profileService.insertOrUpdateSimpleDimension(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE, insertPath, insertedValueExpected);
-
-        String updatedValueActual = profileService.getSimpleDimensionValue(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE, updatePath);
-        String insertedValueActual = profileService.getSimpleDimensionValue(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE, insertPath);
-        Assert.assertEquals(updatedValueExpected, updatedValueActual);
-        Assert.assertEquals(insertedValueExpected, insertedValueActual);
-    }
-
-    @Test
-    @DataSet("/dbunit/core/service/profile.xml")
-    public void testInsertOrUpdateMultiDimension() {
-        String updatePath = "/profile/genre";
-        String insertPath = "/profile/child";
-
-        List<String> updatedValuesExpected = new ArrayList<String>();
-        List<String> insertedValuesExpected = new ArrayList<String>();
-
-        updatedValuesExpected.add("g1");
-        updatedValuesExpected.add("g4");
-        updatedValuesExpected.add("g5");
-        updatedValuesExpected.add("g6");
-
-        insertedValuesExpected.add("c1");
-        insertedValuesExpected.add("c2");
-        insertedValuesExpected.add("c3");
-
-        profileService.insertOrUpdateMultiDimension(
-                TENANT_ID, ITEM_ID_MULTI_VALUE, ITEM_TYPE, updatePath, updatedValuesExpected);
-        profileService.insertOrUpdateMultiDimension(
-                TENANT_ID, ITEM_ID_MULTI_VALUE, ITEM_TYPE, insertPath, insertedValuesExpected);
-
-        Set<String> updatedValueActual = profileService.getMultiDimensionValue(
-                TENANT_ID, ITEM_ID_MULTI_VALUE, ITEM_TYPE, updatePath);
-        Set<String> insertedValueActual = profileService.getMultiDimensionValue(
-                TENANT_ID, ITEM_ID_MULTI_VALUE, ITEM_TYPE, insertPath);
-
-        // add the values which where already in the profile
-        updatedValuesExpected.add("g1");
-        updatedValuesExpected.add("g2");
-        updatedValuesExpected.add("g3");
-
-        Assert.assertEquals(6, updatedValueActual.size());
-        Assert.assertEquals(3, insertedValueActual.size());
-        Assert.assertEquals(new HashSet<String>(updatedValuesExpected), updatedValueActual);
-        Assert.assertEquals(new HashSet<String>(insertedValuesExpected), insertedValueActual);
-    }
-
-    @Test
     @DataSet("/dbunit/core/service/profile.xml")
     public void testDeleteValue() {
 
@@ -180,19 +102,6 @@ public class ProfileServiceTest {
         String profileExpected = "<profile><description>Description stored as a profile.</description><name>profileItem</name></profile>";
         String profileActual = profileService.getProfile(TENANT_ID, ITEM_ID_SINGLE_VALUE, ITEM_TYPE);
         Assert.assertEquals(profileExpected, profileActual);
-    }
-
-    @Test
-    @DataSet("/dbunit/core/service/profile.xml")
-    public void testGetItemsByDimensionValue() {
-
-        List<ItemVO<Integer, Integer>> searchActual = profileService.getItemsByDimensionValue(TENANT_ID, ITEM_TYPE, "/profile/property1", "propvalue1");
-
-        List<ItemVO<Integer, Integer>> searchExpected = new ArrayList<ItemVO<Integer, Integer>>();
-        searchExpected.add(new ItemVO<Integer, Integer>(TENANT_ID, 1, 1));
-        searchExpected.add(new ItemVO<Integer, Integer>(TENANT_ID, 3, 1));
-
-        Assert.assertEquals(searchExpected, searchActual);
     }
 
     @Test

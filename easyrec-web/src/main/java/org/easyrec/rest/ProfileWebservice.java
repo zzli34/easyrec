@@ -43,6 +43,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class is a REST webservice facade for the ProfileService
@@ -107,8 +108,8 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_STORE);
 
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> responseObject = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> responseObject = new ArrayList<>();
 
         try {
             if (checkParameters(apiKey, tenantID, itemID, itemType, errorMessages) &&
@@ -163,8 +164,8 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_DELETE);
 
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> responseObject = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> responseObject = new ArrayList<>();
 
         try {
             if (checkParameters(apiKey, tenantID, itemID, itemType, errorMessages)) {
@@ -220,7 +221,7 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_LOAD);
 
-        List<Message> errorMessages = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
         Object responseObject = null;
 
         try {
@@ -284,8 +285,8 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_FIELD_STORE);
 
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> responseObject = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> responseObject = new ArrayList<>();
 
         try {
             if (checkParameters(apiKey, tenantID, itemID, itemType, errorMessages) &&
@@ -303,30 +304,37 @@ public class ProfileWebservice {
                         errorMessages.add(MSG.PROFILE_FIELD_NOT_SAVED);
                 }
             }
-        } catch (SAXException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+        } catch (Exception e) {
+            if (e instanceof SAXException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " SAXException: " + e.getMessage()));
-        } catch (XPathExpressionException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
-                    " XPathExpressionException: " + e.getMessage()));
-        } catch (TransformerException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof TransformerException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " TransformerException: " + e.getMessage()));
-        } catch (DOMException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof XPathExpressionException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
+                    " XPathExpressionException: " + e.getMessage()));
+            }
+            if (e instanceof DOMException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " DOMException: " + e.getMessage()));
-        } catch (MultipleProfileFieldsFoundException e) {
-            errorMessages.add(MSG.PROFILE_MULTIPLE_FIELDS_WITH_SAME_NAME);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            if (illegalArgumentException.getMessage().contains("unknown item type")) {
+            }
+            if (e instanceof MultipleProfileFieldsFoundException) {
+                errorMessages.add(MSG.PROFILE_MULTIPLE_FIELDS_WITH_SAME_NAME);
+            }
+            if (e instanceof IllegalArgumentException) {
+                if (e.getMessage().contains("unknown item type")) {
                 errorMessages.add(MSG.OPERATION_FAILED.append(
                         String.format(" itemType %s not found for tenant %s", itemType, tenantID)));
             } else
                 errorMessages.add(MSG.PROFILE_FIELD_NOT_SAVED);
-        } catch (RuntimeException runtimeException) {
-            errorMessages.add(MSG.PROFILE_FIELD_NOT_SAVED);
-        }
-
+            }
+            if (e instanceof RuntimeException) {
+                errorMessages.add(MSG.PROFILE_FIELD_NOT_SAVED);
+            }
+        } 
         Response response = formatResponse(responseObject, errorMessages,
                 WS.PROFILE_FIELD_STORE, responseType, callback);
         mon.stop();
@@ -361,15 +369,16 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_FIELD_DELETE);
 
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> responseObject = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> responseObject = new ArrayList<>();
 
         try {
             if (checkParameters(apiKey, tenantID, itemID, itemType, errorMessages) &&
                     checkParameterField(field, errorMessages)) {
                 Integer coreTenantID = operatorDAO.getTenantId(apiKey, tenantID);
-                if (coreTenantID == null)
+                if (coreTenantID == null) {
                     errorMessages.add(MSG.TENANT_WRONG_TENANT_APIKEY);
+                }
                 else {
                     if (profileService.deleteProfileField(coreTenantID, itemID, itemType, field))
                         responseObject.add(MSG.PROFILE_FIELD_DELETED);
@@ -377,34 +386,43 @@ public class ProfileWebservice {
                         errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
                 }
             }
-        } catch (SAXException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+        } catch (Exception e) {
+            if (e instanceof SAXException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " SAXException: " + e.getMessage()));
-        } catch (XPathExpressionException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
-                    " XPathExpressionException: " + e.getMessage()));
-        } catch (TransformerException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof TransformerException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " TransformerException: " + e.getMessage()));
-        } catch (DOMException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof XPathExpressionException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
+                    " XPathExpressionException: " + e.getMessage()));
+            }
+            if (e instanceof DOMException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " DOMException: " + e.getMessage()));
-        } catch (FieldNotFoundException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof FieldNotFoundException) { 
+//TODO: pretty useless Exception for user; first there is no file involved; second user cannt do anything about it, so why bother him/her?
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " FieldNotFoundException: " + e.getMessage()));
-        } catch (ItemNotFoundException e) {
-            errorMessages.add(MSG.ITEM_NOT_EXISTS.append(
-                    " ItemNotFoundException: " + e.getMessage()));
-        } catch (IllegalArgumentException illegalArgumentException) {
-            if (illegalArgumentException.getMessage().contains("unknown item type")) {
+            }
+            if (e instanceof IllegalArgumentException) {
+                if (e.getMessage().contains("unknown item type")) {
                 errorMessages.add(MSG.OPERATION_FAILED.append(
                         String.format(" itemType %s not found for tenant %s", itemType, tenantID)));
-            } else
+                } else
+                    errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
+            }
+            if (e instanceof ItemNotFoundException) {
+                errorMessages.add(MSG.ITEM_NOT_EXISTS.append(
+                    " ItemNotFoundException: " + e.getMessage()));
+            }
+            if (e instanceof RuntimeException) {
                 errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
-        } catch (RuntimeException runtimeException) {
-            errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
-        }
-
+            }
+        } 
         Response response = formatResponse(responseObject, errorMessages,
                 WS.PROFILE_FIELD_DELETE, responseType, callback);
         mon.stop();
@@ -440,7 +458,7 @@ public class ProfileWebservice {
 
         Monitor mon = MonitorFactory.start(JAMON_PROFILE_FIELD_LOAD);
 
-        List<Message> errorMessages = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
         Object responseObject = null;
 
         try {
@@ -451,7 +469,7 @@ public class ProfileWebservice {
                     errorMessages.add(MSG.TENANT_WRONG_TENANT_APIKEY);
                 else {
                     Set<String> values = profileService.loadProfileField(coreTenantID, itemID, itemType, field);
-                    if (values != null || values.size() == 0)
+                    if (values != null || values.isEmpty())
                         if (values.size() > 1)
                             errorMessages.add(MSG.PROFILE_MULTIPLE_FIELDS_WITH_SAME_NAME);
                         else
@@ -461,28 +479,38 @@ public class ProfileWebservice {
                         errorMessages.add(MSG.PROFILE_FIELD_NOT_LOADED);
                 }
             }
-        } catch (SAXException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+        } catch (Exception e) {
+            if (e instanceof SAXException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " SAXException: " + e.getMessage()));
-        } catch (XPathExpressionException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof XPathExpressionException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " XPathExpressionException: " + e.getMessage()));
-        } catch (DOMException e) {
-            errorMessages.add(MSG.OPERATION_FAILED.append(
+            }
+            if (e instanceof DOMException) {
+                errorMessages.add(MSG.OPERATION_FAILED.append(
                     " DOMException: " + e.getMessage()));
-        } catch (ItemNotFoundException e) {
-            errorMessages.add(MSG.ITEM_NOT_EXISTS.append(
-                    " ItemNotFoundException: " + e.getMessage()));
-        } catch (IllegalArgumentException illegalArgumentException) {
-            if (illegalArgumentException.getMessage().contains("unknown item type")) {
+            }
+            if (e instanceof IllegalArgumentException) {
+                if (e.getMessage().contains("unknown item type")) {
                 errorMessages.add(MSG.OPERATION_FAILED.append(
                         String.format(" itemType %s not found for tenant %s", itemType, tenantID)));
-            } else
-                errorMessages.add(MSG.PROFILE_FIELD_NOT_LOADED);
-        } catch (RuntimeException runtimeException) {
-            errorMessages.add(MSG.PROFILE_FIELD_NOT_LOADED);
-        }
+                } else
+                    errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
+            }
+            if (e instanceof ItemNotFoundException) {
+                errorMessages.add(MSG.ITEM_NOT_EXISTS.append(
+                    " ItemNotFoundException: " + e.getMessage()));
+            }
+            if (e instanceof RuntimeException) {
+                errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED);
+            }
+            if (e instanceof ParserConfigurationException) {
+                //TODO
+            }
 
+        }
         Response response = formatResponse(responseObject, errorMessages,
                 WS.PROFILE_FIELD_LOAD, responseType, callback);
         mon.stop();

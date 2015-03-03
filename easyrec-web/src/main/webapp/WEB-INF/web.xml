@@ -48,6 +48,11 @@
         <display-name>Jersey Spring Web Application</display-name>
         <servlet-name>jaxrs-servlet</servlet-name>
         <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>com.fasterxml.jackson.jaxrs.json</param-value>
+<!--            <param-value>com.fasterxml.jackson.jaxrs.xml</param-value>-->
+        </init-param>
     </servlet>
     <!-- end web services -->
 

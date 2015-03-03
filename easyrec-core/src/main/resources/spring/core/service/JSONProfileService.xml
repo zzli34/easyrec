@@ -10,10 +10,12 @@
                 http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- This file contains all spring bean definitions necessary for easyrec REST interfaces -->
+    <!--<import resource="classpath:spring/core/dao/types/ProfiledItemTypeDAO.xml" />-->
 
-    <import resource="classpath:spring/web/rest/easyrecREST.xml"/>
-    <import resource="classpath:spring/web/rest/profileWebservice.xml"/>
-    <import resource="classpath:spring/web/rest/JSONProfileWebservice.xml"/>
-
+    <bean id="JSONProfileService"
+          class="org.easyrec.service.core.impl.JSONProfileServiceImpl">
+        <constructor-arg ref="profileDAO"/>
+        <constructor-arg ref="idMappingDAO"/>
+        <constructor-arg ref="typeMappingService"/>
+    </bean>
 </beans>

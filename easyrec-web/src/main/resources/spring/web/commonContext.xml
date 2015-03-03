@@ -27,6 +27,7 @@
     <import resource="classpath:spring/core/dao/ProfileDAO.xml"/>
     <import resource="classpath:spring/web/common/service/itemService.xml"/>
     <import resource="classpath:spring/core/service/ProfileService.xml"/>
+    <import resource="classpath:spring/core/service/JSONProfileService.xml"/>
     <import resource="classpath:spring/web/common/service/viewInitializationService.xml"/>
     <import resource="classpath:spring/web/common/service/remoteTenantService.xml"/>
     <import resource="classpath:spring/web/common/service/remoteAssocService.xml"/>

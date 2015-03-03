@@ -87,7 +87,7 @@ public class ClusterServiceImpl implements ClusterService, InitializingBean {
         this.sourceTypeDAO = sourceTypeDAO;
         this.viewTypeDAO = viewTypeDAO;
         this.clusters =
-                new HashMap<Integer, DelegateTree<ClusterVO, ItemAssocVO<Integer,Integer>>>();
+                new HashMap<>();
         try {
             context = JAXBContext.newInstance(org.easyrec.model.core.ClusterVO.class);
         } catch (Exception e) {
@@ -95,12 +95,14 @@ public class ClusterServiceImpl implements ClusterService, InitializingBean {
         }
     }
 
+    @Override
     public void afterPropertiesSet() {
 
         // for each tenant
         //build tree from itemassoc
         List<TenantVO> tenants = tenantService.getAllTenants();
         for (TenantVO tenantVO : tenants) {
+//            logger.info("building Cluster tree for tenant " + tenantVO.getId());
             initTenantForClusters(tenantVO);
 
             DelegateTree<ClusterVO, ItemAssocVO<Integer,Integer>> tenantClusters =
@@ -110,6 +112,7 @@ public class ClusterServiceImpl implements ClusterService, InitializingBean {
         }
     }
 
+    @Override
     public void initTenantForClusters(TenantVO tenantVO) {
         // check if itemType CLUSTER exists, if not create
         int itemTypeId;
@@ -159,11 +162,13 @@ public class ClusterServiceImpl implements ClusterService, InitializingBean {
         clusters.put(tenantVO.getId(), tenantClusters);
     }
 
+    @Override
     public DelegateTree<ClusterVO, ItemAssocVO<Integer,Integer>> getClustersForTenant(
             Integer tenantId) {
         return clusters.get(tenantId);
     }
 
+    @Override
     public void addCluster(Integer tenantId, String clusterName, String clusterDescription, String parent)
             throws ClusterException {
 

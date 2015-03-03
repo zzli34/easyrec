@@ -33,7 +33,6 @@ import org.easyrec.plugin.profileduke.duke.datasource.EasyrecXMLFormatDataSource
 import org.easyrec.plugin.profileduke.duke.matchers.EasyrecProfileMatcher;
 import org.easyrec.plugin.profileduke.store.dao.ProfileSimilarityItemAssocDAO;
 import org.easyrec.plugin.support.GeneratorPluginSupport;
-import org.easyrec.service.core.ItemAssocService;
 import org.easyrec.service.core.ProfileService;
 import org.easyrec.service.domain.TypeMappingService;
 import org.easyrec.store.dao.core.ItemAssocDAO;

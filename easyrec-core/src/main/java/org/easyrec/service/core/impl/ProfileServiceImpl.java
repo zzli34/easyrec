@@ -41,14 +41,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -105,20 +103,33 @@ public class ProfileServiceImpl implements ProfileService {
                 typeMappingService.getIdOfItemType(tenantId, itemTypeId), profileXML) != 0;
     }
 
+    /**
+     *  Used
+     * @param tenantId
+     * @param itemId
+     * @param itemType
+     * @param profileXML
+     * @return 
+     */
+    @Override
     public boolean storeProfile(Integer tenantId, String itemId, String itemType, String profileXML) {
         return profileDAO.storeProfile(tenantId, idMappingDAO.lookup(itemId),
                 typeMappingService.getIdOfItemType(tenantId, itemType), profileXML) != 0;
     }
 
+    /**
+     * Used
+     * @param tenantId
+     * @param itemId
+     * @param itemType
+     * @return 
+     */
+    @Override
     public boolean deleteProfile(Integer tenantId, String itemId, String itemType) {
         return profileDAO.deleteProfile(tenantId, idMappingDAO.lookupOnly(itemId),
                 typeMappingService.getIdOfItemType(tenantId, itemType));
     }
 
-    public String getProfile(Integer tenantId, String itemId, Integer itemTypeId) {
-        Integer mappedItemId = idMappingDAO.lookup(itemId);
-        return profileDAO.getProfile(tenantId, mappedItemId, itemTypeId);
-    }
 
     public String getProfile(Integer tenantId, Integer itemId, Integer itemTypeId) {
         return profileDAO.getProfile(tenantId, itemId, itemTypeId);
@@ -128,320 +139,158 @@ public class ProfileServiceImpl implements ProfileService {
         return profileDAO.getProfile(tenantId, itemId, typeMappingService.getIdOfItemType(tenantId, itemTypeId));
     }
 
+    @Override
     public String getProfile(Item item) {
         return getProfile(item.getTenantId(), item.getItemId(), item.getItemType());
     }
 
+    @Override
     public String getProfile(ItemVO<Integer, Integer> item) {
         return getProfile(item.getTenant(), item.getItem(), item.getType());
     }
 
+    /**
+     * Used
+     * @param tenantId
+     * @param itemId
+     * @param itemTypeId
+     * @return 
+     */
+    @Override
     public String getProfile(Integer tenantId, String itemId, String itemTypeId) {
         Integer mappedItemId = idMappingDAO.lookupOnly(itemId);
         return getProfile(tenantId, mappedItemId, itemTypeId);
     }
 
-    public Set<String> getMultiDimensionValue(Integer tenantId, Integer itemId, String itemType,
-                                              String dimensionXPath) {
-        return profileDAO.getMultiDimensionValue(tenantId, itemId,
-                typeMappingService.getIdOfItemType(tenantId, itemType), dimensionXPath);
-    }
-
-    public Set<String> getMultiDimensionValue(Integer tenantId, String itemId, String itemType,
-                                              String dimensionXPath) {
-        return profileDAO.getMultiDimensionValue(tenantId, idMappingDAO.lookup(itemId),
-                typeMappingService.getIdOfItemType(tenantId, itemType), dimensionXPath);
-    }
-
+    /**
+     * Used
+     * @param tenantId
+     * @param itemId
+     * @param itemType
+     * @param dimensionXPath
+     * @return
+     * @throws Exception
+     */
+    @Override
     public Set<String> loadProfileField(Integer tenantId, String itemId, String itemType,
                                         String dimensionXPath)
-            throws XPathExpressionException, SAXException {
+            throws Exception {
 
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
-        try {
-            int itemIntID = idMappingDAO.lookupOnly(itemId);
+        int itemIntID = idMappingDAO.lookupOnly(itemId);
 
-            XPathFactory xpf = XPathFactory.newInstance();
+        XPathFactory xpf = XPathFactory.newInstance();
 
-            Document doc = getProfileXMLDocument(tenantId, itemIntID, itemType);
+        Document doc = getProfileXMLDocument(tenantId, itemIntID, itemType);
 
-            XPath xp = xpf.newXPath();
-            NodeList nodeList = (NodeList) xp.evaluate(dimensionXPath, doc, XPathConstants.NODESET);
+        XPath xp = xpf.newXPath();
+        NodeList nodeList = (NodeList) xp.evaluate(dimensionXPath, doc, XPathConstants.NODESET);
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                result.add(node.getTextContent());
-            }
-
-        } catch (Exception e) {
-            logger.debug("Error loading profile field: " + e.getMessage());
-            e.printStackTrace();
-
-            if (e instanceof SAXException)
-                throw (SAXException) e;
-            if (e instanceof XPathExpressionException)
-                throw (XPathExpressionException) e;
-            if (e instanceof DOMException)
-                throw (DOMException) e;
-            if (e instanceof IllegalArgumentException)
-                throw (IllegalArgumentException) e;
-
-            return null;
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            result.add(node.getTextContent());
         }
+
         return result;
     }
 
-    public String getSimpleDimensionValue(Integer tenantId, Integer itemId, String itemTypeId, String dimensionXPath) {
-        return profileDAO
-                .getSimpleDimensionValue(tenantId, itemId, typeMappingService.getIdOfItemType(tenantId, itemTypeId),
-                        dimensionXPath);
-    }
-
-    public String getSimpleDimensionValue(Integer tenantId, String itemId, String itemTypeId, String dimensionXPath) {
-        return profileDAO.getSimpleDimensionValue(
-                tenantId,
-                idMappingDAO.lookup(itemId),
-                typeMappingService.getIdOfItemType(tenantId, itemTypeId),
-                dimensionXPath);
-    }
-
-    public boolean insertOrUpdateMultiDimension(Integer tenantId, Integer itemId, String itemType, String dimensionXPath,
-                                                List<String> values) {
-
-        XPathFactory xpf = XPathFactory.newInstance();
-
-        try {
-            // load and parse the profile
-            Document doc = getProfileXMLDocument(tenantId, itemId, itemType);
-            // check if the element exists
-            Node node = null;
-            Node parent = null;
-            XPath xp = xpf.newXPath();
-            for (Iterator<String> it = values.iterator(); it.hasNext(); ) {
-                String value = it.next();
-                // look if value already exists
-                node = (Node) xp.evaluate(dimensionXPath + "[text()='" + value + "']", doc, XPathConstants.NODE);
-                // if value exists, value can be discarded
-                if (node != null) {
-                    // optimization: if a node was found, store the parent; later no new XPath evaluation is necessary
-                    parent = node.getParentNode();
-                    it.remove();
-                }
-            }
-            if (values.isEmpty()) return true; // nothing left to do
-            String parentPath = dimensionXPath.substring(0, dimensionXPath.lastIndexOf("/"));
-            parent = (Node) xp.evaluate(parentPath, doc, XPathConstants.NODE);
-            // find path to parent
-            if (parent == null) {
-                String tmpPath = parentPath;
-                while (parent == null) {
-                    tmpPath = parentPath.substring(0, tmpPath.lastIndexOf("/"));
-                    parent = (Node) xp.evaluate(tmpPath, doc, XPathConstants.NODE);
-                }
-                parent = insertElement(doc, parent, parentPath.substring(tmpPath.length()), null);
-            }
-            String tag = dimensionXPath.substring(parentPath.length() + 1);
-            for (String value : values) {
-                Element el = doc.createElement(tag);
-                el.setTextContent(value);
-                parent.appendChild(el);
-            }
-
-            StringWriter writer = new StringWriter();
-            Result result = new StreamResult(writer);
-            trans.transform(new DOMSource(doc), result);
-            writer.close();
-            String xml = writer.toString();
-            logger.debug(xml);
-            storeProfile(tenantId, itemId, itemType, xml);
-
-        } catch (Exception e) {
-            logger.debug("Error inserting Multi Dimension: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    public boolean insertOrUpdateMultiDimension(Integer tenantId, String itemId,
-                                                String itemType, String dimensionXPath,
-                                                List<String> values) {
-        return insertOrUpdateMultiDimension(tenantId, idMappingDAO.lookup(itemId), itemType, dimensionXPath, values);
-    }
-
-
-    public boolean insertOrUpdateSimpleDimension(Integer tenantId, Integer itemId, String itemTypeId,
-                                                 String dimensionXPath, String value) {
-
-        XPathFactory xpf = XPathFactory.newInstance();
-        try {
-            // load and parse the profile
-            Document doc = getProfileXMLDocument(tenantId, itemId, itemTypeId);
-            // check if the element exists
-            XPath xp = xpf.newXPath();
-            Node node = (Node) xp.evaluate(dimensionXPath, doc, XPathConstants.NODE);
-            // if the element exists, just update the value
-            if (node != null) {
-                // if value doesn't change, there is no need to alter the profile and write it to database
-                if (value.equals(node.getTextContent())) return true;
-                node.setTextContent(value);
-            } else { // if the element cannot be found, insert it at the position given in the dimensionXPath
-                // follow the XPath from bottom to top until you find the first existing path element
-                String tmpPath = dimensionXPath;
-                while (node == null) {
-                    tmpPath = dimensionXPath.substring(0, tmpPath.lastIndexOf("/"));
-                    node = (Node) xp.evaluate(tmpPath, doc, XPathConstants.NODE);
-                }
-                // found the correct node to insert or ended at Document root, hence insert
-                insertElement(doc, node, dimensionXPath.substring(tmpPath.length()/*, dimensionXPath.length()*/),
-                        value);
-            }
-
-            StringWriter writer = new StringWriter();
-            Result result = new StreamResult(writer);
-            trans.transform(new DOMSource(doc), result);
-            writer.close();
-            String xml = writer.toString();
-            logger.debug(xml);
-            storeProfile(tenantId, itemId, itemTypeId, xml);
-
-        } catch (Exception e) {
-            logger.debug("Error inserting Simple Dimension: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    public boolean insertOrUpdateSimpleDimension(Integer tenantId, String itemId, String itemTypeId,
-                                                 String dimensionXPath, String value) {
-        return insertOrUpdateSimpleDimension(tenantId, idMappingDAO.lookup(itemId), itemTypeId,
-                dimensionXPath, value);
-    }
-
+    /**
+     * Used
+     * @param tenantId
+     * @param itemId
+     * @param itemTypeId
+     * @param dimensionXPath
+     * @param value
+     * @return
+ 
+     */
+    @Override
     public synchronized boolean storeProfileField(Integer tenantId, String itemId, String itemTypeId,
-                                                  String dimensionXPath, String value)
-            throws XPathExpressionException, TransformerException, SAXException,
-            DOMException, MultipleProfileFieldsFoundException {
+                                                  String dimensionXPath, String value) throws Exception {
 
-        try {
-            int itemIntID = idMappingDAO.lookup(itemId);
+        int itemIntID = idMappingDAO.lookup(itemId);
 
-            XPathFactory xpf = XPathFactory.newInstance();
+        XPathFactory xpf = XPathFactory.newInstance();
 
-            // load and parse the profile
-            Document doc = getProfileXMLDocument(tenantId, itemIntID, itemTypeId);
+        // load and parse the profile
+        Document doc = getProfileXMLDocument(tenantId, itemIntID, itemTypeId);
 
-            // follow the XPath from bottom to top until you find the first existing path element
-            XPath xp = xpf.newXPath();
-            String tmpPath = dimensionXPath;
-            NodeList nodeList = (NodeList) xp.evaluate(tmpPath, doc, XPathConstants.NODESET);
-            if (nodeList.getLength() > 1)
-                throw new MultipleProfileFieldsFoundException(nodeList.getLength() + " nodes found.");
+        // follow the XPath from bottom to top until you find the first existing path element
+        XPath xp = xpf.newXPath();
+        String tmpPath = dimensionXPath;
+        NodeList nodeList = (NodeList) xp.evaluate(tmpPath, doc, XPathConstants.NODESET);
+        if (nodeList.getLength() > 1)
+            throw new MultipleProfileFieldsFoundException(nodeList.getLength() + " nodes found.");
 
-            Node node = null;
-            if (nodeList.getLength() == 1)
-                nodeList.item(0).setTextContent(value);
-            else {
-                while (node == null) {
-                    tmpPath = dimensionXPath.substring(0, tmpPath.lastIndexOf("/"));
-                    if ("".equals(tmpPath))
-                        tmpPath = "/";
-                    node = (Node) xp.evaluate(tmpPath, doc, XPathConstants.NODE);
-                }
-                insertElement(doc, node,
-                        dimensionXPath.substring(tmpPath.length()), value);
+        Node node = null;
+        if (nodeList.getLength() == 1)
+            nodeList.item(0).setTextContent(value);
+        else {
+            while (node == null) {
+                tmpPath = dimensionXPath.substring(0, tmpPath.lastIndexOf("/"));
+                if ("".equals(tmpPath))
+                    tmpPath = "/";
+                node = (Node) xp.evaluate(tmpPath, doc, XPathConstants.NODE);
             }
-
-            StringWriter writer = new StringWriter();
-            Result result = new StreamResult(writer);
-            trans.transform(new DOMSource(doc), result);
-            writer.close();
-            String xml = writer.toString();
-            logger.debug(xml);
-            storeProfile(tenantId, itemId, itemTypeId, xml);
-        } catch (Exception e) {
-            logger.debug("Error inserting Simple Dimension: " + e.getMessage());
-            e.printStackTrace();
-
-            if (e instanceof SAXException)
-                throw (SAXException) e;
-            if (e instanceof TransformerException)
-                throw (TransformerException) e;
-            if (e instanceof XPathExpressionException)
-                throw (XPathExpressionException) e;
-            if (e instanceof DOMException)
-                throw (DOMException) e;
-            if (e instanceof MultipleProfileFieldsFoundException)
-                throw (MultipleProfileFieldsFoundException) e;
-            if (e instanceof IllegalArgumentException)
-                throw (IllegalArgumentException) e;
-
-            return false;
+            insertElement(doc, node,
+                    dimensionXPath.substring(tmpPath.length()), value);
         }
+
+        StringWriter writer = new StringWriter();
+        Result result = new StreamResult(writer);
+        trans.transform(new DOMSource(doc), result);
+        writer.close();
+        String xml = writer.toString();
+        logger.debug(xml);
+        storeProfile(tenantId, itemId, itemTypeId, xml);
+
         return true;
     }
 
-
+/**
+ * Used
+ * @param tenantId
+ * @param itemId
+ * @param itemType
+ * @param deleteXPath
+ * @throws Exception
+ * @return
+ */
+    @Override
     public boolean deleteProfileField(Integer tenantId, String itemId, String itemType, String deleteXPath)
-            throws XPathExpressionException, TransformerException, SAXException, FieldNotFoundException {
+            throws Exception {
 
         XPathFactory xpf = XPathFactory.newInstance();
-        try {
-            // load and parse the profile
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(
-                    getProfile(tenantId, itemId, itemType))));
 
-            // check if the element exists
-            XPath xp = xpf.newXPath();
-            NodeList nodeList = (NodeList) xp.evaluate(deleteXPath, doc, XPathConstants.NODESET);
+        // load and parse the profile
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new InputSource(new StringReader(
+                getProfile(tenantId, itemId, itemType))));
 
-            if (nodeList.getLength() == 0)
-                throw new FieldNotFoundException("Field does not exist in this profile!");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                node.getParentNode().removeChild(node);
-            }
+        // check if the element exists
+        XPath xp = xpf.newXPath();
+        NodeList nodeList = (NodeList) xp.evaluate(deleteXPath, doc, XPathConstants.NODESET);
 
-            StringWriter writer = new StringWriter();
-            Result result = new StreamResult(writer);
-            trans.transform(new DOMSource(doc), result);
-            writer.close();
-            String xml = writer.toString();
-            logger.debug(xml);
-            storeProfile(tenantId, itemId, itemType, xml);
-
-            return true;
-
-        } catch (Exception e) {
-            logger.debug("Error deleting field: " + e.getMessage());
-            e.printStackTrace();
-
-            if (e instanceof SAXException)
-                throw (SAXException) e;
-            if (e instanceof TransformerException)
-                throw (TransformerException) e;
-            if (e instanceof XPathExpressionException)
-                throw (XPathExpressionException) e;
-            if (e instanceof DOMException)
-                throw (DOMException) e;
-            if (e instanceof FieldNotFoundException)
-                throw (FieldNotFoundException) e;
-            if (e instanceof IllegalArgumentException)
-                throw (IllegalArgumentException) e;
-
-            return false;
+        if (nodeList.getLength() == 0)
+            throw new FieldNotFoundException("Field does not exist in this profile!");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            node.getParentNode().removeChild(node);
         }
+
+        StringWriter writer = new StringWriter();
+        Result result = new StreamResult(writer);
+        trans.transform(new DOMSource(doc), result);
+        writer.close();
+        String xml = writer.toString();
+        logger.debug(xml);
+        storeProfile(tenantId, itemId, itemType, xml);
+
+        return true;
     }
 
-    public List<ItemVO<Integer, Integer>> getItemsByDimensionValue(Integer tenantId, String itemType,
-                                                                   String dimensionXPath, String value) {
-        return profileDAO.getItemsByDimensionValue(tenantId, typeMappingService.getIdOfItemType(tenantId, itemType),
-                dimensionXPath, value);
-    }
-
+    @Override
     public List<ItemVO<Integer, Integer>> getItemsByItemType(Integer tenantId, String itemType, int count) {
         return profileDAO.getItemsByItemType(tenantId, typeMappingService.getIdOfItemType(tenantId, itemType), count);
     }

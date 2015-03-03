@@ -4,7 +4,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     
-    <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper"/>
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
     
     <bean id="easyRecRest" class="org.easyrec.rest.EasyRec">
         <constructor-arg ref="operatorDAO"/>
@@ -22,5 +22,6 @@
         <constructor-arg ref="generatorContainer" />
         <constructor-arg value="$easyrec{easyrec.dateFormat}"/>
         <constructor-arg ref="objectMapper" />
+        <constructor-arg ref="logEntryDAO" />
     </bean>
 </beans>

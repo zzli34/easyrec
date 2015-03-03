@@ -48,6 +48,7 @@ public class WS implements InitializingBean {
     public static final String PROFILE_FIELD_STORE = "profile/field/store";
     public static final String PROFILE_FIELD_DELETE = "profile/field/delete";
     public static final String PROFILE_FIELD_LOAD = "profile/field/load";
+    public static final String PROFILE_FIELD_PUSH = "profile/field/push";
 
     public final static String JSON_PATH = "1.0/json";
     public final static String XML_PATH = "1.0";

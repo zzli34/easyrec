@@ -5,7 +5,7 @@
  */
 package org.easyrec.model.web;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  *

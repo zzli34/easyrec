@@ -43,11 +43,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
-import org.springframework.web.util.HtmlUtils;
 
 
 /**
@@ -97,7 +95,7 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
 
     private Cache cache;
     
-    private HashMap<String, Item> itemCache = new HashMap<String, Item>();
+   // private HashMap<String, Item> itemCache = new HashMap<String, Item>();
 
 
     static {
@@ -200,14 +198,14 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
     public Item add(Integer tenantId, String itemId, String itemType, String itemDescription, String url,
                     String imageurl) {
         try {
-            Object[] args = {tenantId, itemId, itemType, HtmlUtils.htmlEscape(itemDescription), Web.makeUrlSecure(url),
+            Object[] args = {tenantId, itemId, itemType, itemDescription, Web.makeUrlSecure(url),
                     Web.makeUrlSecure(imageurl)};
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
             getJdbcTemplate().update(PS_ADD_ITEM.newPreparedStatementCreator(args), keyHolder);
 
             return new Item(keyHolder.getKey().toString(), tenantId, itemId, itemType,
-                    HtmlUtils.htmlEscape(itemDescription), Web.makeUrlSecure(url), Web.makeUrlSecure(imageurl),
+                    itemDescription, Web.makeUrlSecure(url), Web.makeUrlSecure(imageurl),
                     null, true, new Date().toString());
 
         } catch (Exception e) {

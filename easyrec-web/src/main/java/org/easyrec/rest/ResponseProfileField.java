@@ -17,9 +17,9 @@
  */
 package org.easyrec.rest;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Set;
 
 /**
  * This class represents the values of an item's profile field for marshaling.
@@ -45,8 +45,9 @@ public class ResponseProfileField {
     private String field;
 
     @XmlElement
+    @JsonRawValue
     private String value;
-
+       
     public ResponseProfileField() {}
 
     public ResponseProfileField(String action, String tenantID, String itemID,

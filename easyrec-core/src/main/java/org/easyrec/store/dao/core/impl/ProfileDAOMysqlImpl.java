@@ -307,6 +307,7 @@ public class ProfileDAOMysqlImpl extends AbstractBaseProfileDAOMysqlImpl<Integer
         return (result != 0);
     }
 
+    @Override
     public boolean deleteProfile(Integer tenantId, Integer itemId, Integer itemTypeId) {
 
         if (tenantId == null) {

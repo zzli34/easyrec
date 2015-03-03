@@ -19,6 +19,7 @@
 
 package org.easyrec.controller.clusterManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.Tree;
@@ -46,7 +47,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.easyrec.model.web.ClusterNode;
 import org.easyrec.model.web.NodeAttributes;
 

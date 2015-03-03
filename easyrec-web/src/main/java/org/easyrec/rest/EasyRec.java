@@ -17,6 +17,7 @@
  */
 package org.easyrec.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
@@ -26,6 +27,7 @@ import com.jamonapi.MonitorFactory;
 import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.IOException;
+import java.text.ParseException;
 import org.easyrec.exception.core.ClusterException;
 import org.easyrec.model.core.ClusterVO;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
@@ -62,7 +64,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.easyrec.model.plugin.LogEntry;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
+import org.easyrec.store.dao.plugin.LogEntryDAO;
 
 /**
  * @author szavrel
@@ -75,22 +80,23 @@ public class EasyRec {
     @Context
     public HttpServletRequest request;
 
-    private OperatorDAO operatorDAO;
-    private ItemDAO itemDAO;
-    private RemoteAssocService remoteAssocService;
-    private RemoteTenantDAO remoteTenantDAO;
-    private TenantService tenantService;
-    private ShopRecommenderService shopRecommenderService;
-    private TypeMappingService typeMappingService;
-    private String dateFormat;
-    private IDMappingDAO idMappingDAO;
+    private final OperatorDAO operatorDAO;
+    private final ItemDAO itemDAO;
+    private final RemoteAssocService remoteAssocService;
+    private final RemoteTenantDAO remoteTenantDAO;
+    private final TenantService tenantService;
+    private final ShopRecommenderService shopRecommenderService;
+    private final TypeMappingService typeMappingService;
+    private final String dateFormat;
+    private final IDMappingDAO idMappingDAO;
     //added by FK on 2012-12-18 to enable adding profile data to recommendations
-    private ProfileService profileService;
-    private ClusterService clusterService;
-    private EasyRecSettings easyrecSettings;
-    private PluginRegistry pluginRegistry;
-    private GeneratorContainer generatorContainer;
-    private ObjectMapper objectMapper;
+    private final ProfileService profileService;
+    private final ClusterService clusterService;
+    private final EasyRecSettings easyrecSettings;
+    private final PluginRegistry pluginRegistry;
+    private final GeneratorContainer generatorContainer;
+    private final ObjectMapper objectMapper;
+    private final LogEntryDAO logEntryDAO;
 
 
     // Jamon Loggers
@@ -129,7 +135,8 @@ public class EasyRec {
                    PluginRegistry pluginRegistry,
                    GeneratorContainer generatorContainer,
                    String dateFormatString,
-                   ObjectMapper objectMapper) {
+                   ObjectMapper objectMapper,
+                   LogEntryDAO logEntryDAO) {
         this.operatorDAO = operatorDAO;
         this.remoteTenantDAO = remoteTenantDAO;
         this.shopRecommenderService = shopRecommenderService;
@@ -145,6 +152,7 @@ public class EasyRec {
         this.pluginRegistry = pluginRegistry;
         this.generatorContainer = generatorContainer;
         this.objectMapper = objectMapper;
+        this.logEntryDAO = logEntryDAO;
     }
 
     @GET
@@ -1578,7 +1586,7 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
         Integer coreTenantId = null;
 
         coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
@@ -1620,7 +1628,8 @@ public class EasyRec {
      * @param clusterDescription
      * @param clusterParent
      * @param callback
-     * @return
+     *
+     * @param apiKey @return
      * @throws EasyRecException
      */
     @GET
@@ -1648,8 +1657,8 @@ public class EasyRec {
 
         // Collect a List of messages for the user to understand,
         // what went wrong (e.g. Wrong API key).
-        List<Message> errorMessages = new ArrayList<Message>();
-        List<Message> successMessages = new ArrayList<Message>();
+        List<Message> errorMessages = new ArrayList<>();
+        List<Message> successMessages = new ArrayList<>();
         Integer coreTenantId = null;
 
         coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
@@ -1759,6 +1768,31 @@ public class EasyRec {
                                 }
                             }, true, true);
                 }
+                
+                if ("true".equals(tenantConfig.getProperty(RemoteTenant.SESSION_TO_USER_MAPPING_ENABLED))) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date lastRun;
+                    RemoteTenant remoteTenant = remoteTenantDAO.get(coreTenantId);
+                    try {
+                        lastRun = sdf.parse(remoteTenant.getCreationDate());
+                    } catch (ParseException ex) {
+                        lastRun = new Date(System.currentTimeMillis() - (365 * 86400000l)); //fallback one year
+                    }
+                    List<LogEntry> lastRunEntry = logEntryDAO.getLogEntriesForTenant(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE, 0, 1);
+
+                    if ((lastRunEntry != null) && (!lastRunEntry.isEmpty())) {
+                        LogEntry le = lastRunEntry.get(0);
+                        lastRun = le.getStartDate();
+                    }
+
+                    SessionToUserMappingConfiguration configuration = new SessionToUserMappingConfiguration(lastRun);
+                    configuration.setAssociationType("SESSION_USER_MAPPING");
+                    NamedConfiguration namedConfiguration = new NamedConfiguration(remoteTenant.getId(), SessionToUserMappingGenerator.ASSOCTYPE,
+                            SessionToUserMappingGenerator.ID, "Session-to-User-mapping", configuration, true);
+
+
+                    generatorContainer.runGenerator(namedConfiguration, true);
+                }
 
                 generatorContainer.runGeneratorsForTenant(coreTenantId, forceRun);
             }
@@ -1786,7 +1820,7 @@ public class EasyRec {
 
     private void exceptionResponse(String operation, Message message, String type, String callback)
             throws EasyRecException {
-        List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<>();
         messages.add(message);
 
         if ((WS.JSON_PATH.equals(type)))

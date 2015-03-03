@@ -62,11 +62,13 @@ public class ProfiledItemTypeDAOMysqlImpl extends ItemTypeDAOMysqlImpl implement
         }
     }
 
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType, Integer id, String profileSchema,
                               String profileMatcher) {
         return insertOrUpdate(tenantId, itemType, id, profileSchema, profileMatcher, null);
     }
 
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType, Integer id, String profileSchema,
                               String profileMatcher, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
@@ -97,9 +99,6 @@ public class ProfiledItemTypeDAOMysqlImpl extends ItemTypeDAOMysqlImpl implement
             query.append(DEFAULT_VISIBLE_COLUMN_NAME);
             query.append("=?");
         } else {
-            args = new Object[]{tenantId, itemType, id, profileSchema, profileMatcher, tenantId, itemType};
-            argTypes = new int[]{Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR,
-                    Types.INTEGER, Types.VARCHAR};
 
             query.append("UPDATE ");
             query.append(DEFAULT_TABLE_NAME);
@@ -135,6 +134,7 @@ public class ProfiledItemTypeDAOMysqlImpl extends ItemTypeDAOMysqlImpl implement
         return getJdbcTemplate().update(query.toString(), args, argTypes);
     }
 
+    @Override
     public List<Integer> getTenantIds() {
         StringBuilder sqlString = new StringBuilder("SELECT DISTINCT ");
         sqlString.append(DEFAULT_TENANT_COLUMN_NAME);
@@ -145,10 +145,12 @@ public class ProfiledItemTypeDAOMysqlImpl extends ItemTypeDAOMysqlImpl implement
 
     }
 
+    @Override
     public List<Integer> getItemTypeIds(Integer tenantId) {
         return getItemTypeIds(tenantId, null);
     }
 
+    @Override
     public List<Integer> getItemTypeIds(Integer tenantId, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
 
