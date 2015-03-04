@@ -148,14 +148,24 @@ tenantid<input ng-model="tenantid" id="tenantid" style="width:100%"><br>
 <hr/>
 itemid<input ng-model="itemid" id="itemid" style="width:100%"><br>
 itemtype<input ng-model="itemtype" id="itemtype" style="width:100%"><br>
+<div ng-show="apicall.name==='storeitemwithprofile'">
 itemdescription<input ng-model="itemdescription" id="itemdescription" style="width:100%"><br>
 itemurl<input ng-model="itemurl" id="itemurl" style="width:100%"><br>
 itemimageurl<input ng-model="itemimageurl" id="itemimageurl" style="width:100%"><br>
+</div>
 <hr/>
+<div ng-show="apicall.name==='store' || apicall.name==='storeitemwithprofile'">
 profile<input ng-model="profile" id="profile" style="width:100%" /><br>
+</div>
+<div ng-show="apicall.name==='field/store' || apicall.name==='field/push' || apicall.name==='field/load' || apicall.name==='field/delete'">
 path<input ng-model="path" id="path" style="width:100%" /><br>
+</div>
+<div ng-show="apicall.name==='field/store'">
 key<input ng-model="key" id="key" style="width:100%" /><br>
+</div>
+<div ng-show="apicall.name==='field/store' || apicall.name==='field/push'">
 value<input ng-model="value" id="value" style="width:100%" /><br>
+</div>
 <a href="#" ng-click="req()">SEND ACTION</a>
 
 {{status}}

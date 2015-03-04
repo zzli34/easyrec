@@ -1711,7 +1711,7 @@ public class EasyRec {
                                  @QueryParam("tenantid") String tenantId,
                                  @QueryParam("callback") String callback,
                                  @QueryParam("apikey") String apiKey,
-                                 @QueryParam("forceRun") final boolean forceRun)
+                                 @QueryParam("forcerun") final boolean forceRun)
             throws EasyRecException {
 
         Monitor mon = MonitorFactory.start(JAMON_REST_START_PLUGINS);
