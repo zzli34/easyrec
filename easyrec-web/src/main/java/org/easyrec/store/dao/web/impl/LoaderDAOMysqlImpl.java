@@ -20,6 +20,7 @@ package org.easyrec.store.dao.web.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,6 +84,9 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     public LoaderDAOMysqlImpl(DataSource dataSource, SqlScriptService sqlScriptService, Resource dbCreationFile,
                               Resource dbMigrateFolder) {
         setDataSource(dataSource);
+        HikariDataSource bds =  (HikariDataSource) dataSource;
+        //bds.setInitializationFailFast(false);
+        logger.info("Installer trying to connect with user: " + bds.getUsername() + "/" + bds.getPassword());
         this.sqlScriptService = sqlScriptService;
         this.dbCreationFile = dbCreationFile;
         this.dbMigrateFolder = dbMigrateFolder;
@@ -91,11 +95,17 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
     @Override
     public void testConnection(String url, String username, String password) throws Exception {
 
-        HikariDataSource bds = (HikariDataSource) getDataSource();
-        bds.setJdbcUrl(url);
-        bds.setUsername(username);
-        bds.setPassword(password);
+        HikariConfig config = new HikariConfig();
+        config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setPoolName("easyrecPool");
+        config.addDataSourceProperty("url", url);
+        HikariDataSource ds = new HikariDataSource(config);
 
+        setDataSource(ds);
+        
         boolean tablesOk = false;
 
         DatabaseMetaDataCallback callback = new DatabaseMetaDataCallback() {
@@ -105,7 +115,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
             }
         };
 
-        tablesOk = (Boolean) JdbcUtils.extractDatabaseMetaData(bds, callback);
+        tablesOk = (Boolean) JdbcUtils.extractDatabaseMetaData(ds, callback);
     }
 
     @Override
@@ -530,7 +540,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
 
         DatabaseMetaDataCallback callback = new DatabaseMetaDataCallback() {
             public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
-                ResultSet rs = dbmd.getTables(null, null, "%", null);
+                ResultSet rs = dbmd.getTables(null, null, null, null);
                 float f = 0;
                 while (rs.next()) {
                     f++;

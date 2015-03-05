@@ -147,14 +147,14 @@ public class JSONProfileWebService {
     @Path("/storeitemwithprofile")
     @Consumes("application/x-www-form-urlencoded")
     public Response storeItemWithProfile(
-                                 @QueryParam("apikey") String apiKey,
-                                 @QueryParam("tenantid") String tenantID,
-                                 @QueryParam("itemid") String itemID,
-                                 @DefaultValue("ITEM") @QueryParam("itemtype") String itemType,
-                                 @QueryParam("itemdescription") String itemDescription,
-                                 @QueryParam("itemurl") String itemUrl,
-                                 @QueryParam("itemimageurl") String itemImageUrl,
-                                 @QueryParam("profile") String profile) {
+                                 @FormParam("apikey") String apiKey,
+                                 @FormParam("tenantid") String tenantID,
+                                 @FormParam("itemid") String itemID,
+                                 @DefaultValue("ITEM") @FormParam("itemtype") String itemType,
+                                 @FormParam("itemdescription") String itemDescription,
+                                 @FormParam("itemurl") String itemUrl,
+                                 @FormParam("itemimageurl") String itemImageUrl,
+                                 @FormParam("profile") String profile) {
 
         return storeItemWithProfileInternal(apiKey, tenantID, itemID, itemType, itemDescription, itemUrl, itemImageUrl, profile);
     }

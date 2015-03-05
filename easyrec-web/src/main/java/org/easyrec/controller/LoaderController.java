@@ -168,6 +168,7 @@ public class LoaderController extends AbstractController {
                     props.setProperty("db.easyrec.url", "jdbc:mysql://" + db_host + "/" + db_name + "?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull");
                     props.setProperty("db.easyrec.username", db_username);
                     props.setProperty("db.easyrec.password", db_password);
+                    props.setProperty("db.easyrec.failfast", "true");
 
                     try {
                         File f = new File(resource.getFile(), "easyrec.database.properties");

@@ -72,7 +72,7 @@ import org.easyrec.store.dao.plugin.LogEntryDAO;
 /**
  * @author szavrel
  */
-@Path("{type: (1.0(?:/json)?)}")
+@Path("{type: (1.[0-1](?:/json)?)}")
 @Produces({"application/xml", "application/json"})
 @Singleton
 public class EasyRec {
@@ -198,7 +198,7 @@ public class EasyRec {
         }
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_VIEW, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_VIEW);
@@ -213,7 +213,7 @@ public class EasyRec {
         ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_VIEW, userId, sessionId, null, item);
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
                         .build();
@@ -277,7 +277,7 @@ public class EasyRec {
         }
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_RATE, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_RATE);
@@ -298,7 +298,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -348,7 +348,7 @@ public class EasyRec {
         }
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_BUY, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_BUY);
@@ -369,7 +369,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -440,7 +440,7 @@ public class EasyRec {
         }
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_SENDACTION, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_SENDACTION);
@@ -461,7 +461,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -526,7 +526,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -610,7 +610,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -677,7 +677,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -740,7 +740,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -806,7 +806,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -875,7 +875,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -946,7 +946,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1015,7 +1015,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1085,7 +1085,7 @@ public class EasyRec {
 
         monitor.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(recommendation, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1150,7 +1150,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1215,7 +1215,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1292,7 +1292,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1349,7 +1349,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1394,7 +1394,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
                 return Response.ok(new JSONWithPadding(responseItemTypes, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
@@ -1441,7 +1441,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
                 return Response.ok(new JSONWithPadding(responseClusters, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
@@ -1537,7 +1537,7 @@ public class EasyRec {
 
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_IMPORT_RULE, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_IMPORT_RULE);
@@ -1551,7 +1551,7 @@ public class EasyRec {
                         Float.toString(assocValue));
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respRule, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
@@ -1593,7 +1593,7 @@ public class EasyRec {
         checkParameters(coreTenantId, itemId, itemDescription, itemUrl, messages);
 
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, WS.ACTION_IMPORT_ITEM, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, WS.ACTION_IMPORT_ITEM);
@@ -1608,7 +1608,7 @@ public class EasyRec {
 
         mon.stop();
 
-        if (WS.JSON_PATH.equals(type)) {
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
                 return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
                         .build();
@@ -1665,7 +1665,7 @@ public class EasyRec {
         checkParameters(coreTenantId, clusterId, errorMessages);
 
         if (errorMessages.size() > 0) {
-            if ((WS.JSON_PATH.equals(type)))
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(errorMessages, WS.ACTION_CREATE_CLUSTER, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(errorMessages, WS.ACTION_CREATE_CLUSTER);
@@ -1823,7 +1823,7 @@ public class EasyRec {
         List<Message> messages = new ArrayList<>();
         messages.add(message);
 
-        if ((WS.JSON_PATH.equals(type)))
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
             throw new EasyRecException(messages, operation, WS.RESPONSE_TYPE_JSON, callback);
         else
             throw new EasyRecException(messages, operation);
@@ -1959,7 +1959,7 @@ public class EasyRec {
 
         //handle error messages if existing
         if (messages.size() > 0) {
-            if ((WS.JSON_PATH.equals(responseType)))
+            if (responseType.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
                 throw new EasyRecException(messages, serviceName, WS.RESPONSE_TYPE_JSON, callback);
             else
                 throw new EasyRecException(messages, serviceName);
@@ -1970,7 +1970,7 @@ public class EasyRec {
         }
 
         //convert respondData to Respond object
-        if (WS.JSON_PATH.equals(responseType)) {
+        if (responseType.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
                 return Response.ok(new JSONWithPadding(respondData, callback),
                         WS.RESPONSE_TYPE_JSCRIPT).build();
