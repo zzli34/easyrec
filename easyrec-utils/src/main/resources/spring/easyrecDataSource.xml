@@ -43,6 +43,7 @@
         <property name="username" value="$easyrec-db{db.easyrec.username}"/>
         <property name="password" value="$easyrec-db{db.easyrec.password}"/>
         <property name="poolName" value="easyrecPool"/>
+        <property name="initializationFailFast" value="$easyrec-db{db.easyrec.failfast}"/>
         <property name="dataSourceProperties">
             <props>
                 <prop key="url">$easyrec-db{db.easyrec.url}</prop>

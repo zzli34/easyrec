@@ -17,6 +17,8 @@
  */
 package org.easyrec.model.core.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.common.base.Strings;
 
 import org.apache.commons.logging.Log;
@@ -103,6 +105,7 @@ public class Item implements Serializable {
      * @return
      */
     @XmlTransient
+    @JsonIgnore
     public String getId() {
         return id;
     }
@@ -112,6 +115,7 @@ public class Item implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Integer getTenantId() {
         return tenantId;
     }
@@ -185,6 +189,7 @@ public class Item implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public boolean isActive() {
         return active;
     }
@@ -216,6 +221,7 @@ public class Item implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public String getRelativeImageUrl() {
         return relativeImageUrl;
     }
@@ -247,6 +253,7 @@ public class Item implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public String getRelativeUrl() {
         return relativeUrl;
     }
@@ -274,6 +281,7 @@ public class Item implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public String getAbsoluteImageUrl() {
         return absoluteImageUrl;
     }
@@ -283,11 +291,13 @@ public class Item implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public String getAbsoluteUrl() {
         return absoluteUrl;
     }
 
     @XmlElement(nillable = true)
+    @JsonRawValue
     public String getProfileData() {
         return profileData;
     }
@@ -300,10 +310,13 @@ public class Item implements Serializable {
      * sets the url for backtracking an item.
      *
      * @param session
+     * @param userId
+     * @param tenant
      * @param itemFrom
      * @param itemTo
      * @param assocType
      * @param url
+     * @return 
      */
     public static String getTrackingUrl(Session session, Integer userId, RemoteTenant tenant, Integer itemFrom,
                                         Integer itemTo, Integer assocType, String url) {
