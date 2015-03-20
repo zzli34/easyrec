@@ -54,6 +54,7 @@ sessionid<input id="sessionid" style="width:100%"><br>
 itemtype<input id="itemtype" style="width:100%"><br>
 actiontime<input id="actiontime" style="width:100%"><br>
 ratingvalue<input id="ratingvalue" style="width:100%"><br>
+actionInfo<input id="actionInfo" style="width:100%"><br>
 <hr/>
 numberOfResults<input id="numberOfResults" style="width:100%"><br>
 requesteditemtype<input id="requesteditemtype" style="width:100%"><br>
@@ -97,6 +98,7 @@ assoctype<input id="assoctype" style="width:100%"><br>
         addValue("token");
         addValue("assoctype");
         addValue("withProfile");
+        addValue("actionInfo");
 
         document.getElementById("iframe").src = url;
         document.getElementById("debug").innerHTML = url;

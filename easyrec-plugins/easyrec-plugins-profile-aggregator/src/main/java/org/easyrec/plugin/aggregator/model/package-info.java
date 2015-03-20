@@ -1,4 +1,4 @@
-/**Copyright 2010 Research Studios Austria Forschungsgesellschaft mBH
+/**Copyright 2015 Research Studios Austria Forschungsgesellschaft mBH
  *
  * This file is part of easyrec.
  *
@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with easyrec.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.easyrec.plugin.arm;
+/**
+ * Consists of model objects used for the 'AggregatorService'.
+ *
+ * <p><b>Company:&nbsp;</b>
+ * SAT, Research Studios Austria</p>
+ *
+ * <p><b>Copyright:&nbsp;</b>
+ * (c) 2007</p>
+ *
+ * <p><b>last modified:</b><br/>
+ * $Author: szavrel $<br/>
+ * $Date: 2011-02-11 11:04:49 +0100 (Fr, 11 Feb 2011) $<br/>
+ * $Revision: 17656 $</p>
+ *
+ * @author Stephan Zavrel 
+ */
+package org.easyrec.plugin.aggregator.model;
 
-import java.util.ArrayList;
-import org.easyrec.model.core.ItemVO;
-
-import org.easyrec.plugin.arm.model.TupleVO;
-
-public interface TupleCounter {
-    public void count(ItemVO<Integer, Integer> item1, ItemVO<Integer, Integer> item2)
-            throws Exception;
-
-    public void init();
-
-    public ArrayList<TupleVO> getTuples(int support) throws Exception;
-
-    public int size() throws Exception;
-
-}

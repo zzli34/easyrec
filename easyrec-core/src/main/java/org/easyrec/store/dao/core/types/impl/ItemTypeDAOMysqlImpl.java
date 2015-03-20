@@ -88,6 +88,7 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return TABLE_CREATING_SQL_SCRIPT_NAME;
     }
 
+    @Override
     public String getTypeById(Integer tenantId, final Integer id) {
         return getTypeById(tenantId, id, null);
     }
@@ -137,10 +138,12 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getJdbcTemplate().query(sqlQuery.toString(), args, argTypes, rse);
     }
 
+    @Override
     public Integer getIdOfType(Integer tenantId, final String itemType) {
         return getIdOfType(tenantId, itemType, null);
     }
 
+    @Override
     public boolean isVisible(Integer tenantId, Integer id) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
         Preconditions.checkNotNull(id, "missing constraints: missing 'id'");
@@ -156,6 +159,7 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getJdbcTemplate().queryForObject(sqlQuery.toString(), args, argt, Boolean.class);
     }
 
+    @Override
     public boolean isVisible(Integer tenantId, String itemType) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
         Preconditions.checkNotNull(itemType, "missing constraints: missing 'itemType'");
@@ -172,6 +176,7 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
     }
 
     @LongCacheable
+    @Override
     public Integer getIdOfType(Integer tenantId, final String itemType, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
 
@@ -215,11 +220,13 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getJdbcTemplate().query(sqlQuery.toString(), args, argTypes, rse);
     }
 
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType) {
         return insertOrUpdate(tenantId, itemType, (Boolean) null);
     }
 
     @InvalidatesCache
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType, Boolean visible) {
         Integer newId = existsType(tenantId, itemType);
         if (newId == null) {
@@ -229,11 +236,13 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return newId;
     }
 
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType, Integer id) {
         return insertOrUpdate(tenantId, itemType, id, null);
     }
 
     @InvalidatesCache
+    @Override
     public int insertOrUpdate(Integer tenantId, String itemType, Integer id, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
         Preconditions.checkNotNull(itemType, "missing constraints: missing 'itemType'");
@@ -294,17 +303,19 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getJdbcTemplate().update(query.toString(), args, argTypes);
     }
 
+    @Override
     public HashMap<String, Integer> getMapping(Integer tenantId) {
         return getMapping(tenantId, null);
     }
 
     @LongCacheable
+    @Override
     public HashMap<String, Integer> getMapping(Integer tenantId, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
 
         ResultSetExtractor<HashMap<String, Integer>> rse = new ResultSetExtractor<HashMap<String, Integer>>() {
             public HashMap<String, Integer> extractData(ResultSet rs) {
-                HashMap<String, Integer> mapping = new HashMap<String, Integer>();
+                HashMap<String, Integer> mapping = new HashMap<>();
                 try {
                     while (rs.next()) {
                         mapping.put(DaoUtils.getStringIfPresent(rs, DEFAULT_NAME_COLUMN_NAME),
@@ -341,17 +352,19 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         return getJdbcTemplate().query(sqlQuery.toString(), args, argTypes, rse);
     }
 
+    @Override
     public Set<String> getTypes(Integer tenantId) {
         return getTypes(tenantId, null);
     }
 
     @LongCacheable
+    @Override
     public Set<String> getTypes(Integer tenantId, Boolean visible) {
         Preconditions.checkNotNull(tenantId, "missing constraints: missing 'tenantId'");
 
         ResultSetExtractor<Set<String>> rse = new ResultSetExtractor<Set<String>>() {
             public Set<String> extractData(ResultSet rs) {
-                Set<String> types = new TreeSet<String>();
+                Set<String> types = new TreeSet<>();
                 try {
                     while (rs.next()) {
                         types.add(DaoUtils.getStringIfPresent(rs, DEFAULT_NAME_COLUMN_NAME));

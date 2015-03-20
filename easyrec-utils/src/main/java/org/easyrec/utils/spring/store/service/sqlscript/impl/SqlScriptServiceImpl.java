@@ -62,6 +62,7 @@ public class SqlScriptServiceImpl extends JdbcDaoSupport implements SqlScriptSer
         setDataSource(dataSource);
     }
 
+    @Override
     public List<String> parseSqlScript(String filename) {
         try {
             return parseSqlScript(resourceLoader.getResource(filename).getInputStream());
@@ -72,11 +73,13 @@ public class SqlScriptServiceImpl extends JdbcDaoSupport implements SqlScriptSer
         }
     }
 
+    @Override
     public List<String> parseSqlScript(InputStream stream) {
         SqlFileParser parser = new SqlFileParser(stream);
         return parser.parse();
     }
 
+    @Override
     public void executeSqlScript(String filename) throws RuntimeException {
         //open the file
 
@@ -95,6 +98,7 @@ public class SqlScriptServiceImpl extends JdbcDaoSupport implements SqlScriptSer
         }
     }
 
+    @Override
     public void executeSqlScript(InputStream stream) {
         //create a reader for the file
         SqlFileParser parser = new SqlFileParser(stream);
@@ -110,6 +114,7 @@ public class SqlScriptServiceImpl extends JdbcDaoSupport implements SqlScriptSer
         }
     }
 
+    @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }

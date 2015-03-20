@@ -137,6 +137,10 @@
                                     <groupId>org.easyrec</groupId>
                                     <artifactId>easyrec-plugins-profile-duke</artifactId>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.easyrec</groupId>
+                                    <artifactId>easyrec-plugins-aggregator</artifactId>
+                                </artifactItem>
                             </artifactItems>
                             <!--<excludeTransitive>true</excludeTransitive>-->
                         </configuration>
@@ -230,6 +234,12 @@
         <dependency>
             <groupId>org.easyrec</groupId>
             <artifactId>easyrec-plugins-profile-duke</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easyrec</groupId>
+            <artifactId>easyrec-plugins-aggregator</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

@@ -20,9 +20,9 @@ package org.easyrec.service.core.impl;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.internal.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.internal.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import java.util.EnumSet;
 import java.util.List;
@@ -92,7 +92,25 @@ public class JSONProfileServiceImpl implements InitializingBean {
     public String getProfile(Integer tenantId, String itemId, String itemTypeId) {
         return profileDAO.getProfile(tenantId, idMappingDAO.lookupOnly(itemId), typeMappingService.getIdOfItemType(tenantId, itemTypeId));
     }
+    
+    public Object getProfileParsed(Integer tenantId, String itemId, String itemTypeId) {
+        String profile = getProfile(tenantId, itemId, itemTypeId);
+        if (profile != null) {
+            return Configuration.defaultConfiguration().jsonProvider().parse(profile);
+        } else {
+            return profile;
+        }
+    }
 
+    public Object getProfileParsed(ItemVO<Integer, Integer> item) {
+        String profile = getProfile(item);
+        if (profile != null) {
+            return Configuration.defaultConfiguration().jsonProvider().parse(profile);
+        } else {
+            return profile;
+        }
+    }
+    
     public boolean storeProfile(Integer tenantId, String itemId, String itemType, String profile) {
         return profileDAO.storeProfile(tenantId, idMappingDAO.lookup(itemId), typeMappingService.getIdOfItemType(tenantId, itemType), profile) != 0;
     }
@@ -101,21 +119,39 @@ public class JSONProfileServiceImpl implements InitializingBean {
         return profileDAO.deleteProfile(tenantId, idMappingDAO.lookupOnly(itemId), typeMappingService.getIdOfItemType(tenantId, itemType));
     }
 
-    public String loadProfileFieldJSON(Integer tenantId, String itemId, String itemType, String dimensionPath) throws Exception {
+    public Object loadProfileField(Integer tenantId, String itemId, String itemType, String dimensionPath) throws Exception {
         String profile = getProfile(tenantId,itemId,itemType);
         JsonPath jp = JsonPath.compile(dimensionPath);
         Object result = jp.read(profile);
+        return result;
+    }
+    
+    public String loadProfileFieldJSON(Integer tenantId, String itemId, String itemType, String dimensionPath) throws Exception {
+        Object result = loadProfileField(tenantId, itemId, itemType, dimensionPath);
         String res = Configuration.defaultConfiguration().jsonProvider().toJson(result);
         return res;
     }
 
-   
     public boolean storeProfileField(Integer tenantId, String itemId, String itemTypeId, String Path, String key, String value) throws Exception {
         
         String profile = getProfile(tenantId,itemId,itemTypeId);
-        JsonPath jp = JsonPath.compile(Path);
-        Object updated = jp.put(Configuration.defaultConfiguration().jsonProvider().parse(profile), key, Configuration.defaultConfiguration().jsonProvider().parse(value), Configuration.defaultConfiguration());
-        return storeProfile(tenantId, itemId, itemTypeId, Configuration.defaultConfiguration().jsonProvider().toJson(updated));    
+        if (profile != null) {
+            JsonPath jp = JsonPath.compile(Path);
+            Object updated = jp.put(Configuration.defaultConfiguration().jsonProvider().parse(profile), key, Configuration.defaultConfiguration().jsonProvider().parse(value), Configuration.defaultConfiguration());
+            return storeProfile(tenantId, itemId, itemTypeId, Configuration.defaultConfiguration().jsonProvider().toJson(updated));
+        }
+        return false;
+    }
+    
+    public boolean storeProfileFieldParsed(Integer tenantId, String itemId, String itemTypeId, String Path, String key, Object value) throws Exception {
+        
+        String profile = getProfile(tenantId,itemId,itemTypeId);
+        if (profile != null) {
+            JsonPath jp = JsonPath.compile(Path);
+            Object updated = jp.put(Configuration.defaultConfiguration().jsonProvider().parse(profile), key, value, Configuration.defaultConfiguration());
+            return storeProfile(tenantId, itemId, itemTypeId, Configuration.defaultConfiguration().jsonProvider().toJson(updated));
+        }
+        return false;
     }
     
     public boolean pushToArrayField(Integer tenantId, String itemId, String itemTypeId, String path, String value) throws Exception {

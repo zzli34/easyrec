@@ -25,6 +25,7 @@ public class GeneratorTask implements Runnable {
     }
 
     @SuppressWarnings({"unchecked"})
+    @Override
     public void run() {
         try {
             this.generator.setConfiguration(config);

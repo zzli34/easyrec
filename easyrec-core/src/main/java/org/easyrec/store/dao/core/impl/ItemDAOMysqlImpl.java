@@ -94,9 +94,6 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
     private ItemDetailsRowMapper itemDetailsRowMapper = new ItemDetailsRowMapper();
 
     private Cache cache;
-    
-   // private HashMap<String, Item> itemCache = new HashMap<String, Item>();
-
 
     static {
 
@@ -254,14 +251,34 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
         }
     }
 
+    @Override
+    public Item get(Integer tenantId, String itemId, String itemType) {
+        String cacheId = makeCacheKey(tenantId, itemType, itemId);
+
+        Element e = cache.get(cacheId);
+
+        if (e != null) {
+            return (Item) e.getValue();
+        } else {
+            Object[] args = {tenantId, itemId, itemType};
+
+            try {
+                Item i = getJdbcTemplate().query(PS_GET_ITEM.newPreparedStatementCreator(args), itemRowMapper).get(0);
+                return i;
+            } catch (Exception ex) {
+                if (logger.isDebugEnabled())
+                    logger.debug("failed to get item or failed to insert it into the cache", ex);
+                return null;
+            }
+        }
+    }
+    
     //@ShortCacheable
     @Override
     public Item get(RemoteTenant remoteTenant, String itemId, String itemType) {
         String cacheId = makeCacheKey(remoteTenant.getId(), itemType, itemId);
 
         Element e = cache.get(cacheId);
-
-//        Item i = itemCache.get(cacheId);
 
         if (e != null) {
             return (Item) e.getValue();
@@ -273,7 +290,6 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
                 i.setUrl(Text.matchMax(remoteTenant.getUrl(), i.getUrl()));
                 i.setImageUrl(Text.matchMax(remoteTenant.getUrl(), i.getImageUrl()));
                 cache.put(new Element(cacheId, i));
-//                itemCache.put(cacheId, i);
 
                 return i;
             } catch (Exception ex) {

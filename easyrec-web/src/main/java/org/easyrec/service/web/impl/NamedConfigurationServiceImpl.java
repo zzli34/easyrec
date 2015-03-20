@@ -106,22 +106,22 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
 
         shopRecommenderService.viewItem(remoteTenant, "A", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("initA", ip), "");
+                new Session("initA", ip), "{\"genre\":\"Electronic\",\"label\":\"EMI\", \"price\":5}");
         shopRecommenderService.viewItem(remoteTenant, "B", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("initB", ip), "");
+                new Session("initB", ip), "{\"genre\":\"Electronic\",\"label\":\"EMI\", \"price\":5}");
         shopRecommenderService.viewItem(remoteTenant, "A", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("initA", ip), "");
+                new Session("initA", ip), "{\"genre\":\"Electronic\",\"label\":\"Universal\", \"price\":7}");
         shopRecommenderService.viewItem(remoteTenant, "B", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("initB", ip), "");
+                new Session("initB", ip), "{\"genre\":\"Electronic\",\"label\":\"Universal\", \"price\":7}");
         shopRecommenderService.viewItem(remoteTenant, "A", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("initA", ip), "");
+                new Session("initA", ip), "{\"genre\":\"Pop\",\"label\":\"Ariola\", \"price\":3}");
         shopRecommenderService.viewItem(remoteTenant, "B", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("initB", ip), "");
+                new Session("initB", ip), "{\"genre\":\"Pop\",\"label\":\"Ariola\", \"price\":3}");
 
         setupDefaultConfiguration(tenantId);
     }

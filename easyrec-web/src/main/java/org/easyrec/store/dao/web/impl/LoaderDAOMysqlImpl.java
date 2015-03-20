@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.web.Operator;
 import org.easyrec.store.dao.web.LoaderDAO;
 import org.easyrec.store.dao.web.OperatorDAO;
-import org.easyrec.utils.spring.store.service.sqlscript.SqlScriptService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,6 +52,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 import javax.sql.DataSource;
+import org.easyrec.utils.spring.store.service.sqlscript.impl.SqlScriptServiceImpl;
 
 /**
  * @author szavrel
@@ -62,7 +62,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
 
     private final Log logger = LogFactory.getLog(LoaderDAOMysqlImpl.class);
 
-    private SqlScriptService sqlScriptService;
+    private SqlScriptServiceImpl sqlScriptService;
     private Properties properties;
     private Resource overrideFolder;
     private Resource dbCreationFile;
@@ -81,7 +81,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
                 .append("    (?,PASSWORD(?),?,?,?,?,?,?,?,?,?,?,?) ").toString();
     }
 
-    public LoaderDAOMysqlImpl(DataSource dataSource, SqlScriptService sqlScriptService, Resource dbCreationFile,
+    public LoaderDAOMysqlImpl(DataSource dataSource, SqlScriptServiceImpl sqlScriptService, Resource dbCreationFile,
                               Resource dbMigrateFolder) {
         setDataSource(dataSource);
         HikariDataSource bds =  (HikariDataSource) dataSource;
@@ -105,6 +105,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
         HikariDataSource ds = new HikariDataSource(config);
 
         setDataSource(ds);
+        sqlScriptService.setDataSource(ds);
         
         boolean tablesOk = false;
 

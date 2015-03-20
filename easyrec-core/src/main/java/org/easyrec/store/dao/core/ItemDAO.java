@@ -120,6 +120,8 @@ public interface ItemDAO extends BasicDAO {
      */
     public Item get(Integer id);
 
+    public Item get(Integer tenantId, String itemId, String itemType);
+    
     /**
      * This function returns true,
      * if an item for the given key exists.

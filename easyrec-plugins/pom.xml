@@ -38,6 +38,7 @@
         <module>easyrec-plugins-waiting</module>
 <!--        <module>easyrec-plugins-mahout-boolean</module>
         <module>easyrec-plugins-mahout-slopeone</module>-->
+        <module>easyrec-plugins-profile-aggregator</module>
   </modules>
     <name>easyrec - Plugins</name>
     <description>This module is a parent module itself, and bundles several plugins for easyrec.</description>

@@ -34,19 +34,23 @@ public abstract class GeneratorPluginSupport<C extends GeneratorConfiguration, S
      * @return
      */
     @Deprecated
+    @Override
     public String getSourceType() {
         return getId().toString();
     }
 
+    @Override
     public C getConfiguration() {
         return configuration;
     }
 
+    @Override
     public Class<C> getConfigurationClass() {
         return this.configClass;
     }
 
 
+    @Override
     public C newConfiguration() {
         try {
             return this.configClass.newInstance();
@@ -56,6 +60,7 @@ public abstract class GeneratorPluginSupport<C extends GeneratorConfiguration, S
         }
     }
 
+    @Override
     public void setConfiguration(C configuration) {
         this.configuration = configuration;
     }

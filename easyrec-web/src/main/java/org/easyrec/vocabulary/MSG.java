@@ -246,7 +246,7 @@ public class MSG {
     public static final Message MISSING_ACTION_VALUE = new ErrorMessage(
             915, "The given actionType requires a valid actionValue!");
     public static final Message INVALID_JSON = new ErrorMessage(
-            916, "The given actioninfo is not a valid JSON!");
+            916, "The given actioninfo/profile is not a valid JSON!");
     public static final Message ACTION_INFO_TOO_LONG = new ErrorMessage(
             917, "The given actioninfo is too long (max. 500 chars)!");
     public static final Message PLUGIN_START_IN_FRONTEND_MODE = new ErrorMessage(

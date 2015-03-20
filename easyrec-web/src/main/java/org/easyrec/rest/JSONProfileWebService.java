@@ -499,7 +499,7 @@ public class JSONProfileWebService {
 
 
     private Response storeProfileInternal(String apiKey, String tenantID, String itemID, String itemType, String profile) {
-                Monitor mon = MonitorFactory.start(JAMON_PROFILE_STORE);
+        Monitor mon = MonitorFactory.start(JAMON_PROFILE_STORE);
 
         List<Message> errorMessages = new ArrayList<>();
         List<Message> responseObject = new ArrayList<>();
