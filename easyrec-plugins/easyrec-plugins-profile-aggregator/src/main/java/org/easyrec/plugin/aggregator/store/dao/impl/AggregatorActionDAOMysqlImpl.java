@@ -94,6 +94,11 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
         query.append(") FROM ").append(BaseActionDAO.DEFAULT_TABLE_NAME);
         query.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=")
                 .append(configuration.getTenantId());
+        if (configuration.getActionType() != null) {
+        query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?");
+                args.add(configuration.getActionType());
+                argt.add(Types.INTEGER);
+        }
         if (configuration.getLastRun() != null) {
         query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
                 args.add(configuration.getLastRun());
@@ -120,6 +125,11 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
         query.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=")
                 .append(configuration.getTenantId()).append(" AND ").append(BaseActionDAO.DEFAULT_USER_COLUMN_NAME)
                 .append("=").append(userId);
+        if (configuration.getActionType() != null) {
+        query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?");
+                args.add(configuration.getActionType());
+                argt.add(Types.INTEGER);
+        }
         if (configuration.getLastRun() != null) {
             query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
                 args.add(configuration.getLastRun());

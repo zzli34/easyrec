@@ -119,8 +119,8 @@ public class AggregatorGenerator extends GeneratorPluginSupport<AggregatorConfig
 
     @Override
     public String getPluginDescription() {
-        return "This plugin provides a simple algorithm for shopping basket analysis. "
-                + "It generates rules of the type 'items that where frequently viewed/bought/good rated together.'";
+        return "This plugin allows the aggragation of item and action metadata into simple user/item profiles. "
+                + "It does not generate rules, just enriches the metadata in profiles. The generated data can then be used for matching techniques";
     }
 
 

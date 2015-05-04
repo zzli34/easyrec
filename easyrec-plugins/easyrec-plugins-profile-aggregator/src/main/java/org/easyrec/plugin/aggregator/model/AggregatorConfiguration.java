@@ -33,7 +33,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AggregatorConfiguration extends GeneratorConfiguration {
 
-    public static String DEFAULT_ACTIONTYPE = "VIEW";
+    public static String DEFAULT_ACTIONTYPE = "";
 
     public AggregatorConfiguration() {
         this(DEFAULT_ACTIONTYPE);
@@ -49,24 +49,28 @@ public class AggregatorConfiguration extends GeneratorConfiguration {
     @XmlElement(name = "itemType")
     private List<String> itemTypes = Lists.newArrayList();
 
-//    @PluginParameter(
-//        displayName = "action type",
-//        shortDescription = "The type of action to be considered in rule generation.",
-//        description = "Defines the type of actions to be considered when rules are generated.",
-//        optional = false)
+    @PluginParameter(
+        displayName = "action type",
+        shortDescription = "The type of action to be considered for profile aggregation.",
+        description = "Defines the type of actions to be considered for aggeregation of a user profile.",
+        optional = false)
     private String actionType = "VIEW";
-    
+       
     @PluginParameter(
         displayName = "action info fields",
-        shortDescription = "JSON fields in the action info to be analysed.",
-        description = "TODO",
+        shortDescription = "JSON fields in the actionInfo to be analysed.",
+        description = "The JSON fields in the actionInfo to be analysed. Use the following format: targetField,sourceJSONPath,(itemType);itemType is optional:"
+                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE; tries to read the field "
+                + "$.genre from the actionInfo where the item type is MOVIE and writes the result to the field genres in the result profile.",
         optional = true)
     private String actionInfoFields;
     
     @PluginParameter(
         displayName = "item profile fields",
         shortDescription = "JSON fields in the item profile to be analysed.",
-        description = "TODO",
+        description = "The JSON fields in the item profile to be analysed. Use the following format: targetField,sourceJSONPath,(itemType);itemType is optional:"
+                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE; tries to read the field "
+                + "$.genre from the item profile where the item type is MOVIE and writes the result to the field genres in the result profile.",
         optional = true)
     private String itemProfileFields;
     
@@ -74,8 +78,8 @@ public class AggregatorConfiguration extends GeneratorConfiguration {
 
     @PluginParameter(
         displayName = "do delta update",
-        shortDescription = "If true, only the sctions since the last plugin run are considered.",
-        description = "TODO",
+        shortDescription = "If true, only the actions since the last plugin run are considered.",
+        description = "If true, only the actions since the last plugin run are considered and the profiles updated accordingly.",
         optional = false)
     private Boolean doDeltaUpdate = true;
 

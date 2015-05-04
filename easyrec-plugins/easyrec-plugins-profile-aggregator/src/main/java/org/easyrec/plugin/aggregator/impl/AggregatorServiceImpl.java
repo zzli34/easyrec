@@ -100,7 +100,6 @@ public class AggregatorServiceImpl implements AggregatorService {
         
         //if user profile not exists, create it
         String userIdStr = idMappingDAO.lookup(userId);
-        boolean newProfile = false;
         Item userItem = itemDAO.get(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER);
         LinkedHashMap<String, Object> userProfile = null;
         if (userItem == null) {
@@ -126,21 +125,22 @@ public class AggregatorServiceImpl implements AggregatorService {
                     if (profile != null) {
                     //get fields stuff here
                         for (FieldConfiguration fc : configurationInt.getProfileFields()) {
-                            addFieldToUserProfile(fc, profile, userProfile);
+                            if ((fc.getItemType()==null) || (action.getItem().getType().equals(fc.getItemType()))) {
+                                addFieldToUserProfile(fc, profile, userProfile);
+                            }
                         }
                     }
                 }
                     
             }
             
-        if(!configurationInt.getActionFields().isEmpty()) { //in case actionInfo content is interesting
-            String actionInfo = action.getActionInfo();
-            Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
-            for (FieldConfiguration fc : configurationInt.getActionFields()) {
-                addFieldToUserProfile(fc, actionProfile, userProfile);
+            if(!configurationInt.getActionFields().isEmpty()) { //in case actionInfo content is interesting
+                String actionInfo = action.getActionInfo();
+                Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
+                for (FieldConfiguration fc : configurationInt.getActionFields()) {
+                    addFieldToUserProfile(fc, actionProfile, userProfile);
+                }
             }
-            //get fields stuff here
-        }
         }
 
         try {
@@ -153,27 +153,37 @@ public class AggregatorServiceImpl implements AggregatorService {
 
     private void addFieldToUserProfile(FieldConfiguration fc, Object sourceProfile, LinkedHashMap<String,Object> userProfile) {
         try {
+            ArrayList<String> fields = new ArrayList<>();
             Object field = fc.getJsonPath().read(sourceProfile);
-            if (!(field instanceof String)) {
-                field = field.toString();
+            if (!(field instanceof List)) {
+                if (!(field instanceof String)) {
+                    field = field.toString();
+                }
+                fields.add((String)field);
+            } else {
+                for (Object field1 : (List)field) {
+                    if (!(field1 instanceof String)) {
+                    field1 = field1.toString();
+                }
+                fields.add((String)field1);
+                }
             }
-        //                        if (field instanceof ArrayList) {
-        //                            
-        //                        } else {
-        //                            
-        //                        }
+
             LinkedHashMap<String, Object> outputField = (LinkedHashMap<String, Object>) userProfile.get(fc.getOutputField());
             if (outputField == null) {
                 outputField = new LinkedHashMap<>();
                 userProfile.put(fc.getOutputField(), outputField);
             }
-            Integer counter = (Integer) outputField.get(field);
-            if (counter == null) { 
-                counter = 1;
-            } else {
-                counter++;
+            for (String field1 : fields) {
+                Integer counter = (Integer) outputField.get(field1);
+                if (counter == null) { 
+                    counter = 1;
+                } else {
+                    counter++;
+                }
+                outputField.put(field1, (Object) counter);  
             }
-            outputField.put((String) field, (Object) counter);
+
         } catch (PathNotFoundException pnfe) {
             logger.debug("Path not found in profile " + pnfe.getMessage());
         }
@@ -193,12 +203,15 @@ public class AggregatorServiceImpl implements AggregatorService {
 
         ret = new AggregatorConfigurationInt(configuration.getTenantId(), null ,new ArrayList<Integer>(), null, configuration.getMaxRulesPerItem(), configuration.getDoDeltaUpdate(), configuration.getLastRun());
 
-//        Integer actionId = typeMappingService.getIdOfActionType(configuration.getTenantId(), configuration.getActionType());
-//        if (actionId == null) {
-//            String sb = "Action '" + configuration.getActionType() + "' not valid for Tenant '" + configuration.getTenantId() + "'! Action will not be considered in Rulemining!";
-//            logger.info(sb);
-//        }
-        ret.setActionType(null);
+        Integer actionId;
+        try {
+            actionId = typeMappingService.getIdOfActionType(configuration.getTenantId(), configuration.getActionType());
+        } catch (IllegalArgumentException iae) {
+            actionId = null;
+            String sb = "Action '" + configuration.getActionType() + "' not valid for Tenant '" + configuration.getTenantId() + "'! Action will not be considered for Aggragation!";
+            logger.debug(sb);
+        }
+        ret.setActionType(actionId);
         Integer typeUser;
         try {
             typeUser = itemTypeDAO.getIdOfType(configuration.getTenantId(), AggregatorGenerator.ITEMTYPE_USER);
@@ -226,7 +239,7 @@ public class AggregatorServiceImpl implements AggregatorService {
 
         Integer assocTypeId = typeMappingService.getIdOfAssocType(configuration.getTenantId(), configuration.getAssociationType());
         if (assocTypeId == null) {
-            String sb = "AssocType '" + configuration.getAssociationType() + "' not valid for Tenant '" + configuration.getTenantId() + "'! Skipping analysis!";
+            String sb = "AssocType '" + configuration.getAssociationType() + "' not valid for tenant '" + configuration.getTenantId() + "'! Skipping analysis!";
             logger.info(sb);
             throw new Exception(sb);
         }
@@ -238,6 +251,16 @@ public class AggregatorServiceImpl implements AggregatorService {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);
                 FieldConfiguration fc = new FieldConfiguration(fieldInfo[0], jp);
+                if (fieldInfo.length == 3) {
+                    Integer it = null;
+                    try {
+                        it = itemTypeDAO.getIdOfType(configuration.getTenantId(), fieldInfo[2]);
+                    } catch (IllegalArgumentException iae) {
+                        logger.debug("ItemType " + fieldInfo[2] + " not found for tenant " + configuration.getTenantId() + "! Will aggregate all itemTypes.");
+                        it = null;
+                    }
+                    fc.setItemType(it);   
+                }
                 ret.getActionFields().add(fc);
             }
         }
@@ -248,6 +271,16 @@ public class AggregatorServiceImpl implements AggregatorService {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);
                 FieldConfiguration fc = new FieldConfiguration(fieldInfo[0], jp);
+                if (fieldInfo.length == 3) {
+                    Integer it = null;
+                    try {
+                        it = itemTypeDAO.getIdOfType(configuration.getTenantId(), fieldInfo[2]);
+                    } catch (IllegalArgumentException iae) {
+                        logger.debug("ItemType " + fieldInfo[2] + " not found for tenant " + configuration.getTenantId() + "! Will aggregate all itemTypes.");
+                        it = null;
+                    }
+                    fc.setItemType(it);   
+                }
                 ret.getProfileFields().add(fc);
             }
         }
