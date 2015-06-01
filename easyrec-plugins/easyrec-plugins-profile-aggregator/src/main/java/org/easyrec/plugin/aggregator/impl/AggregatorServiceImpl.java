@@ -28,6 +28,9 @@ import org.easyrec.service.core.TenantService;
 import org.easyrec.service.domain.TypeMappingService;
 
 import java.util.*;
+import java.util.Map.Entry;
+import org.apache.commons.collections.KeyValue;
+import org.apache.commons.collections.keyvalue.DefaultKeyValue;
 import org.easyrec.model.core.ActionVO;
 import org.easyrec.model.core.ItemVO;
 import org.easyrec.model.core.web.Item;
@@ -52,10 +55,6 @@ import org.easyrec.store.dao.core.types.ItemTypeDAO;
  * <p><b>Copyright:&nbsp;</b>
  * (c) 2007</p>
  * <p/>
- * <p><b>last modified:</b><br/>
- * $Author: pmarschik $<br/>
- * $Date: 2011-02-11 18:35:47 +0100 (Fr, 11 Feb 2011) $<br/>
- * $Revision: 17681 $</p>
  *
  * @author Stephan Zavrel
  */
@@ -98,22 +97,24 @@ public class AggregatorServiceImpl implements AggregatorService {
     @Override
     public void aggregateUserProfile(Integer userId, List<ActionVO<Integer,Integer>> actions, AggregatorConfigurationInt configurationInt) {
         
-        //if user profile not exists, create it
+        //if user profile does not exist, create it
         String userIdStr = idMappingDAO.lookup(userId);
         Item userItem = itemDAO.get(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER);
         LinkedHashMap<String, Object> userProfile = null;
         if (userItem == null) {
             userItem = itemDAO.add(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, userIdStr, "", "");
             jsonProfileService.storeProfile(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "{}");
-        } else {
-            try {
-                // if doDeltaUpdate load existing user profile
-                if (configurationInt.getLastRun() != null) userProfile = (LinkedHashMap<String,Object>) jsonProfileService.loadProfileField(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, "$.upa"); //TODO: parse json;    
-            } catch (Exception ex) {
-                logger.info("Could not load aggregator profile! Creating new one!",ex);
-            }
-        }
-        if (userProfile == null) userProfile = new LinkedHashMap<>();
+        } 
+//        else {
+//            try {
+//                // if doDeltaUpdate load existing user profile
+//                if (configurationInt.getLastRun() != null) userProfile = (LinkedHashMap<String,Object>) jsonProfileService.loadProfileField(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, "$.upa"); //TODO: parse json;    
+//            } catch (Exception ex) {
+//                logger.info("Could not load aggregator profile! Creating new one!",ex);
+//            }
+//        }
+        //if (userProfile == null) userProfile = new LinkedHashMap<>();
+        HashMap<String, HashMap<String, Integer>> tmpProfile = new HashMap<>();
 
         ItemVO<Integer,Integer> prevItem = null;
         for (ActionVO<Integer, Integer> action : actions) {
@@ -122,11 +123,11 @@ public class AggregatorServiceImpl implements AggregatorService {
                 if (!action.getItem().equals(prevItem)) { // in case the item is new -> load profile and get the fields
                     prevItem = action.getItem();
                     Object profile = jsonProfileService.getProfileParsed(action.getItem());
-                    if (profile != null) {
+                    if (profile != null) { //TODO: Move out of prevItem if-clause; now multiple actions on item only count as 1!!!
                     //get fields stuff here
-                        for (FieldConfiguration fc : configurationInt.getProfileFields()) {
+                        for (FieldConfiguration fc : configurationInt.getProfileFields().values()) {
                             if ((fc.getItemType()==null) || (action.getItem().getType().equals(fc.getItemType()))) {
-                                addFieldToUserProfile(fc, profile, userProfile);
+                                addFieldToTmpProfile(fc, profile, tmpProfile);
                             }
                         }
                     }
@@ -137,12 +138,14 @@ public class AggregatorServiceImpl implements AggregatorService {
             if(!configurationInt.getActionFields().isEmpty()) { //in case actionInfo content is interesting
                 String actionInfo = action.getActionInfo();
                 Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
-                for (FieldConfiguration fc : configurationInt.getActionFields()) {
-                    addFieldToUserProfile(fc, actionProfile, userProfile);
+                for (FieldConfiguration fc : configurationInt.getActionFields().values()) {
+                    addFieldToTmpProfile(fc, actionProfile, tmpProfile);
                 }
             }
         }
 
+        userProfile = convertAndOrderProfile(tmpProfile, configurationInt);
+            
         try {
             jsonProfileService.storeProfileFieldParsed(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "$", "upa", userProfile);
         } catch (Exception ex) {
@@ -151,7 +154,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         
     }
 
-    private void addFieldToUserProfile(FieldConfiguration fc, Object sourceProfile, LinkedHashMap<String,Object> userProfile) {
+    private void addFieldToTmpProfile(FieldConfiguration fc, Object sourceProfile, HashMap<String,HashMap<String,Integer>> userProfile) {
         try {
             ArrayList<String> fields = new ArrayList<>();
             Object field = fc.getJsonPath().read(sourceProfile);
@@ -162,34 +165,72 @@ public class AggregatorServiceImpl implements AggregatorService {
                 fields.add((String)field);
             } else {
                 for (Object field1 : (List)field) {
-                    if (!(field1 instanceof String)) {
+                    if (!(field1 instanceof String) && (field1 != null)) {
                     field1 = field1.toString();
                 }
                 fields.add((String)field1);
                 }
             }
 
-            LinkedHashMap<String, Object> outputField = (LinkedHashMap<String, Object>) userProfile.get(fc.getOutputField());
+            HashMap<String, Integer> outputField = userProfile.get(fc.getOutputField());
             if (outputField == null) {
-                outputField = new LinkedHashMap<>();
+                outputField = new HashMap<>();
                 userProfile.put(fc.getOutputField(), outputField);
             }
             for (String field1 : fields) {
-                Integer counter = (Integer) outputField.get(field1);
+                Integer counter = outputField.get(field1);
                 if (counter == null) { 
                     counter = 1;
                 } else {
                     counter++;
                 }
-                outputField.put(field1, (Object) counter);  
+                outputField.put(field1, counter);  
             }
-
+            
         } catch (PathNotFoundException pnfe) {
             logger.debug("Path not found in profile " + pnfe.getMessage());
         }
         
     }
     
+    private LinkedHashMap<String, Object> convertAndOrderProfile(HashMap<String, HashMap<String, Integer>> tmpProfile, AggregatorConfigurationInt configuration) {
+        
+        LinkedHashMap<String, Object> profile = new LinkedHashMap<>();
+        for (String field : tmpProfile.keySet()) {
+            Integer threshold = null;
+            if (configuration.getActionFields().get(field) != null) {
+                threshold = configuration.getActionFields().get(field).getThreshold();
+            } else if (configuration.getProfileFields().get(field) != null) {
+                threshold = configuration.getProfileFields().get(field).getThreshold();
+            }
+            if (threshold == null) threshold = Integer.MAX_VALUE;
+            profile.put(field, convertAndOrderField(tmpProfile.get(field), threshold));
+        }
+           
+        return profile;
+    }
+    
+    private List<KeyValue> convertAndOrderField(HashMap<String, Integer> tmpField, Integer threshold) {
+
+        List<Entry<String, Integer>> list = new ArrayList<>(tmpField.entrySet());
+        Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+            @Override
+            public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue()); //Note: exchanged o2 and o1 for descending order!
+            }
+        });
+
+        List<KeyValue> result = new ArrayList<>();
+        int i = 0;
+        for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext(); i++) {
+            if (i >= threshold) break;
+            Entry<String, Integer> entry = it.next();
+            result.add(new DefaultKeyValue(entry.getKey(), entry.getValue()));
+        }
+        return result;
+        
+    }
+        
     @Override
     public Integer getNumberOfActions(AggregatorConfigurationInt intConfiguration, Date lastRun) {
         return aggregatorActionDAO.getNumberOfActions(intConfiguration.getTenantId(), intConfiguration.getActionType(), lastRun);
@@ -251,7 +292,7 @@ public class AggregatorServiceImpl implements AggregatorService {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);
                 FieldConfiguration fc = new FieldConfiguration(fieldInfo[0], jp);
-                if (fieldInfo.length == 3) {
+                if (fieldInfo.length > 2) {
                     Integer it = null;
                     try {
                         it = itemTypeDAO.getIdOfType(configuration.getTenantId(), fieldInfo[2]);
@@ -261,7 +302,18 @@ public class AggregatorServiceImpl implements AggregatorService {
                     }
                     fc.setItemType(it);   
                 }
-                ret.getActionFields().add(fc);
+                if (fieldInfo.length > 3) { //percentage Threshold not feasible because of deltaUpdate
+                    Integer thres = null;
+                    try {
+                        thres = Integer.parseInt(fieldInfo[3]);
+                    } catch (NumberFormatException iae) {
+                        logger.debug("Threshold is not an integer: " + fieldInfo[3] + " !" + configuration.getTenantId() + "! Ignoring threshold.");
+                        thres = null;
+                    }
+                    fc.setThreshold(thres);
+                    ret.setHasActionFieldThreshold(true);
+                }
+                ret.getActionFields().put(fc.getOutputField(),fc);
             }
         }
         
@@ -271,7 +323,7 @@ public class AggregatorServiceImpl implements AggregatorService {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);
                 FieldConfiguration fc = new FieldConfiguration(fieldInfo[0], jp);
-                if (fieldInfo.length == 3) {
+                if (fieldInfo.length > 2) {
                     Integer it = null;
                     try {
                         it = itemTypeDAO.getIdOfType(configuration.getTenantId(), fieldInfo[2]);
@@ -281,7 +333,18 @@ public class AggregatorServiceImpl implements AggregatorService {
                     }
                     fc.setItemType(it);   
                 }
-                ret.getProfileFields().add(fc);
+                if (fieldInfo.length > 3) {
+                    Integer thres = null;
+                    try {
+                        thres = Integer.parseInt(fieldInfo[3]);
+                    } catch (NumberFormatException iae) {
+                        logger.debug("Threshold is not an integer: " + fieldInfo[3] + " !" + configuration.getTenantId() + "! Ignoring threshold.");
+                        thres = null;
+                    }
+                    fc.setThreshold(thres);
+                    ret.setHasProfileFieldThreshold(true);
+                }
+                ret.getProfileFields().put(fc.getOutputField(), fc);
             }
         }
 
@@ -293,6 +356,16 @@ public class AggregatorServiceImpl implements AggregatorService {
 
     }
 
+    private void pruneProfile(LinkedHashMap<String, Object> profileField, Integer threshold) {
+        for (Iterator<Entry<String, Object>> it = profileField.entrySet().iterator(); it.hasNext();) {
+            Entry<String,Object> entry = it.next();
+            Integer val = (Integer) entry.getValue();
+            if (val < threshold) {
+                it.remove(); // using iterator to avoid ConcurrentModificationExceptions!!
+            }
+        }
+    }
+    
     @Override
     public void removeOldRules(AggregatorConfigurationInt configuration,
                                AggregatorStatistics stats) {
@@ -302,18 +375,6 @@ public class AggregatorServiceImpl implements AggregatorService {
 //                stats.getStartDate());
     }
 
-//    private String extractKey(String jsonPath) {
-//        
-//        String[] tokens = jsonPath.split(".");
-//        String tmp = tokens[tokens.length-1]; 
-//        if ("*".equals(tmp)) {
-//            tmp = tokens[tokens.length-2];
-//        }
-//        if (tmp.endsWith("]")) {
-//            tmp = tmp.substring(0, tmp.lastIndexOf("[")-1);
-//        }
-//        return tmp;
-//    }
     
     // getters and setters
     public TypeMappingService getTypeMappingService() {

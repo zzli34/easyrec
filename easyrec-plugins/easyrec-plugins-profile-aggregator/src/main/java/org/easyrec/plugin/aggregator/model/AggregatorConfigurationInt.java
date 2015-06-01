@@ -20,9 +20,8 @@
 package org.easyrec.plugin.aggregator.model;
 
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,8 +38,10 @@ public class AggregatorConfigurationInt {
     private Integer maxRulesPerItem;
     private Boolean doDeltaUpdate;
     private Date lastRun;
-    private List<FieldConfiguration> actionFields = new ArrayList<>();
-    private List<FieldConfiguration> profileFields = new ArrayList<>();
+    private boolean hasActionFieldThreshold;
+    private boolean hasProfileFieldThreshold;
+    private HashMap<String,FieldConfiguration> actionFields = new HashMap<>();
+    private HashMap<String,FieldConfiguration> profileFields = new HashMap<>();
     private Configuration configuration;
 
     public AggregatorConfigurationInt() {
@@ -55,7 +56,9 @@ public class AggregatorConfigurationInt {
         this.maxRulesPerItem = maxRulesPerItem;
         this.doDeltaUpdate = doDeltaUpdate;
         this.lastRun = lastRun;
-        this.configuration = Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
+        this.configuration = Configuration.defaultConfiguration();//.addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
+        this.hasActionFieldThreshold = false;
+        this.hasProfileFieldThreshold = false;
     }
 
     public Integer getActionType() {
@@ -114,19 +117,19 @@ public class AggregatorConfigurationInt {
         this.lastRun = lastRun;
     }
 
-    public List<FieldConfiguration> getActionFields() {
+    public HashMap<String, FieldConfiguration> getActionFields() {
         return actionFields;
     }
 
-    public void setActionFields(List<FieldConfiguration> actionFields) {
+    public void setActionFields(HashMap<String, FieldConfiguration> actionFields) {
         this.actionFields = actionFields;
     }
 
-    public List<FieldConfiguration> getProfileFields() {
+    public HashMap<String, FieldConfiguration> getProfileFields() {
         return profileFields;
     }
 
-    public void setProfileFields(List<FieldConfiguration> profileFields) {
+    public void setProfileFields(HashMap<String, FieldConfiguration> profileFields) {
         this.profileFields = profileFields;
     }
 
@@ -141,5 +144,22 @@ public class AggregatorConfigurationInt {
     public void setItemTypeUser(Integer itemTypeUser) {
         this.itemTypeUser = itemTypeUser;
     }
+
+    public boolean isHasActionFieldThreshold() {
+        return hasActionFieldThreshold;
+    }
+
+    public void setHasActionFieldThreshold(boolean hasActionFieldThreshold) {
+        this.hasActionFieldThreshold = hasActionFieldThreshold;
+    }
+
+    public boolean isHasProfileFieldThreshold() {
+        return hasProfileFieldThreshold;
+    }
+
+    public void setHasProfileFieldThreshold(boolean hasProfileFieldThreshold) {
+        this.hasProfileFieldThreshold = hasProfileFieldThreshold;
+    }
+    
     
 }

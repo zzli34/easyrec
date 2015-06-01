@@ -16,6 +16,7 @@ public class FieldConfiguration {
     private String outputField;
     private JsonPath jsonPath;
     private Integer itemType;
+    private Integer threshold;
 
     public FieldConfiguration(String outputField, JsonPath jsonPath) {
         this.outputField = outputField;
@@ -44,6 +45,14 @@ public class FieldConfiguration {
 
     public void setItemType(Integer itemType) {
         this.itemType = itemType;
+    }
+
+    public Integer getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Integer threshold) {
+        this.threshold = threshold;
     }
     
 }

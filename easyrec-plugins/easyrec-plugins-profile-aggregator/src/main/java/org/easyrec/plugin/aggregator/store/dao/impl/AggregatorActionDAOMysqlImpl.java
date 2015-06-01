@@ -115,7 +115,7 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
     @Override
     public List<ActionVO<Integer,Integer>> getActionsForUsers(Integer userId, AggregatorConfigurationInt configuration) {
         
-        //TODO: sort by itemID then check on itemID,typeID change look in profile -> this way only 1 query is needed 
+        //sort by itemID, then check on itemID,typeID change look in profile -> this way only 1 query is needed 
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
         
