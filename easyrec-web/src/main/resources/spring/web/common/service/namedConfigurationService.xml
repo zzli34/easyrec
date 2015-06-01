@@ -31,5 +31,6 @@
         <constructor-arg index="6" ref="remoteTenantService"/>
         <constructor-arg index="7" ref="shopRecommenderService"/>
         <constructor-arg index="8" ref="generatorContainer"/>
+        <constructor-arg index="9" ref="JSONProfileService"/>
     </bean>
 </beans>

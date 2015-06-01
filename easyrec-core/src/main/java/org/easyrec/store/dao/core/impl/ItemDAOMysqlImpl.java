@@ -222,7 +222,7 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
             
             cache.remove(makeCacheKey(tenantId, itemType, itemId));
 //            itemCache.remove(makeCacheKey(tenantId, itemType, itemId));
-            return null;
+            return null; //TODO: Check why????
             /*return new Item(keyHolder.getKey().toString(),
            tenantId,
            itemId,

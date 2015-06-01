@@ -72,24 +72,23 @@ public class ProfileRenderer implements Tag {
         super();
     }
 
+    @Override
     public int doStartTag() throws JspTagException {
         return SKIP_BODY;
     }
 
+    @Override
     public int doEndTag() throws JspTagException {
         try {
             String tagId = "profile" + new Long(System.currentTimeMillis()).toString();
             StringBuilder fullHTML = new StringBuilder();
-            fullHTML = new StringBuilder();
             fullHTML.append("<div class=\"profile\">");
-            fullHTML.append("   <div class=\"viewSource\">");
-            fullHTML.append("   <a href=\"javascript:void(0)\" onclick=\"toggleProfileViewMode('" + tagId + "');\"><img src=\"images/viewSource.png\" alt=\"View Profile Source\"/></a> ");
-            fullHTML.append("   </div>");
-            fullHTML.append("   <div style=\"display:none;\" id=\"profileXML-" + tagId + "\">");
-            fullHTML.append(getSourceViewHTML(profile));
-            fullHTML.append("   </div>");
+            String profileContent = getListViewHTML(profile);
+            if (profileContent == null) {
+                profileContent = getSourceViewHTML(profile); 
+            }
             fullHTML.append("   <div id=\"profileHTML-" + tagId + "\">");
-            fullHTML.append(getListViewHTML(profile));
+            fullHTML.append(profileContent);
             fullHTML.append("   </div>");
             fullHTML.append("</div>");
 
@@ -119,9 +118,6 @@ public class ProfileRenderer implements Tag {
      *
      * @param profileXML the XML Profile you want to convert
      * @return the HTML representation of the given XML object
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
      */
     public String getListViewHTML(String profileXML) {
 
@@ -134,7 +130,8 @@ public class ProfileRenderer implements Tag {
         if (childNodes != null)
             convertNodeListToHTML(childNodes, profileHTML);
         else
-            return "<p>The profile contains no valid XML.<br />Click \"View Profile Source\" to display the content of the profile.</p>";
+            return null;
+            //return "<p>The profile contains no valid XML.<br />Click \"View Profile Source\" to display the content of the profile.</p>";
         return profileHTML.toString();
     }
 
@@ -202,7 +199,7 @@ public class ProfileRenderer implements Tag {
             doc.getDocumentElement().normalize();
             return doc.getDocumentElement().getChildNodes();
         } catch (SAXException e) {
-            logger.warn("An error occurred!", e);
+            logger.debug("An error occurred!", e);
             return null;
         }
     }
@@ -217,8 +214,7 @@ public class ProfileRenderer implements Tag {
             throws SAXException {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = null;
-            db = dbf.newDocumentBuilder();
+            DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource();
             is.setCharacterStream(new StringReader(profileXML));
             return db.parse(is);
@@ -260,19 +256,23 @@ public class ProfileRenderer implements Tag {
     }
 
 
+    @Override
     public void release() {
     }
 
 
+    @Override
     public void setPageContext(final PageContext pageContext) {
         this.pageContext = pageContext;
     }
 
 
+    @Override
     public void setParent(final Tag parent) {
         this.parent = parent;
     }
 
+    @Override
     public Tag getParent() {
         return parent;
     }

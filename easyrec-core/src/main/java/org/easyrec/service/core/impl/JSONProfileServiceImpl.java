@@ -160,7 +160,7 @@ public class JSONProfileServiceImpl implements InitializingBean {
         JsonPath jp = JsonPath.compile(path);
         Object array = jp.read(profile, Configuration.defaultConfiguration());
         if (!Configuration.defaultConfiguration().jsonProvider().isArray(array)) throw new IllegalArgumentException("The given field is not an array!"); 
-        Object updated = jp.add(Configuration.defaultConfiguration().jsonProvider().parse(profile), value, Configuration.defaultConfiguration());
+        Object updated = jp.add(Configuration.defaultConfiguration().jsonProvider().parse(profile), Configuration.defaultConfiguration().jsonProvider().parse(value), Configuration.defaultConfiguration());
         return storeProfile(tenantId, itemId, itemTypeId, Configuration.defaultConfiguration().jsonProvider().toJson(updated));    
     }
 

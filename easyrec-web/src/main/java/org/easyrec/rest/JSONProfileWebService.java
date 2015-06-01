@@ -827,7 +827,7 @@ public class JSONProfileWebService {
      * @return returns <code>true</code> if all parameters are positively checked and
      *         <code>false</code> otherwise
      */
-    private boolean checkParameterValue(String value, List<Message> messages) {
+    private boolean checkParameterValue(Object value, List<Message> messages) {
         if (value == null) {
             messages.add(MSG.PROFILE_NO_VALUE_PROVIDED);
             return false;

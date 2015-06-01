@@ -63,6 +63,7 @@ public interface ItemDAO extends BasicDAO {
     public static final String DEFAULT_ACTIVE_COLUMN_NAME = "ACTIVE";
     public static final String DEFAULT_VALUE_COLUMN_NAME = "VALUE";
     public static final String DEFAULT_CREATION_DATE_COLUMN_NAME = "CREATIONDATE";
+    public static final String DEFAULT_PROFILEDATA_COLUMN_NAME = "PROFILEDATA";
 
     public static final String DEFAULT_TABLE_NAME = "item";
     public static final String DEFAULT_TABLE_KEY = "id";

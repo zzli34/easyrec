@@ -176,6 +176,7 @@ public class ItemAssocDAOMysqlImpl extends
         return rowsAffected;
     }
 
+    @Override
     public int insertOrUpdateItemAssocs(
             List<ItemAssocVO<Integer,Integer>> itemAssocs) {
         if (itemAssocs == null) throw new IllegalArgumentException("Missing 'itemAssocs'");

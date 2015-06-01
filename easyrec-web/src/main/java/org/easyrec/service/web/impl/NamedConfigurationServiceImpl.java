@@ -44,6 +44,7 @@ import org.easyrec.store.dao.web.RemoteTenantDAO;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
+import org.easyrec.service.core.impl.JSONProfileServiceImpl;
 
 /**
  * @author patrick
@@ -61,13 +62,15 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
     private RemoteTenantService remoteTenantService;
     private ShopRecommenderService shopRecommenderService;
     private GeneratorContainer generatorContainer;
+    private JSONProfileServiceImpl jsonProfileService;
 
     public NamedConfigurationServiceImpl(TypeMappingService typeMappingService, SourceTypeDAO sourceTypeDAO,
                                          PluginRegistry pluginRegistry, NamedConfigurationDAO namedConfigurationDAO,
                                          EasyRecSettings easyrecSettings, RemoteTenantDAO remoteTenantDAO,
                                          RemoteTenantService remoteTenantService,
                                          ShopRecommenderService shopRecommenderService,
-                                         GeneratorContainer generatorContainer) {
+                                         GeneratorContainer generatorContainer,
+                                         JSONProfileServiceImpl jsonProfileService) {
         this.typeMappingService = typeMappingService;
         this.sourceTypeDAO = sourceTypeDAO;
         this.pluginRegistry = pluginRegistry;
@@ -77,6 +80,7 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
         this.remoteTenantService = remoteTenantService;
         this.shopRecommenderService = shopRecommenderService;
         this.generatorContainer = generatorContainer;
+        this.jsonProfileService = jsonProfileService;
     }
 
     private void makeARMConfiguration(Generator<GeneratorConfiguration, GeneratorStatistics> generator, int tenantId,
@@ -106,22 +110,26 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
 
         shopRecommenderService.viewItem(remoteTenant, "A", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("initA", ip), "{\"genre\":\"Electronic\",\"label\":\"EMI\", \"price\":5}");
+                new Session("initA", ip), "{\"price\":5}");
         shopRecommenderService.viewItem(remoteTenant, "B", "42", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Fatboy Slim - The Rockafeller Skank", "/item/fatboyslim", "/img/covers/fatboyslim.jpg", new Date(),
-                new Session("initB", ip), "{\"genre\":\"Electronic\",\"label\":\"EMI\", \"price\":5}");
+                new Session("initB", ip), "{\"price\":5}");
         shopRecommenderService.viewItem(remoteTenant, "A", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("initA", ip), "{\"genre\":\"Electronic\",\"label\":\"Universal\", \"price\":7}");
+                new Session("initA", ip), "{\"price\":7}");
         shopRecommenderService.viewItem(remoteTenant, "B", "43", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Beastie Boys - Intergalactic", "/item/beastieboyz", "/img/covers/beastieboys.jpg", new Date(),
-                new Session("initB", ip), "{\"genre\":\"Electronic\",\"label\":\"Universal\", \"price\":7}");
+                new Session("initB", ip), "{\"price\":7}");
         shopRecommenderService.viewItem(remoteTenant, "A", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("initA", ip), "{\"genre\":\"Pop\",\"label\":\"Ariola\", \"price\":3}");
+                new Session("initA", ip), "{\"price\":3}");
         shopRecommenderService.viewItem(remoteTenant, "B", "44", Item.DEFAULT_STRING_ITEM_TYPE,
                 "Gorillaz - Clint Eastwood", "/item/gorillaz", "/img/covers/gorillaz.jpg", new Date(),
-                new Session("initB", ip), "{\"genre\":\"Pop\",\"label\":\"Ariola\", \"price\":3}");
+                new Session("initB", ip), "{\"price\":3}");
+        
+        jsonProfileService.storeProfile(tenantId, "42", Item.DEFAULT_STRING_ITEM_TYPE, "{\"genres\":[\"Electronic\",\"Pop\"],\"label\":\"EMI\"}");
+        jsonProfileService.storeProfile(tenantId, "43", Item.DEFAULT_STRING_ITEM_TYPE, "{\"genres\":[\"Electronic\"],\"label\":\"EMI\"}");
+        jsonProfileService.storeProfile(tenantId, "44", Item.DEFAULT_STRING_ITEM_TYPE, "{\"genres\":[\"Pop\",\"Hiphop\"],\"label\":\"Ariola\"}");
 
         setupDefaultConfiguration(tenantId);
     }

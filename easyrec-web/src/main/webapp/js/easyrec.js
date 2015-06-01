@@ -311,9 +311,3 @@ function showPluginDescription(operatorId, tenantId, pluginId, version, divName)
         }
     });
 }
-
-function toggleProfileViewMode(profileId) {
-    $("#profileXML-" + profileId).toggle();
-    $("#profileHTML-" + profileId).toggle();
-    prettyPrint();
-}

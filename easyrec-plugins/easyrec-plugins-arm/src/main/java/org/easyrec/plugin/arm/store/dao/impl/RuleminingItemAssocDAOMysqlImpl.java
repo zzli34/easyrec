@@ -41,6 +41,7 @@ public class RuleminingItemAssocDAOMysqlImpl extends ItemAssocDAOMysqlImpl imple
         super(dataSource, sqlScriptService);
     }
 
+    @Override
     public int insertOrUpdateItemAssoc(ItemAssocVO<Integer,Integer> itemAssoc) {
         // validate input parameters
         if (itemAssoc == null) {

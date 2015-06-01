@@ -240,7 +240,7 @@ public class TenantServiceImpl implements TenantService {
             tenantConfig.load(config.getBinaryStream());
             //tenantConfig.load(new StringReader(config));
         } catch (Exception e) {
-            logger.warn("An error occurred!", e);
+            logger.debug("Could not load tenantConfig!", e);
             return null;
         }
         return tenantConfig;

@@ -373,6 +373,7 @@ public class ProfileDAOMysqlImpl extends AbstractBaseProfileDAOMysqlImpl<Integer
         return getJdbcTemplate().query(sqlString.toString(), args.toArray(), Ints.toArray(argt), itemRowMapper);
     }
 
+    @Override
     public List<ItemVO<Integer, Integer>> getItemsByItemType(Integer tenantId, Integer itemType, int count) {
 
         if (itemType == null) {
