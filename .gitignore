@@ -170,3 +170,14 @@
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/dictionaries/install.xml
+/easyrec-plugins/easyrec-plugins-slopeone/nbactions.xml
+/easyrec-core/nbactions.xml
+/easyrec-plugin-api/nbactions.xml
+/easyrec-plugin-container/nbactions.xml
+/easyrec-plugins/easyrec-plugins-arm/nbactions.xml
+/easyrec-plugins/easyrec-plugins-profile-solr/nbactions.xml
+/easyrec-plugins/easyrec-plugins-profile-aggregator/nbactions.xml
+/easyrec-testutils/nbactions.xml
+/easyrec-utils/nbactions.xml
+/easyrec-web/nbactions.xml
+/easyrec-web/nb-configuration.xml

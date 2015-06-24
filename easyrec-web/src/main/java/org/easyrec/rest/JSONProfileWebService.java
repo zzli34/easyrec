@@ -481,7 +481,7 @@ public class JSONProfileWebService {
                 errorMessages.add(MSG.OPERATION_FAILED.append(
                         String.format(" itemType %s not found for tenant %s", itemType, tenantID)));
                 } else
-                    errorMessages.add(MSG.PROFILE_FIELD_NOT_DELETED.append(e.getMessage()));
+                    errorMessages.add(MSG.PROFILE_FIELD_NOT_LOADED.append(e.getMessage()));
             }
             else if (e instanceof ItemNotFoundException) {
                 errorMessages.add(MSG.ITEM_NOT_EXISTS.append(

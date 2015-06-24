@@ -34,6 +34,7 @@
         <!--<module>easyrec-plugins-itemitem</module>-->
         <module>easyrec-plugins-pearson</module>
         <module>easyrec-plugins-profile-duke</module>
+        <module>easyrec-plugins-profile-solr</module>
         <module>easyrec-plugins-sample</module>
         <module>easyrec-plugins-waiting</module>
 <!--        <module>easyrec-plugins-mahout-boolean</module>
@@ -50,6 +51,7 @@
             <groupId>org.easyrec</groupId>
             <artifactId>easyrec-plugin-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- TEST SCOPE -->
         <dependency>

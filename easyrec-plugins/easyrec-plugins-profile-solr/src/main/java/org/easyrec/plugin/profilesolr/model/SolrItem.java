@@ -16,40 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with easyrec.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.easyrec.plugin.aggregator.model;
+package org.easyrec.plugin.profilesolr.model;
 
-import com.jayway.jsonpath.JsonPath;
+import org.apache.solr.client.solrj.beans.Field;
 
 /**
  *
  * @author Stephan
  */
-public class FieldConfiguration {
+public class SolrItem {
     
-    private String outputField;
-    private JsonPath jsonPath;
+    @Field("tenant_i")
+    private Integer tenant;
+    
+    @Field("type_i")
     private Integer itemType;
-    private Integer threshold;
-
-    public FieldConfiguration(String outputField, JsonPath jsonPath) {
-        this.outputField = outputField;
-        this.jsonPath = jsonPath;
-    }
     
-    public String getOutputField() {
-        return outputField;
+    @Field("id_i")
+    private Integer id;
+    
+    @Field
+    private Float score;
+
+    public SolrItem() {
     }
 
-    public void setOutputField(String outputField) {
-        this.outputField = outputField;
+    public Integer getTenant() {
+        return tenant;
     }
 
-    public JsonPath getJsonPath() {
-        return jsonPath;
-    }
-
-    public void setJsonPath(JsonPath jsonPath) {
-        this.jsonPath = jsonPath;
+    public void setTenant(Integer tenant) {
+        this.tenant = tenant;
     }
 
     public Integer getItemType() {
@@ -60,12 +57,20 @@ public class FieldConfiguration {
         this.itemType = itemType;
     }
 
-    public Integer getThreshold() {
-        return threshold;
+    public Integer getId() {
+        return id;
     }
 
-    public void setThreshold(Integer threshold) {
-        this.threshold = threshold;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
     
 }

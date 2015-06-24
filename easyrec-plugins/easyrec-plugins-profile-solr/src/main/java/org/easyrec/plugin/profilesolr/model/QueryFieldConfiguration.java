@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with easyrec.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.easyrec.plugin.aggregator.model;
+package org.easyrec.plugin.profilesolr.model;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -24,24 +24,14 @@ import com.jayway.jsonpath.JsonPath;
  *
  * @author Stephan
  */
-public class FieldConfiguration {
+public class QueryFieldConfiguration {
     
-    private String outputField;
     private JsonPath jsonPath;
-    private Integer itemType;
-    private Integer threshold;
+    private Integer boost;
 
-    public FieldConfiguration(String outputField, JsonPath jsonPath) {
-        this.outputField = outputField;
+    public QueryFieldConfiguration(JsonPath jsonPath, Integer boost) {
         this.jsonPath = jsonPath;
-    }
-    
-    public String getOutputField() {
-        return outputField;
-    }
-
-    public void setOutputField(String outputField) {
-        this.outputField = outputField;
+        this.boost = boost;
     }
 
     public JsonPath getJsonPath() {
@@ -52,20 +42,13 @@ public class FieldConfiguration {
         this.jsonPath = jsonPath;
     }
 
-    public Integer getItemType() {
-        return itemType;
+    public Integer getBoost() {
+        return boost;
     }
 
-    public void setItemType(Integer itemType) {
-        this.itemType = itemType;
+    public void setBoost(Integer boost) {
+        this.boost = boost;
     }
-
-    public Integer getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(Integer threshold) {
-        this.threshold = threshold;
-    }
+    
     
 }
