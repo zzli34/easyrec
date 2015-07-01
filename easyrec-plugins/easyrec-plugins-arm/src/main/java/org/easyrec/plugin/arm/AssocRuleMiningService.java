@@ -52,12 +52,10 @@ public interface AssocRuleMiningService {
     public static final String PARAM_CONFIDENCE_PRCT = "confidencePrcnt";
     public static final String PARAM_METRIC = "metricType";
     public static final String PARAM_EXCL_SINGLE_ITEM_BASKETS = "excludeSingleItemBaskets";
-    // Added PH: dynamic L1
     public static final String PARAM_MAX_SIZE_L1 = "maxSizeL1";
     public static final String GENERATOR_ID = "ARM";
     public static final String GENERATOR_VERSION = "0.95";
 
-    public void archive(Integer tenantId, Integer days) throws Exception;
 
     public Integer getNumberOfBaskets(ARMConfigurationInt configuration);
 
@@ -65,7 +63,7 @@ public interface AssocRuleMiningService {
 
     public Integer getNumberOfActions(ARMConfigurationInt configuration, Date lastRun);
 
-    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration);
+    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration, int offset, int batchSize);
 
     public List<TupleVO> defineL2(TObjectIntHashMap<ItemVO<Integer, Integer>> L1, TupleCounter tupleCounter, ARMConfigurationInt configuration, ARMStatistics stats);
 
@@ -82,7 +80,7 @@ public interface AssocRuleMiningService {
                                                                                                 Double minConfidence);
     public void removeOldRules(ARMConfigurationInt configuration, ARMStatistics stats);
 
-    public ARMConfigurationInt mapTypesToConfiguration(ARMConfiguration configuration) throws Exception;
+    public ARMConfigurationInt mapTypesToConfiguration(ARMConfiguration configuration, Date start) throws Exception;
 
     /**
      * Return true if ruleminer is running.

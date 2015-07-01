@@ -102,7 +102,22 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
     }
 
     @Override
-    public Integer getNumberOfBaskets(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
+    public Integer getCutoffId(Integer tenantId, Integer actionType, Date cutoff) {
+        
+            Object[] args ={tenantId, actionType, cutoff};
+            int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.DATE};
+
+            StringBuilder cutoffQuery = new StringBuilder("SELECT MIN(id) FROM ");
+            cutoffQuery.append(BaseActionDAO.DEFAULT_TABLE_NAME);
+            cutoffQuery.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=?");
+            cutoffQuery.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TYPE_COLUMN_NAME).append("=?");
+            cutoffQuery.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">?");
+
+            return getJdbcTemplate().queryForObject(cutoffQuery.toString(), args, argTypes, Integer.class);
+    }
+    
+    @Override
+    public Integer getNumberOfBaskets(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
 
@@ -134,6 +149,12 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
                 }
             }
         }
+        
+        if (cutoff != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ID_COLUMN_NAME).append(">?");
+            args.add(cutoff);
+            argt.add(Types.INTEGER);
+        }
         return getJdbcTemplate().queryForObject(query.toString(), args.toArray(), Ints.toArray(argt),
                 Integer.class);
     }
@@ -144,7 +165,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
      * @return int
      */
     @Override
-    public Integer getNumberOfBasketsESIB(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
+    public Integer getNumberOfBasketsESIB(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
 
@@ -175,13 +196,19 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
                 }
             }
         }
+        
+        if (cutoff != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ID_COLUMN_NAME).append(">?");
+            args.add(cutoff);
+            argt.add(Types.INTEGER);
+        }
         query.append(" GROUP BY userId HAVING cnt>1) b");
 
         return getJdbcTemplate().queryForObject(query.toString(), args.toArray(), Ints.toArray(argt), Integer.class);
     }
 
     @Override
-    public int getNumberOfProducts(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes) {
+    public int getNumberOfProducts(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
 
@@ -212,12 +239,18 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
                 }
             }
         }
+        
+        if (cutoff != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ID_COLUMN_NAME).append(">?");
+            args.add(cutoff);
+            argt.add(Types.INTEGER);
+        }
         return getJdbcTemplate().queryForObject(query.toString(), args.toArray(), Ints.toArray(argt), Integer.class);
     }
 
 
     @Override
-    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration) {
+    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration, int offset, int batchSize) {
         ActionResultSetExtractor rse = new ActionResultSetExtractor();
 
         List<Object> args = Lists.newArrayList();
@@ -259,15 +292,16 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         args.add(configuration.getSupport());
         argt.add(Types.INTEGER);
 
-        query.append(" LIMIT ?");
+        query.append(" LIMIT ?,?");
 
-        args.add(configuration.getMaxSizeL1());
+        args.add(offset);
+        argt.add(Types.INTEGER);
+
+        args.add(Math.min(offset+batchSize, configuration.getMaxSizeL1()));
         argt.add(Types.INTEGER);
         
         TObjectIntHashMap<ItemVO<Integer, Integer>> ret = getJdbcTemplate()
                 .query(query.toString(),  args.toArray(), Ints.toArray(argt), rse);
-
-        //if (ret.size() == configuration.getMaxSizeL1()) configuration.setSupport(rse.getMinSupp());
 
         return ret;
     }
@@ -284,8 +318,9 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
         List<Integer> argt = Lists.newArrayList();
 
         RowMapper<ItemVO<Integer, Integer>> itemVOMapper = new RowMapper<ItemVO<Integer, Integer>>() {
+            @Override
             public ItemVO<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new ItemVO<Integer, Integer>(rs.getInt(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME),
+                return new ItemVO<>(rs.getInt(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME),
                         rs.getInt(BaseActionDAO.DEFAULT_ITEM_COLUMN_NAME),
                         rs.getInt(BaseActionDAO.DEFAULT_ITEM_TYPE_COLUMN_NAME));
             }
@@ -360,7 +395,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
                 List<ItemVO<Integer, Integer>> items = getJdbcTemplate()
                         .query(query2.toString(), itemVOMapper);
 
-                ArrayList<ItemVO<Integer, Integer>> v = new ArrayList<ItemVO<Integer, Integer>>();
+                ArrayList<ItemVO<Integer, Integer>> v = new ArrayList<>();
 
                 for (ItemVO<Integer, Integer> itemVO : items) {
                     if (!L1.containsKey(itemVO)) {
@@ -404,7 +439,7 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
     }
 
     @Override
-    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun) {
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun, Integer cutoff) {
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
         
@@ -421,6 +456,12 @@ public class RuleminingActionDAOMysqlImpl extends JdbcDaoSupport implements Rule
             query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
             args.add(lastRun);
             argt.add(Types.TIMESTAMP);
+        }
+        
+        if (cutoff != null) {
+            query.append(" AND ").append(BaseActionDAO.DEFAULT_ID_COLUMN_NAME).append(">?");
+            args.add(cutoff);
+            argt.add(Types.INTEGER);
         }
 
         return getJdbcTemplate().queryForInt(query.toString(), args.toArray(), Ints.toArray(argt));

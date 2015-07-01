@@ -70,7 +70,7 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
         if (lastRun == null) return true; // never run before so execute anyway+
         ARMConfigurationInt intConfiguration;
         try {
-            intConfiguration = assocRuleMiningService.mapTypesToConfiguration(getConfiguration());
+            intConfiguration = assocRuleMiningService.mapTypesToConfiguration(getConfiguration(), null);
         } catch (Exception ex) {
             logger.info("error in mapping configuration during evaluation of runcondition! Execution cancelled!");
             intConfiguration = null;
@@ -92,8 +92,9 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
         stats.setStartDate(start);
 
         try {
-            intConfiguration = assocRuleMiningService.mapTypesToConfiguration(configuration);
+            intConfiguration = assocRuleMiningService.mapTypesToConfiguration(configuration, start);
             logger.info("TenantId:" + intConfiguration.getTenantId());
+            stats.setCutoffDate(intConfiguration.getCutoffDate());
         } catch (Exception e) {
             stats.setException(e.getMessage());
             intConfiguration = null;
@@ -101,7 +102,7 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
         if (intConfiguration != null) {
             tupleCounter.init();
             if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
-            control.updateProgress(1, 6, "Calculating # of baskets.");
+            control.updateProgress(1, 6, "Calculating # of baskets.");        
             Integer nrBaskets = assocRuleMiningService.getNumberOfBaskets(intConfiguration);
             stats.setNrBaskets(nrBaskets);
 
@@ -114,54 +115,70 @@ public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMSt
             intConfiguration.setSupport(Math.max(support, configuration.getSupportMinAbs()));
 
             if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
-            control.updateProgress(3, 6, "Defining set L1.");
-            TObjectIntHashMap<ItemVO<Integer, Integer>> L1 = assocRuleMiningService.defineL1(intConfiguration);
-            stats.setSizeL1(L1.size());
-            stats.setLastSupport(intConfiguration.getSupport());
+            
+//            TObjectIntHashMap<ItemVO<Integer, Integer>> L1 = assocRuleMiningService.defineL1(intConfiguration);
+            int offset = configuration.getL1KeepItemCount();
+            int iter = 0;
+            while (offset < configuration.getMaxSizeL1()) {
+                iter++;
+                tupleCounter.init();
+                control.updateProgress(3, 6, "Defining set L1(" + iter + ").");
+                TObjectIntHashMap<ItemVO<Integer, Integer>> L1 = assocRuleMiningService.defineL1(intConfiguration, 0, configuration.getL1KeepItemCount());
+                L1.putAll(assocRuleMiningService.defineL1(intConfiguration, offset, configuration.getItemBatchSize()));
+                stats.setSizeL1(stats.getSizeL1() + L1.size());
+                stats.setLastSupport(intConfiguration.getSupport());
 
-            if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
-            control.updateProgress(4, 6, "Defining set L2.");
-            List<TupleVO> L2 = assocRuleMiningService.defineL2(L1, tupleCounter, intConfiguration, stats);
-            stats.setSizeL2(L2.size());
+                if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
+                control.updateProgress(4, 6, "Defining set L2(" + iter + ").");
+                List<TupleVO> L2 = assocRuleMiningService.defineL2(L1, tupleCounter, intConfiguration, stats);
+                stats.setSizeL2(stats.getSizeL2() + L2.size());
 
-            if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
-            control.updateProgress(5, 6, "Generating rules.");
+                if (control.isAbortRequested()) throw new Exception("ARM was manually aborted!");
+                control.updateProgress(5, 6, "Generating rules(" + iter + ").");
 
-            if (configuration.getMaxRulesPerItem() == null) {
-                List<ItemAssocVO<Integer,Integer>> rules = assocRuleMiningService.createRules(L2, L1,
-                        intConfiguration, stats, configuration.getConfidencePrcnt());
-                stats.setSizeRules(rules.size());
-                for (ItemAssocVO<Integer,Integer> itemAssocVO : rules) {
-                    //                try {
-                    //                    ruleminingItemAssocDAO.insertItemAssoc(itemAssocVO);
-                    //                } catch (DataIntegrityViolationException e) {
-                    //                    ruleminingItemAssocDAO.updateItemAssocUsingUniqueKey(itemAssocVO);
-                    //                }
-                    ruleminingItemAssocDAO.insertOrUpdateItemAssoc(itemAssocVO);
-                }
-            } else {
-                int count = 0;
-                Collection<SortedSet<ItemAssocVO<Integer,Integer>>> rules = assocRuleMiningService.createBestRules(
-                        L2, L1, intConfiguration, stats, configuration.getConfidencePrcnt());
-                for (SortedSet<ItemAssocVO<Integer,Integer>> sortedSet : rules) {
-                    count += sortedSet.size();
-                    for (ItemAssocVO<Integer,Integer> itemAssocVO : sortedSet) {
-                        //                   try {
-                        //                        ruleminingItemAssocDAO.insertItemAssoc(itemAssocVO);
-                        //                    } catch (DataIntegrityViolationException e) {
-                        //                        ruleminingItemAssocDAO.updateItemAssocUsingUniqueKey(itemAssocVO);
-                        //                    }
+                if (configuration.getMaxRulesPerItem() == null) {
+                    List<ItemAssocVO<Integer,Integer>> rules = assocRuleMiningService.createRules(L2, L1,
+                            intConfiguration, stats, configuration.getConfidencePrcnt());
+                    stats.setSizeRules(rules.size());
+                    for (ItemAssocVO<Integer,Integer> itemAssocVO : rules) {
+                        //                try {
+                        //                    ruleminingItemAssocDAO.insertItemAssoc(itemAssocVO);
+                        //                } catch (DataIntegrityViolationException e) {
+                        //                    ruleminingItemAssocDAO.updateItemAssocUsingUniqueKey(itemAssocVO);
+                        //                }
                         ruleminingItemAssocDAO.insertOrUpdateItemAssoc(itemAssocVO);
                     }
+                } else {
+                    int count = 0;
+                    Collection<SortedSet<ItemAssocVO<Integer,Integer>>> rules = assocRuleMiningService.createBestRules(
+                            L2, L1, intConfiguration, stats, configuration.getConfidencePrcnt());
+                    for (SortedSet<ItemAssocVO<Integer,Integer>> sortedSet : rules) {
+                        count += sortedSet.size();
+                        for (ItemAssocVO<Integer,Integer> itemAssocVO : sortedSet) {
+                            //                   try {
+                            //                        ruleminingItemAssocDAO.insertItemAssoc(itemAssocVO);
+                            //                    } catch (DataIntegrityViolationException e) {
+                            //                        ruleminingItemAssocDAO.updateItemAssocUsingUniqueKey(itemAssocVO);
+                            //                    }
+                            ruleminingItemAssocDAO.insertOrUpdateItemAssoc(itemAssocVO);
+                        }
+                    }
+                    stats.setNumberOfRulesCreated(stats.getSizeRules() + count);
+                    stats.setSizeRules(stats.getSizeRules() + count);
                 }
-                stats.setSizeRules(count);
-                stats.setNumberOfRulesCreated(count);
+                stats.setLastConf(configuration.getConfidencePrcnt());
+                stats.setNumberOfActionsConsidered(assocRuleMiningService.getNumberOfActions(intConfiguration, null));
+                offset += configuration.getItemBatchSize();
+                // there were less items than MaxSizeL1
+                if (L1.size() < configuration.getItemBatchSize()) {
+                    break;
+                }
+                L1.clear();
+                L2.clear();
             }
-            stats.setLastConf(configuration.getConfidencePrcnt());
-            stats.setNumberOfActionsConsidered(assocRuleMiningService.getNumberOfActions(intConfiguration, null));
-                    // remove old Rules
+            stats.setIterations(iter);
+            // remove old Rules
             assocRuleMiningService.removeOldRules(intConfiguration, stats);
-            //assocRuleMiningService.perform(configuration.getTenantId());
 
             control.updateProgress(6, 6, "Finished");
         } // TODO: else write logoutput 

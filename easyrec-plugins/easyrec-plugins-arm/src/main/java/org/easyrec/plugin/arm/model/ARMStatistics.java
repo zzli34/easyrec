@@ -1,8 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**Copyright 2015 Research Studios Austria Forschungsgesellschaft mBH
+ *
+ * This file is part of easyrec.
+ *
+ * easyrec is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * easyrec is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with easyrec.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.easyrec.plugin.arm.model;
 
 import java.io.Serializable;
@@ -23,17 +35,19 @@ public class ARMStatistics extends GeneratorStatistics implements Serializable {
     private static final long serialVersionUID = 5535763649070204018L;
 
     private String sessionName;
-    private Integer nrBaskets;
-    private Integer nrProducts;
-    private Integer sizeRules;
-    private Integer sizeL1;
-    private Integer sizeL2;
-    private Integer sizeCountMap;
+    private Integer nrBaskets = 0;
+    private Integer nrProducts = 0;
+    private Integer sizeRules = 0;
+    private Integer sizeL1 = 0;
+    private Integer sizeL2 = 0;
+    private Integer sizeCountMap = 0;
     private long duration;
-    private Integer lastSupport;
+    private Integer lastSupport = 0;
     private double lastConf;
     private MetricTypes metricType;
     private String exception = null;
+    private Integer iterations = 0;
+    private Date cutoffDate;
 
     public ARMStatistics() {
 
@@ -137,4 +151,19 @@ public class ARMStatistics extends GeneratorStatistics implements Serializable {
         this.exception = exception;
     }
 
+    public Integer getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(Integer iterations) {
+        this.iterations = iterations;
+    }
+
+    public Date getCutoffDate() {
+        return cutoffDate;
+    }
+
+    public void setCutoffDate(Date cutoffDate) {
+        this.cutoffDate = cutoffDate;
+    }
 }

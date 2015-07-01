@@ -109,10 +109,43 @@ public class ARMConfiguration extends GeneratorConfiguration {
 
     @PluginParameter(
             displayName = "popular items threshold",
-            shortDescription = "The number of most popular items consideres for rule mining.",
+            shortDescription = "The number of most popular items considered for rule mining.",
             description = "Defines the number of items considered for rule minig. Usually only the x most popular items are considered. CAUTION!!! This setting heavily influences the amount of memory needed by easyrec. The default value of 5000 requires a java heap size of 640MB to be on the safe side!",
             optional = false)
     private Integer maxSizeL1 = 5000;
+    
+    @PluginParameter(
+                    displayName = "item batch size",
+                    shortDescription = "The number of items loaded to memory at a time for rule mining.",
+                    description = "Defines the number of items loaded to memory at a time for rule mining. Helps to keep memory usage under control for " +
+                                    "large sets of items",
+                    optional = false)
+    private Integer itemBatchSize = 4000;
+
+    @PluginParameter(
+                    displayName = "keep top items",
+                    shortDescription = "The number of most popular items always kept for analysis when batch processing.",
+                    description = "When ruleminer uses batch processing to save memory it only loads a subset of the most popular items into memory at a " +
+                                    "time. This amount specifies how many of the most popular items are kept in memory for analysis at all times. Keep this  value " +
+                                    "significantly lower than popular items threshold. Furthermore it is always added to item batch size so be cautious with " +
+                                    "memory usage.",
+                    optional = false)
+    private Integer L1KeepItemCount = 1000;
+    
+    @PluginParameter(
+                    displayName = "time range (d)",
+                    shortDescription = "The number of last days from which actions are considered.",
+                    description = "Sets the number of days for how long back actions are considered. Use -1 for no time limit.",
+                    optional = false)
+    private Integer timeRange = 365;
+
+    @PluginParameter(
+                    displayName = "max basket size",
+                    shortDescription = "The maximum number of items in a basket considered for rule mining.",
+                    description = "The maximum number of items in a basket considered for rule mining.",
+                    optional = false)
+    private Integer maxBasketSize = 300;
+    
     private Boolean doDeltaUpdate = false;
 
     public String getActionType() {
@@ -209,6 +242,38 @@ public class ARMConfiguration extends GeneratorConfiguration {
 
     public void setMetricType(MetricTypes metricType) {
         this.metricType = metricType;
+    }
+
+    public Integer getItemBatchSize() {
+        return itemBatchSize;
+    }
+
+    public void setItemBatchSize(Integer itemBatchSize) {
+        this.itemBatchSize = itemBatchSize;
+    }
+
+    public Integer getL1KeepItemCount() {
+        return L1KeepItemCount;
+    }
+
+    public void setL1KeepItemCount(Integer L1KeepItemCount) {
+        this.L1KeepItemCount = L1KeepItemCount;
+    }
+
+    public Integer getTimeRange() {
+        return timeRange;
+    }
+
+    public void setTimeRange(Integer timeRange) {
+        this.timeRange = timeRange;
+    }
+
+    public Integer getMaxBasketSize() {
+        return maxBasketSize;
+    }
+
+    public void setMaxBasketSize(Integer maxBasketSize) {
+        this.maxBasketSize = maxBasketSize;
     }
 
 }

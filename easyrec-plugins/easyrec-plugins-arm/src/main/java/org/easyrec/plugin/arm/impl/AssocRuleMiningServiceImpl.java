@@ -37,7 +37,7 @@ import org.easyrec.plugin.arm.model.ARMStatistics;
 import org.easyrec.plugin.arm.model.TupleVO;
 import org.easyrec.plugin.arm.store.dao.RuleminingActionDAO;
 import org.easyrec.plugin.arm.store.dao.RuleminingItemAssocDAO;
-import org.easyrec.store.dao.core.ArchiveDAO;
+import org.easyrec.utils.io.MySQL;
 
 /**
  * <DESCRIPTION>
@@ -58,7 +58,6 @@ import org.easyrec.store.dao.core.ArchiveDAO;
 public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
     private TypeMappingService typeMappingService;
     private TenantService tenantService;
-    private ArchiveDAO archiveDAO;
     private RuleminingActionDAO ruleminingActionDAO;
     private RuleminingItemAssocDAO itemAssocDAO;
 
@@ -76,68 +75,13 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 
     }
 
-    /**
-     * Move actions to archive table if older than given days.
-     *
-     * @param tenantId
-     * @param days
-     * @throws java.lang.Exception
-     */
-    @Override
-    public void archive(Integer tenantId, Integer days) throws Exception {
-
-//
-//        currentRunningTenantId = tenantId;
-//        try {
-//
-//            String actualArchiveTableName = archiveDAO.getActualArchiveTableName();
-//
-//            Date refDate = new Date(System.currentTimeMillis() - (days * 86400000l)); //convert days to millis
-//
-//            if (ruleMinerLogDAO != null) {
-//                ruleMinerLogDAO
-//                        .start(tenantId, AssocRuleMiningService.GENERATOR_ID, AssocRuleMiningService.GENERATOR_VERSION,
-//                                "archiving", "Cutoff date=" + refDate + "<br/>");
-//            }
-//
-//            logger.info("Cutoff date: " + refDate);
-//
-//            Integer numberOfActionsToArchive = archiveDAO.getNumberOfActionsToArchive(tenantId, refDate);
-//
-//            logger.info("Number of actions to archive:" + numberOfActionsToArchive);
-//
-//            if (numberOfActionsToArchive > 0) {
-//                if (archiveDAO.isArchiveFull(actualArchiveTableName, numberOfActionsToArchive)) {
-//                    //generate new archive
-//                    actualArchiveTableName = archiveDAO.generateNewArchive(actualArchiveTableName);
-//                }
-//                // move actions to archive
-//                archiveDAO.moveActions(actualArchiveTableName, tenantId, refDate);
-//            }
-//            if (ruleMinerLogDAO != null) {
-//                ruleMinerLogDAO
-//                        .finish(tenantId, AssocRuleMiningService.GENERATOR_ID, AssocRuleMiningService.GENERATOR_VERSION,
-//                                "archiving", "<actionsArchived>" + numberOfActionsToArchive + "</actionsArchived>");
-//            }
-//            currentRunningTenantId = null;
-//        } catch (Exception e) {
-//            currentRunningTenantId = null;
-//            if (ruleMinerLogDAO != null) {
-//                ruleMinerLogDAO
-//                        .finish(tenantId, AssocRuleMiningService.GENERATOR_ID, AssocRuleMiningService.GENERATOR_VERSION,
-//                                "archiving", "Archiving rules aborted!");
-//            }
-//            throw e;
-//        }
-    }
-
     @Override
     public Integer getNumberOfBaskets(ARMConfigurationInt configuration) {
 
         if (configuration.getExcludeSingleItemBaskests()) {
-            return ruleminingActionDAO.getNumberOfBasketsESIB(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes());
+            return ruleminingActionDAO.getNumberOfBasketsESIB(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes(), configuration.getCutoffId());
         } else {
-            return ruleminingActionDAO.getNumberOfBaskets(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes());
+            return ruleminingActionDAO.getNumberOfBaskets(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes(), configuration.getCutoffId());
         }
     }
 
@@ -145,20 +89,20 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
     @Override
     public Integer getNumberOfProducts(ARMConfigurationInt configuration) {
 
-        return ruleminingActionDAO.getNumberOfProducts(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes());
+        return ruleminingActionDAO.getNumberOfProducts(configuration.getTenantId(), configuration.getActionType(), configuration.getRatingNeutral(), configuration.getItemTypes(), configuration.getCutoffId());
     }
 
     @Override
     public Integer getNumberOfActions(ARMConfigurationInt configuration, Date lastRun) {
 
-        return ruleminingActionDAO.getNumberOfActions(configuration.getTenantId(), configuration.getActionType(), lastRun);
+        return ruleminingActionDAO.getNumberOfActions(configuration.getTenantId(), configuration.getActionType(), lastRun, configuration.getCutoffId());
     }
 
     @Override
-    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration) {
+    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration, int offset, int batchSize) {
 
 
-        return ruleminingActionDAO.defineL1(configuration);
+        return ruleminingActionDAO.defineL1(configuration, offset, batchSize);
     }
 
     @Override
@@ -169,7 +113,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 
 
     @Override
-    public ARMConfigurationInt mapTypesToConfiguration(ARMConfiguration configuration) throws Exception {
+    public ARMConfigurationInt mapTypesToConfiguration(ARMConfiguration configuration, Date start) throws Exception {
 
         ARMConfigurationInt ret;
 
@@ -185,7 +129,8 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
                 configuration.getRatingNeutral(),
                 configuration.getMetricType(),
                 configuration.getMaxSizeL1(),
-                configuration.getDoDeltaUpdate());
+                configuration.getDoDeltaUpdate(),
+                configuration.getMaxBasketSize());
 
         Integer actionId = typeMappingService.getIdOfActionType(configuration.getTenantId(), configuration.getActionType());
         if (actionId == null) {
@@ -224,6 +169,22 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
             ret.setRatingNeutral(null);
         }
 
+        if (start != null) {
+            Calendar cal = Calendar.getInstance();
+            
+            if (configuration.getTimeRange() < 0)  {
+                cal.setTime(new Date(0));
+            } else {
+                cal.setTime(start);
+                cal.add(Calendar.DATE, configuration.getTimeRange() * -1);
+            }
+            ret.setCutoffDate(MySQL.sanitzeForMysql56(cal.getTime()));      
+            ret.setCutoffId(ruleminingActionDAO.getCutoffId(ret.getTenantId(), ret.getActionType(), ret.getCutoffDate()));
+        } else {
+            ret.setCutoffDate(null);
+            ret.setCutoffId(0);
+        }
+        ret.setExcludeSingleItemBaskests(configuration.getExcludeSingleItemBaskests());
         return ret;
 
     }
@@ -525,10 +486,6 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 
     public void setRuleminingActionDAO(RuleminingActionDAO ruleminingActionDAO) {
         this.ruleminingActionDAO = ruleminingActionDAO;
-    }
-
-    public void setArchiveDAO(ArchiveDAO archiveDAO) {
-        this.archiveDAO = archiveDAO;
     }
 
     /**

@@ -17,6 +17,7 @@
  */
 package org.easyrec.plugin.arm.model;
 
+import java.util.Date;
 import java.util.List;
 import org.easyrec.plugin.arm.model.enums.MetricTypes;
 
@@ -40,6 +41,9 @@ public class ARMConfigurationInt {
     private MetricTypes metricType;
     private Integer maxSizeL1;
     private Boolean doDeltaUpdate;
+    private Date cutoffDate;
+    private Integer cutoffId;
+    private Integer maxBasketSize;
 
     public ARMConfigurationInt() {
 
@@ -57,7 +61,8 @@ public class ARMConfigurationInt {
                                Double ratingNeutral,
                                MetricTypes metricType,
                                Integer maxSizeL1,
-                               Boolean doDeltaUpdate)
+                               Boolean doDeltaUpdate,
+                               Integer maxBasketSize)
     {
         this.tenantId = tenantId;
         this.support = support;
@@ -72,6 +77,7 @@ public class ARMConfigurationInt {
         this.maxSizeL1 = maxSizeL1;
         this.doDeltaUpdate = doDeltaUpdate;
         this.assocType = assocType;
+        this.maxBasketSize = maxBasketSize;
     }
 
     
@@ -188,6 +194,29 @@ public class ARMConfigurationInt {
     public void setTenantId(Integer tenantId) {
         this.tenantId = tenantId;
     }
-    
 
+    public Date getCutoffDate() {
+        return cutoffDate;
+    }
+
+    public void setCutoffDate(Date cutoffDate) {
+        this.cutoffDate = cutoffDate;
+    }
+
+    public Integer getCutoffId() {
+        return cutoffId;
+    }
+
+    public void setCutoffId(Integer cutoffId) {
+        this.cutoffId = cutoffId;
+    }
+
+    public Integer getMaxBasketSize() {
+        return maxBasketSize;
+    }
+
+    public void setMaxBasketSize(Integer maxBasketSize) {
+        this.maxBasketSize = maxBasketSize;
+    }
+   
 }

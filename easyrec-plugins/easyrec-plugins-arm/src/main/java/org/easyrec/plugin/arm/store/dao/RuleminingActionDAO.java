@@ -44,18 +44,20 @@ import org.easyrec.plugin.arm.model.TupleVO;
  * @author Roman Cerny
  */
 public interface RuleminingActionDAO {
-    public Integer getNumberOfBaskets(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes);
+    public Integer getNumberOfBaskets(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff);
 
-    public Integer getNumberOfBasketsESIB(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes);
+    public Integer getNumberOfBasketsESIB(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff);
 
-    public int getNumberOfProducts(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes);
+    public int getNumberOfProducts(Integer tenantId, Integer actionType, Double ratingNeutral, List<Integer> itemTypes, Integer cutoff);
 
-    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration);
+    public TObjectIntHashMap<ItemVO<Integer, Integer>> defineL1(ARMConfigurationInt configuration, int offset, int batchSize);
 
    public List<TupleVO> defineL2(TObjectIntHashMap<ItemVO<Integer, Integer>> L1,
                                   TupleCounter tupleCounter,
                                   ARMConfigurationInt configuration,
                                   ARMStatistics stats);
    //public int getCount(String tableName, String keyA, String keyB);
-    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun);
+    public int getNumberOfActions(Integer tenantId, Integer actionType, Date lastRun, Integer cutoff);
+    
+    public Integer getCutoffId(Integer tenantId, Integer actionType, Date cutoff);
 }
