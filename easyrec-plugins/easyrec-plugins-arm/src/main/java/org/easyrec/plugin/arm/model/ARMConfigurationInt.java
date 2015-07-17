@@ -44,6 +44,7 @@ public class ARMConfigurationInt {
     private Date cutoffDate;
     private Integer cutoffId;
     private Integer maxBasketSize;
+    private boolean storeAlternativeMetrics = false;
 
     public ARMConfigurationInt() {
 
@@ -62,7 +63,8 @@ public class ARMConfigurationInt {
                                MetricTypes metricType,
                                Integer maxSizeL1,
                                Boolean doDeltaUpdate,
-                               Integer maxBasketSize)
+                               Integer maxBasketSize,
+                               boolean storeAlternativeMetrics)
     {
         this.tenantId = tenantId;
         this.support = support;
@@ -78,9 +80,8 @@ public class ARMConfigurationInt {
         this.doDeltaUpdate = doDeltaUpdate;
         this.assocType = assocType;
         this.maxBasketSize = maxBasketSize;
+        this.storeAlternativeMetrics = storeAlternativeMetrics;
     }
-
-    
 
 
     public Integer getActionType() {
@@ -218,5 +219,13 @@ public class ARMConfigurationInt {
     public void setMaxBasketSize(Integer maxBasketSize) {
         this.maxBasketSize = maxBasketSize;
     }
-   
+
+    public boolean getStoreAlternativeMetrics() {
+        return storeAlternativeMetrics;
+    }
+
+    public void setStoreAlternativeMetrics(boolean storeAlternativeMetrics) {
+        this.storeAlternativeMetrics = storeAlternativeMetrics;
+    }
+    
 }

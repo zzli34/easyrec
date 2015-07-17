@@ -146,6 +146,14 @@ public class ARMConfiguration extends GeneratorConfiguration {
                     optional = false)
     private Integer maxBasketSize = 300;
     
+    @PluginParameter(
+                    displayName = "store  alternative metrics",
+                    shortDescription = "Calculates and stores the values for the not chosen metric types for comparison purposes.",
+                    description = "Calculates and stores the values for the not chosen metric types for comparison purposes in a database field. "
+                            + "Enable for tuning and tweaking purposes to compare different metric types.",
+                    optional = false)
+    private boolean storeAlternativeMetrics = false;
+    
     private Boolean doDeltaUpdate = false;
 
     public String getActionType() {
@@ -276,4 +284,12 @@ public class ARMConfiguration extends GeneratorConfiguration {
         this.maxBasketSize = maxBasketSize;
     }
 
+    public boolean getStoreAlternativeMetrics() {
+        return storeAlternativeMetrics;
+    }
+
+    public void setStoreAlternativeMetrics(boolean storeAlternativeMetrics) {
+        this.storeAlternativeMetrics = storeAlternativeMetrics;
+    }
+    
 }

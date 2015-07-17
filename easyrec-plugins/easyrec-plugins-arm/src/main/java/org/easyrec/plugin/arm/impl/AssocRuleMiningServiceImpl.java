@@ -130,7 +130,8 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
                 configuration.getMetricType(),
                 configuration.getMaxSizeL1(),
                 configuration.getDoDeltaUpdate(),
-                configuration.getMaxBasketSize());
+                configuration.getMaxBasketSize(),
+                configuration.getStoreAlternativeMetrics());
 
         Integer actionId = typeMappingService.getIdOfActionType(configuration.getTenantId(), configuration.getActionType());
         if (actionId == null) {
@@ -213,7 +214,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
 
         Double baskets = new Double(stats.getNrBaskets());
         stats.setMetricType(configuration.getMetricType());
-        Vector<ItemAssocVO<Integer, Integer>> ret = new Vector<ItemAssocVO<Integer, Integer>>();
+        ArrayList<ItemAssocVO<Integer, Integer>> ret = new ArrayList<>();
 
         for (TupleVO tuple : tuples) {
             sup1 = L1.get(tuple.getItem1());
@@ -270,14 +271,16 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
             //                          String sourceInfo, VT viewType, Boolean active)
             // TODO: confidence always used as quality reference! maybe better use assocValue
             if (dh1 >= (minConfidence)) {
+                String comment1 = null;
+                if (configuration.getStoreAlternativeMetrics()) {
+                    comment1 = new StringBuilder("conf=").append(String.format("%04f", dh1)).append(" lift=")
+                            .append(String.format("%04f", lift)).append(" convic=")
+                            .append(String.format("%04f", conviction1)).append(" ltc=").append(String.format("%04f", ltc1))
+                            .append(" sup1=").append(String.format("%04f", dsup1)).append(" sup2=")
+                            .append(String.format("%04f", dsup2)).append(" tsup=").append(tuple.getSupport()).toString();
+                }
 
-                String comment1 = new StringBuilder("conf=").append(String.format("%04f", dh1)).append(" lift=")
-                        .append(String.format("%04f", lift)).append(" convic=")
-                        .append(String.format("%04f", conviction1)).append(" ltc=").append(String.format("%04f", ltc1))
-                        .append(" sup1=").append(String.format("%04f", dsup1)).append(" sup2=")
-                        .append(String.format("%04f", dsup2)).append(" tsup=").append(tuple.getSupport()).toString();
-
-                ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<Integer, Integer>(
+                ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<>(
                         configuration.getTenantId(), tuple.getItem1(), configuration.getAssocType(), assocValue1/*new Double(h1)*/,
                         tuple.getItem2(),
                         typeMappingService.getIdOfSourceType(configuration.getTenantId(), ARMGenerator.ID.toString() + "/" + ARMGenerator.VERSION),
@@ -288,14 +291,15 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
             }
 
             if (dh2 >= (minConfidence)) {
-
-                String comment2 = new StringBuilder("conf=").append(String.format("%04f", dh2)).append(" lift=")
-                        .append(String.format("%04f", lift)).append(" convic=")
-                        .append(String.format("%04f", conviction2)).append(" ltc=").append(String.format("%04f", ltc2))
-                        .append(" sup2=").append(String.format("%04f", dsup2)).append(" sup1=")
-                        .append(String.format("%04f", dsup1)).append(" tsup=").append(tuple.getSupport()).toString();
-
-                ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<Integer, Integer>(
+                String comment2 = null;
+                if (configuration.getStoreAlternativeMetrics()) {
+                    comment2 = new StringBuilder("conf=").append(String.format("%04f", dh2)).append(" lift=")
+                            .append(String.format("%04f", lift)).append(" convic=")
+                            .append(String.format("%04f", conviction2)).append(" ltc=").append(String.format("%04f", ltc2))
+                            .append(" sup2=").append(String.format("%04f", dsup2)).append(" sup1=")
+                            .append(String.format("%04f", dsup1)).append(" tsup=").append(tuple.getSupport()).toString();
+                }
+                ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<>(
                         configuration.getTenantId(), tuple.getItem2(), configuration.getAssocType(), assocValue2/*new Double(h2)*/,
                         tuple.getItem1(),
                         typeMappingService.getIdOfSourceType(configuration.getTenantId(), ARMGenerator.ID.toString() + "/" + ARMGenerator.VERSION),
@@ -324,7 +328,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
         Double baskets = new Double(stats.getNrBaskets());
         stats.setMetricType(configuration.getMetricType());
         //Vector<ItemAssocVO<Integer,Integer>> ret = new Vector<ItemAssocVO<Integer,Integer>>();
-        Map<ItemVO<Integer, Integer>, SortedSet<ItemAssocVO<Integer, Integer>>> ret = new HashMap<ItemVO<Integer, Integer>, SortedSet<ItemAssocVO<Integer, Integer>>>();
+        Map<ItemVO<Integer, Integer>, SortedSet<ItemAssocVO<Integer, Integer>>> ret = new HashMap<>();
         for (TupleVO tuple : tuples) {
             sup1 = L1.get(tuple.getItem1());
             dsup1 = new Double(sup1);
@@ -384,18 +388,20 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
                 SortedSet<ItemAssocVO<Integer, Integer>> bestRules = ret
                         .get(tuple.getItem1());
                 if (bestRules == null) {
-                    bestRules = new TreeSet<ItemAssocVO<Integer, Integer>>();
+                    bestRules = new TreeSet<>();
                 }
                 if ((bestRules.size() < configuration.getMaxRulesPerItem()) || (assocValue1 > bestRules.first()
                         .getAssocValue())) { // no need to create objects if limit already reached and rule shows worse quality
-                    String comment1 = new StringBuilder("conf=").append(String.format("%04f", dh1)).append(" lift=")
-                            .append(String.format("%04f", lift)).append(" convic=")
-                            .append(String.format("%04f", conviction1)).append(" ltc=")
-                            .append(String.format("%04f", ltc1)).append(" sup1=").append(String.format("%04f", dsup1))
-                            .append(" sup2=").append(String.format("%04f", dsup2)).append(" tsup=")
-                            .append(tuple.getSupport()).toString();
-
-                    ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<Integer, Integer>(
+                    String comment1 = null;
+                    if (configuration.getStoreAlternativeMetrics()) {
+                        comment1 = new StringBuilder("conf=").append(String.format("%04f", dh1)).append(" lift=")
+                                .append(String.format("%04f", lift)).append(" convic=")
+                                .append(String.format("%04f", conviction1)).append(" ltc=")
+                                .append(String.format("%04f", ltc1)).append(" sup1=").append(String.format("%04f", dsup1))
+                                .append(" sup2=").append(String.format("%04f", dsup2)).append(" tsup=")
+                                .append(tuple.getSupport()).toString();
+                    }
+                    ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<>(
                             configuration.getTenantId(), tuple.getItem1(), configuration.getAssocType(), assocValue1
                             /*new Double(h1)*/, tuple.getItem2(), typeMappingService
                             .getIdOfSourceType(configuration.getTenantId(), ARMGenerator.ID.toString() + "/" + ARMGenerator.VERSION), comment1,
@@ -416,19 +422,20 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
                 SortedSet<ItemAssocVO<Integer, Integer>> bestRules = ret
                         .get(tuple.getItem2());
                 if (bestRules == null) {
-                    bestRules = new TreeSet<ItemAssocVO<Integer, Integer>>();
+                    bestRules = new TreeSet<>();
                 }
                 if ((bestRules.size() < configuration.getMaxRulesPerItem()) || (assocValue2 > bestRules.first()
                         .getAssocValue())) { // no need to create objects if limit already reached and rule shows worse quality
-
-                    String comment2 = new StringBuilder("conf=").append(String.format("%04f", dh2)).append(" lift=")
-                            .append(String.format("%04f", lift)).append(" convic=")
-                            .append(String.format("%04f", conviction2)).append(" ltc=")
-                            .append(String.format("%04f", ltc2)).append(" sup2=").append(String.format("%04f", dsup2))
-                            .append(" sup1=").append(String.format("%04f", dsup1)).append(" tsup=")
-                            .append(tuple.getSupport()).toString();
-
-                    ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<Integer, Integer>(
+                    String comment2 = null;
+                    if (configuration.getStoreAlternativeMetrics()) {
+                        comment2 = new StringBuilder("conf=").append(String.format("%04f", dh2)).append(" lift=")
+                                .append(String.format("%04f", lift)).append(" convic=")
+                                .append(String.format("%04f", conviction2)).append(" ltc=")
+                                .append(String.format("%04f", ltc2)).append(" sup2=").append(String.format("%04f", dsup2))
+                                .append(" sup1=").append(String.format("%04f", dsup1)).append(" tsup=")
+                                .append(tuple.getSupport()).toString();
+                    }
+                    ItemAssocVO<Integer, Integer> rule = new ItemAssocVO<>(
                             configuration.getTenantId(), tuple.getItem2(), configuration.getAssocType(), assocValue2
                             /*new Double(h2)*/, tuple.getItem1(), typeMappingService
                             .getIdOfSourceType(configuration.getTenantId(), ARMGenerator.ID.toString() + "/" + ARMGenerator.VERSION), comment2,
