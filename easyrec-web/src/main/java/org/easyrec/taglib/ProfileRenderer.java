@@ -18,6 +18,9 @@
  */
 package org.easyrec.taglib;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.serialize.OutputFormat;
@@ -63,6 +66,8 @@ public class ProfileRenderer implements Tag {
     private PageContext pageContext;
     private Tag parent;
     private String profile = "";
+    private ObjectMapper mapper;
+    private ObjectWriter writer;
 
     public void setProfile(String profile) {
         this.profile = profile;
@@ -70,6 +75,8 @@ public class ProfileRenderer implements Tag {
 
     public ProfileRenderer() {
         super();
+        this.mapper = new ObjectMapper();
+        this.writer = mapper.writer(new DefaultPrettyPrinter());
     }
 
     @Override
@@ -80,14 +87,17 @@ public class ProfileRenderer implements Tag {
     @Override
     public int doEndTag() throws JspTagException {
         try {
-            String tagId = "profile" + new Long(System.currentTimeMillis()).toString();
+            String tagId = "profile" + Long.toString(System.currentTimeMillis());
             StringBuilder fullHTML = new StringBuilder();
             fullHTML.append("<div class=\"profile\">");
-            String profileContent = getListViewHTML(profile);
+            String profileContent = getSourceViewJSON(profile); //since JSON is now the primary format, we try this first
+            if (profileContent == null) {
+                profileContent = getListViewHTML(profile); 
+            }
             if (profileContent == null) {
                 profileContent = getSourceViewHTML(profile); 
             }
-            fullHTML.append("   <div id=\"profileHTML-" + tagId + "\">");
+            fullHTML.append("   <div id=\"profileHTML-").append(tagId).append("\">");
             fullHTML.append(profileContent);
             fullHTML.append("   </div>");
             fullHTML.append("</div>");
@@ -110,6 +120,19 @@ public class ProfileRenderer implements Tag {
         returnString += formatXml(profileXML).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         returnString += "</pre>";
 
+        return returnString;
+    }
+    
+    public String getSourceViewJSON(String profileJSON) {
+        
+        String returnString = null;
+        try {
+            returnString = "<pre class=\"prettyprint\">";
+            returnString += writer.writeValueAsString(mapper.readValue(profileJSON, Object.class));
+            returnString += "</pre>";
+        } catch (Exception e) {
+            returnString = null;
+        }
         return returnString;
     }
 

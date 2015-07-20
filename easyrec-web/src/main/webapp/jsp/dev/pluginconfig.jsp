@@ -214,11 +214,11 @@
     </tr>
 </table>
 
-<h2>association type settings</h2>
+<h2>association type settings (executed in order of association type id)</h2>
 <c:choose>
     <c:when test="${assocTypes != null && not empty assocTypes}">
         <c:forEach items="${assocTypes}" var="assocType">
-            <h3>${assocType.key}</h3>
+            <h3>${assocType.key} (id: ${assocType.value})</h3> 
             <table class="configtable">
                 <tr>
                     <th class="configparam">plugin</th>
