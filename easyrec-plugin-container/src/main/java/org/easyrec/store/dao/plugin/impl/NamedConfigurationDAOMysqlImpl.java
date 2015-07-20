@@ -130,7 +130,7 @@ public class NamedConfigurationDAOMysqlImpl extends AbstractTableCreatingDAOImpl
         readActiveConfiguration.compile();
         
         readActiveConfigurations = new NamedConfigurationMappingStatement(dataSource,
-                "SELECT * FROM plugin_configuration WHERE tenantId = ? AND active = b'1'",
+                "SELECT * FROM plugin_configuration WHERE tenantId = ? AND active = b'1' ORDER BY assocTypeId ASC",
                 pluginRegistry);
         readActiveConfigurations.declareParameter(new SqlParameter("tenantId", Types.INTEGER));
         readActiveConfigurations.compile();
