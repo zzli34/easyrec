@@ -80,8 +80,8 @@ public class AggregatorConfiguration extends GeneratorConfiguration {
 
     @PluginParameter(
         displayName = "do delta update",
-        shortDescription = "If true, only the actions since the last plugin run are considered.",
-        description = "If true, only the actions since the last plugin run are considered and the profiles updated accordingly.",
+        shortDescription = "If true, only users with actions since the last plugin run are considered.",
+        description = "If true, only users with actions since the last plugin run are considered and the profiles updated accordingly.",
         optional = false)
     private Boolean doDeltaUpdate = true;
 

@@ -105,15 +105,7 @@ public class AggregatorServiceImpl implements AggregatorService {
             userItem = itemDAO.add(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, userIdStr, "", "");
             jsonProfileService.storeProfile(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "{}");
         } 
-//        else {
-//            try {
-//                // if doDeltaUpdate load existing user profile
-//                if (configurationInt.getLastRun() != null) userProfile = (LinkedHashMap<String,Object>) jsonProfileService.loadProfileField(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, "$.upa"); //TODO: parse json;    
-//            } catch (Exception ex) {
-//                logger.info("Could not load aggregator profile! Creating new one!",ex);
-//            }
-//        }
-        //if (userProfile == null) userProfile = new LinkedHashMap<>();
+
         HashMap<String, HashMap<String, Integer>> tmpProfile = new HashMap<>();
 
         ItemVO<Integer,Integer> prevItem = null;
@@ -137,9 +129,11 @@ public class AggregatorServiceImpl implements AggregatorService {
             
             if(!configurationInt.getActionFields().isEmpty()) { //in case actionInfo content is interesting
                 String actionInfo = action.getActionInfo();
-                Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
-                for (FieldConfiguration fc : configurationInt.getActionFields().values()) {
-                    addFieldToTmpProfile(fc, actionProfile, tmpProfile);
+                if (!Strings.isNullOrEmpty(actionInfo)) {
+                    Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
+                    for (FieldConfiguration fc : configurationInt.getActionFields().values()) {
+                        addFieldToTmpProfile(fc, actionProfile, tmpProfile);
+                    }
                 }
             }
         }
@@ -287,7 +281,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         ret.setAssocType(assocTypeId);
         
         if (!Strings.isNullOrEmpty(configuration.getActionInfoFields())) {
-            String[] fields = configuration.getActionInfoFields().split(";");
+            String[] fields = configuration.getActionInfoFields().replaceAll("\n", "").split(";");
             for (String field : fields) {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);
@@ -318,7 +312,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         }
         
         if (!Strings.isNullOrEmpty(configuration.getItemProfileFields())) {
-            String[] fields = configuration.getItemProfileFields().split(";");
+            String[] fields = configuration.getItemProfileFields().replaceAll("\n", "").split(";");
             for (String field : fields) {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[1]);

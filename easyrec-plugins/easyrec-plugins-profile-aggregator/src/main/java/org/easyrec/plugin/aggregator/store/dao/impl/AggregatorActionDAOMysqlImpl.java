@@ -83,15 +83,15 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
    
     @Override
     public List<Integer> getUsersWithActions(AggregatorConfigurationInt configuration) {
-        //Todo: only get non-anonymous users!
+        //Todo: only get non-anonymous users! -> done using idMappingDAO later 
         //Todo: move to iterator
         List<Object> args = Lists.newArrayList();
         List<Integer> argt = Lists.newArrayList();
         
         // get all Baskets
         StringBuilder query = new StringBuilder();
-        query.append("SELECT DISTINCT(").append(BaseActionDAO.DEFAULT_USER_COLUMN_NAME);
-        query.append(") FROM ").append(BaseActionDAO.DEFAULT_TABLE_NAME);
+        query.append("SELECT DISTINCT(a.").append(BaseActionDAO.DEFAULT_USER_COLUMN_NAME);
+        query.append(") FROM ").append(BaseActionDAO.DEFAULT_TABLE_NAME).append(" a, idmapping i");
         query.append(" WHERE ").append(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME).append("=")
                 .append(configuration.getTenantId());
         if (configuration.getActionType() != null) {
@@ -104,7 +104,10 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
                 args.add(configuration.getLastRun());
                 argt.add(Types.TIMESTAMP);
         }
-
+        // filter anonymous users
+        query.append(" AND a.userId=i.intId AND a.sessionId!=i.stringId");
+        
+        
         List<Integer> baskets = getJdbcTemplate().queryForList(query.toString(), args.toArray(),
                 Ints.toArray(argt), Integer.class);
             
@@ -130,11 +133,13 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
                 args.add(configuration.getActionType());
                 argt.add(Types.INTEGER);
         }
-        if (configuration.getLastRun() != null) {
-            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
-                args.add(configuration.getLastRun());
-                argt.add(Types.TIMESTAMP);
-        }
+        
+        // delta updates don't work since we only store Top x of every field
+//        if (configuration.getLastRun() != null) {
+//            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
+//                args.add(configuration.getLastRun());
+//                argt.add(Types.TIMESTAMP);
+//        }
         
         query.append(" ORDER BY ").append(BaseActionDAO.DEFAULT_ITEM_COLUMN_NAME).append(" ASC");
         
@@ -161,16 +166,18 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
             args.add(actionType);
             argt.add(Types.INTEGER);
         }
-        if (lastRun != null) {
-            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
-            args.add(lastRun);
-            argt.add(Types.TIMESTAMP);
-        }
+        // we always need to consider all actions since we don't store the complete user profile
+//        if (lastRun != null) {
+//            query.append(" AND ").append(BaseActionDAO.DEFAULT_ACTION_TIME_COLUMN_NAME).append(">=?");
+//            args.add(lastRun);
+//            argt.add(Types.TIMESTAMP);
+//        }
 
         return getJdbcTemplate().queryForInt(query.toString(), args.toArray(), Ints.toArray(argt));
     }
     
     private class ActionVORowMapper implements RowMapper<ActionVO<Integer, Integer>> {
+        @Override
         public ActionVO<Integer, Integer> mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             ActionVO<Integer, Integer> actionVO =
@@ -198,8 +205,9 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
         // logging
         private final Log logger = LogFactory.getLog(this.getClass());
 
+        @Override
         public TObjectIntHashMap<ItemVO<Integer, Integer>> extractData(ResultSet rs) {
-            TObjectIntHashMap<ItemVO<Integer, Integer>> map = new TObjectIntHashMap<ItemVO<Integer, Integer>>();
+            TObjectIntHashMap<ItemVO<Integer, Integer>> map = new TObjectIntHashMap<>();
             int itemId, itemTypeId, tenantId, cnt = 0;
 
             try {
@@ -208,7 +216,7 @@ public class AggregatorActionDAOMysqlImpl extends JdbcDaoSupport implements Aggr
                     itemTypeId = rs.getInt(BaseActionDAO.DEFAULT_ITEM_TYPE_COLUMN_NAME);
                     tenantId = rs.getInt(BaseActionDAO.DEFAULT_TENANT_COLUMN_NAME);
                     cnt = rs.getInt("cnt");
-                    map.put(new ItemVO<Integer, Integer>(tenantId, itemId, itemTypeId), cnt);
+                    map.put(new ItemVO<>(tenantId, itemId, itemTypeId), cnt);
                 }
                 // optimization: replaces former adjustSupport method
                 minSupp = cnt;
