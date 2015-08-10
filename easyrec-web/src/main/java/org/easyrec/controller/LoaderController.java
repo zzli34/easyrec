@@ -136,13 +136,13 @@ public class LoaderController extends AbstractController {
                 } catch (Exception e) {
                     mav.setViewName("home");
                     // if wrong host
-                    if (e.getMessage().contains("Communications link failure")) {
+                    if (e.getCause().getMessage().contains("Communications link failure")) {
                         mav.addObject("exceptionMessage",
                                 "easyrec could not connect to the specified host '" + db_host + "'.<br/> " +
                                         "Please make sure the host is reachable and a MySQL server is running!");
                     } else
                         // if wrong db name
-                        if ((e.getMessage().contains("Unknown database"))) {
+                        if ((e.getCause().getMessage().contains("Unknown database"))) {
                             mav.addObject("exceptionMessage",
                                     "A database with name '" + db_name + "' does not exist on host '" + db_host +
                                             "'!<br/>" +
@@ -150,12 +150,12 @@ public class LoaderController extends AbstractController {
                                             "database with the name specified above!");
                         } else
                             // if wrong credentials
-                            if ((e.getMessage().contains("Access denied"))) {
+                            if ((e.getCause().getMessage().contains("Access denied"))) {
                                 mav.addObject("exceptionMessage",
                                         "easyrec has been denied access to the specified database!<br/>" +
                                                 "Please make sure you entered a valid username/password combination.");
                             } else {
-                                mav.addObject("exceptionMessage", e.getMessage());
+                                mav.addObject("exceptionMessage", e.getMessage() + "-" + e.getCause().getMessage());
                             }
                     //mav.addObject("exceptionCause", e.getCause());
                     //mav.addObject("exceptionStackTrace", e.getStackTrace());
