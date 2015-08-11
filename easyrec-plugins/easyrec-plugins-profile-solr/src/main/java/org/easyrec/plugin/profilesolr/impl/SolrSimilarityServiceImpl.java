@@ -101,7 +101,7 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
         ret.setAssocType(assocTypeId);
         
         if (!Strings.isNullOrEmpty(configuration.getIndexProfileFields())) {
-            String[] fields = configuration.getIndexProfileFields().split(";");
+            String[] fields = configuration.getIndexProfileFields().replaceAll("\n", "").split(";");
             for (String field : fields) {
                 JsonPath jp = JsonPath.compile(field);
                 ret.getIndexFields().add(jp);
@@ -109,7 +109,7 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
         }
         
         if (!Strings.isNullOrEmpty(configuration.getQueryProfileFields())) {
-            String[] fields = configuration.getQueryProfileFields().split(";");
+            String[] fields = configuration.getQueryProfileFields().replaceAll("\n", "").split(";");
             for (String field : fields) {
                 String[] fieldInfo = field.split(",");
                 JsonPath jp = JsonPath.compile(fieldInfo[0]);
@@ -188,12 +188,18 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
             Object parsedProfile = configuration.getConfiguration().jsonProvider().parse(user.getProfileData());
             String query = "";
             for (QueryFieldConfiguration fc : configuration.getQueryFields()) {
-                List<String> fields = fc.getJsonPath().read(parsedProfile);//, Configuration.builder().options(Option.AS_PATH_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL).build());
-                for (String field : fields) {
-                    if (fc.getBoost() != null) field = field + '^' + fc.getBoost();
-                    //field = field.substring(field.lastIndexOf("[") + 2, field.length() - 2);
-                    query += field + " ";
+                List<Object> fields = fc.getJsonPath().read(parsedProfile);//, Configuration.builder().options(Option.AS_PATH_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL).build());
+                for (Object field : fields) {
+                    if (field instanceof String) {
+                        //field = (String) field;
+                        if (fc.getBoost() != null) field = (String) field + '^' + fc.getBoost();
+                        //field = field.substring(field.lastIndexOf("[") + 2, field.length() - 2);
+                        query += field + " ";
+                    } else {
+                        stats.setException("The following path does not return simple String values an is ignored! Check your settings: " + fc.getJsonPath().getPath());
+                    }
                 }
+
             }
             //logger.info("Query:" + query);
             SolrQuery sQuery = new SolrQuery(query);
