@@ -52,7 +52,7 @@ public class SolrSimilarityConfigurationInt {
         this.maxRulesPerItem = maxRulesPerItem;
         this.doDeltaUpdate = doDeltaUpdate;
         this.lastRun = lastRun;
-        this.configuration = Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
+        this.configuration = Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.ALWAYS_RETURN_LIST);
     }
 
     public Boolean getDoDeltaUpdate() {

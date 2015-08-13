@@ -41,13 +41,14 @@ import org.easyrec.plugin.profilesolr.model.SolrSimilarityStatistics;
 import org.easyrec.utils.io.MySQL;
 import org.easyrec.utils.io.TreeCopy;
 import org.easyrec.utils.io.TreeDelete;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 
 /**
  *
  * @author szavrel
  */
-public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilarityConfiguration, SolrSimilarityStatistics> implements RunConditionEnabled {
+public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilarityConfiguration, SolrSimilarityStatistics> implements RunConditionEnabled, DisposableBean {
 
     public static final String DISPLAY_NAME = "Solr Profile Similarity";
     public static final Version VERSION = new Version("0.98");
@@ -111,7 +112,7 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
 
 //        String urlString = "http://localhost:8983/solr/easyrec";
 //        SolrClient solrClient = new HttpSolrClient(urlString);
-//        
+        if (solrServer == null) throw new Exception("Could not initialized Solr server!");
         solrSimilarityService.setSolrClient(solrServer);
         
     }
@@ -145,11 +146,16 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
     @Override
     protected void doUninstall() throws Exception {
         SolrClient sc = solrSimilarityService.getSolrClient();
-        sc.close();
+        if (sc != null) sc.close();
         Files.walkFileTree(solrHomeFolder, new TreeDelete());
     }
 
-    
+    @Override
+    public void destroy() throws Exception {
+        SolrClient sc = solrSimilarityService.getSolrClient();
+        if (sc != null) sc.close();
+    }
+        
 
     // ----------------------------- GETTER / SETTER METHODS -------------------------------------
 

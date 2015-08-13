@@ -53,7 +53,7 @@ import org.easyrec.store.dao.core.types.ItemTypeDAO;
  * @author Stephan
  */
 public class SolrSimilarityServiceImpl implements SolrSimilarityService {
-    
+   
     private final ItemTypeDAO itemTypeDAO;
     private final TypeMappingService typeMappingService;
     private final SolrItemDAO solrItemDAO;
@@ -188,7 +188,7 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
             Object parsedProfile = configuration.getConfiguration().jsonProvider().parse(user.getProfileData());
             String query = "";
             for (QueryFieldConfiguration fc : configuration.getQueryFields()) {
-                List<Object> fields = fc.getJsonPath().read(parsedProfile);//, Configuration.builder().options(Option.AS_PATH_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL).build());
+                List<Object> fields = fc.getJsonPath().read(parsedProfile, configuration.getConfiguration());//Configuration.builder().options(Option.ALWAYS_RETURN_LIST,Option.DEFAULT_PATH_LEAF_TO_NULL).build());
                 for (Object field : fields) {
                     if (field instanceof String) {
                         //field = (String) field;
@@ -254,7 +254,7 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
                 typeMappingService.getIdOfSourceType(configuration.getTenantId(), SolrSimilarityGenerator.ID.toString() + "/" + SolrSimilarityGenerator.VERSION),
                 stats.getStartDate());
     }
-    
+        
     @Override
     public SolrClient getSolrClient() {
         return solrClient;
