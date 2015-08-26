@@ -72,6 +72,7 @@ public class ViewInitializationService {
 
             if (remoteTenant != null)
                 mav.addObject("remoteTenant", remoteTenant);
+            mav.addObject("apikey", signedInOperator.getApiKey());
         }
 
         if (Security.isDeveloper(request) && !Strings.isNullOrEmpty(operatorId))

@@ -18,6 +18,7 @@
 package org.easyrec.controller;
 
 
+import java.util.Set;
 import org.easyrec.store.dao.web.OperatorDAO;
 import org.easyrec.util.core.Security;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +26,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.easyrec.model.core.web.Operator;
+import org.easyrec.model.core.web.RemoteTenant;
+import org.easyrec.service.web.ViewInitializationService;
 
 
 /**
@@ -48,10 +52,16 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeController extends MultiActionController {
 
     private OperatorDAO operatorDAO;
+    private ViewInitializationService viewInitializationService;
 
     public void setOperatorDAO(OperatorDAO operatorDAO) {
         this.operatorDAO = operatorDAO;
     }
+
+    public void setViewInitializationService(ViewInitializationService viewInitializationService) {
+        this.viewInitializationService = viewInitializationService;
+    }
+    
     public ModelAndView robots(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
         ModelAndView mav = new ModelAndView("robots");
@@ -76,9 +86,23 @@ public class HomeController extends MultiActionController {
         mav.addObject("title", "easyrec :: api");
         mav.addObject("page", "api");
         mav.addObject("selectedMenu", "api");
+        RemoteTenant remoteTenant = viewInitializationService.initializeView(request, mav);
         return mav;
     }
-
+    
+    public ModelAndView apitest(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mav = new ModelAndView("apitest/apitest");
+        RemoteTenant remoteTenant = viewInitializationService.initializeView(request, mav);
+        Operator operator = Security.signedInOperator(request);
+        return mav;
+    }
+    
+    public ModelAndView apitestprofile(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mav = new ModelAndView("apitest/apitestprofile");
+        RemoteTenant remoteTenant = viewInitializationService.initializeView(request, mav);
+        return mav;
+    }
+        
     public ModelAndView contact(HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
         ModelAndView mav = new ModelAndView("page");

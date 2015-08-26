@@ -49,11 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 public class BackTrackingController extends AbstractController {
 
     // TODO: move to vocabulary?
-    public static final int ASSOC_RECOMMENDATIONS_FOR_USER = 999;
-    public static final int ASSOC_RANKINGS = 998;
-    public static final int ASSOC_RATINGS = 997;
-    public static final int ASSOC_CLUSTER = 996;
-    public static final int ASSOC_HISTORY = 995;
+
 
     private BackTrackingDAO backTrackingDAO;
 
@@ -66,8 +62,10 @@ public class BackTrackingController extends AbstractController {
             throws Exception {
         Integer tenantId;
         Integer itemFromId;
+        Integer itemFromType;
         Integer itemToId;
-        Integer assocType;
+        Integer itemToType;
+        Integer recType;
         Integer userId;
 
         try {
@@ -79,10 +77,12 @@ public class BackTrackingController extends AbstractController {
         try {
             tenantId = Integer.parseInt(request.getParameter("t"));
             itemFromId = Integer.parseInt(request.getParameter("f"));
+            itemFromType = Integer.parseInt(request.getParameter("ft"));
             itemToId = Integer.parseInt(request.getParameter("i"));
-            assocType = Integer.parseInt(request.getParameter("a"));
+            itemToType = Integer.parseInt(request.getParameter("it"));
+            recType = Integer.parseInt(request.getParameter("a"));
 
-            backTrackingDAO.track(userId, tenantId, itemFromId, itemToId, assocType);
+            backTrackingDAO.track(userId, tenantId, itemFromId, itemFromType, itemToId, itemToType, recType);
         } catch (Exception e) {
             logger.warn("error storing tracking information", e);
         }

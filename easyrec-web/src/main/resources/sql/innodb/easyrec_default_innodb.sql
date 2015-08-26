@@ -280,13 +280,15 @@ CREATE TABLE viewtype (
 
 DROP TABLE IF EXISTS backtracking;
 CREATE TABLE backtracking (
-	userId INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	tenantId INT(10) UNSIGNED NOT NULL,
-	itemFromId INT(10) UNSIGNED NOT NULL,
-	itemToId INT(10) UNSIGNED NOT NULL,
-	assocType INT(10) UNSIGNED NOT NULL,
-	timestamp DATETIME NOT NULL,
-	INDEX assoc (itemFromId, tenantId, assocType, itemToId)
+	userId INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	tenantId INT(11) UNSIGNED NOT NULL,
+	itemFromId INT(11) UNSIGNED NOT NULL,
+        itemFromTypeId INT(11) UNSIGNED NOT NULL,
+	itemToId INT(11) UNSIGNED NOT NULL,
+        itemToTypeId INT(11) UNSIGNED NOT NULL,
+	recType INT(11) UNSIGNED NOT NULL,
+	actionTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	INDEX assoc (tenantId, itemFromId, itemFromTypeId, recType, itemToId, itemToTypeId)
  ) ENGINE=InnoDb DEFAULT CHARSET=latin1 COMMENT='Backtracking information about recommendations';
 
 DROP TABLE IF EXISTS plugin;

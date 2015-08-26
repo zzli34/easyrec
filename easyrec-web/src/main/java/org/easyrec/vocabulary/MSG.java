@@ -188,6 +188,8 @@ public class MSG {
             504, "ItemFrom Id must differ from ItemTo Id!");
     public static final Message ASSOC_TYPE_NEEDED = new ErrorMessage(
             505, "Association Type (assoctype) needed!");
+    public static final Message REC_TYPE_NEEDED = new ErrorMessage(
+            505, "Recommendation Type (rectype) needed! Valid options are: RECS_FOR_USER, RANKING, CLUSTER, HISTORY or any valid assocType");
 
     // plugin messages
     public static final Message PLUGIN_INSTALLED = new SuccessMessage(

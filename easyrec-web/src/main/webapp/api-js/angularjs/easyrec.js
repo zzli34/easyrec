@@ -347,6 +347,31 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
+            track: function(sessionid, itemfromid, itemfromtype, itemtoid, itemtotype, userid, rectype) {
+                var deferred = $q.defer();
+                $http.get(baseUrl + '/api/1.1/json/track',
+                {params : {
+                        apikey: apikey,
+                        tenantid: tenant,
+                        sessionid: sessionid,
+                        userid: userid,
+                        itemfromid: itemfromid,
+                        itemfromtype: itemfromtype,
+                        itemtoid: itemtoid,
+                        itemtotype: itemtotype,
+                        rectype: rectype
+                    }
+                }).success(function(data, status) {
+                    if (!angular.isArray(data)) {
+                        deferred.resolve(data.itemType);
+                    } else { //was error
+                        deferred.reject(data[0].message);
+                    }
+                }).error(function(data, status) {
+                    deferred.reject(status + data);
+                });
+                return deferred.promise;
+            },
             getdata: function(filename) {
                 var deferred = $q.defer();
                 $http.get('http://localhost:8084/AAA/' + filename,

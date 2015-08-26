@@ -23,7 +23,7 @@
 
     <div style="position:absolute; left:13px; top:25px; padding: 10px;">
         <a href="${webappPath}/easyrec/overview?<c:if test="${signedInOperatorId!=null}">operatorId=${signedInOperatorId}</c:if>">
-            <span class="logo">easyrec<sup style="font-size: 9px">BETA</sup></span>
+            <span class="logo">easyrec</span>
         </a>
     </div>
 
@@ -56,7 +56,7 @@
                         href="${webappPath}/easyrec/overview?operatorId=${signedInOperatorId}&tenantId=EASYREC_DEMO"
                         title="my easyrec"><span>Management</span></a></li>
                 <li<c:if test="${selectedMenu == 'api' }"> class="selectedMenu"</c:if>><a
-                        href="${webappPath}/API?operatorId=${signedInOperatorId}"
+                        href="${webappPath}/API?operatorId=${signedInOperatorId}&tenantId=EASYREC_DEMO"
                         title="How to implement"><span>API</span></a></li>
             </ul>
         </c:if>

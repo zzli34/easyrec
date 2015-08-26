@@ -23,5 +23,6 @@
         <constructor-arg value="$easyrec{easyrec.dateFormat}"/>
         <constructor-arg ref="objectMapper" />
         <constructor-arg ref="logEntryDAO" />
+        <constructor-arg ref="backtrackingDAO" />
     </bean>
 </beans>

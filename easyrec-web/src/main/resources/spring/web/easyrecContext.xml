@@ -124,7 +124,8 @@
                 <prop key="/clustermanager/ajax/removeitemfromcluster">clusterManagerController</prop>
                 <prop key="/clustermanager/clusterimport">clusterImportController</prop>
                 <prop key="/clustermanager/ajax/searchresult">itemSearchController</prop>
-
+                <prop key="/apitest">homeController</prop>
+                <prop key="/apitestprofile">homeController</prop>
             </props>
         </property>
     </bean>
@@ -148,6 +149,7 @@
 
     <bean id="homeController" class="org.easyrec.controller.HomeController">
         <property name="operatorDAO" ref="operatorDAO"/>
+        <property name="viewInitializationService" ref="viewInitializationService"/>
     </bean>
 
     <bean id="itemTypeController" class="org.easyrec.controller.ItemTypeController">
@@ -295,6 +297,7 @@
         <property name="logEntryDAO" ref="logEntryDAO"/>
         <property name="namedConfigurationService" ref="namedConfigurationService"/>
         <property name="pluginRegistry" ref="pluginRegistry"/>
+        <property name="typeMappingService" ref="typeMappingService"/>
     </bean>
 
     <!-- Pictures for Statistics -->

@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
      */
     @Override
     public List<Item> filterDeactivatedItems(List<Item> items) {
-        List<Item> returnedItems = new ArrayList<Item>();
+        List<Item> returnedItems = new ArrayList<>();
         for (Item item : items) {
             Item i = itemDAO.get(remoteTenantDAO.get(item.getTenantId()), item.getItemId(), item.getItemType());
             if (i != null && i.isActive()) {

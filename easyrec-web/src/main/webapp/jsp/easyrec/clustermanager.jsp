@@ -21,7 +21,7 @@
 <script src="${webappPath}/js/easyrec.js" type="text/javascript"></script>
 <script type="text/javascript">
 var tenantId = "${tenantId}";
-var operatorId = "${operatorId}"
+var operatorId = "${operatorId}";
 var selectedCluster = 0;
 var draggedId = 0;
 var draggedType = "";

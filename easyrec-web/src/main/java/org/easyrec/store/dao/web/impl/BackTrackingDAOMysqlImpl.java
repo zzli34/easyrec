@@ -37,14 +37,14 @@ public class BackTrackingDAOMysqlImpl extends JdbcDaoSupport implements BackTrac
     static {
 
         SQL_ADD_ITEM = new StringBuilder().append(" INSERT INTO backtracking ")
-                .append("    (userId, tenantId, itemFromId, itemToId, assocType, timestamp) VALUES ")
-                .append("    (?,?,?,?,?,now()) ").toString();
+                .append("(userId, tenantId, itemFromId, itemFromTypeId, itemToId, itemToTypeId, recType) VALUES ")
+                .append("(?,?,?,?,?,?,?) ").toString();
 
         SQL_COUNT_ITEM = new StringBuilder().append(" SELECT count(1) FROM backtracking WHERE")
-                .append("  tenantId = ? AND itemFromId = ? and itemToId = ? and assocType = ? ").toString();
+                .append("  tenantId = ? AND itemFromId = ? AND itemFromTypeId = ? AND recType = ? AND itemToId = ? and itemToTypeId = ?").toString();
 
 
-        ARGTYPES_ADD_ITEM = new int[]{Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER};
+        ARGTYPES_ADD_ITEM = new int[]{Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER};
 
 
         PS_ADD_ITEM = new PreparedStatementCreatorFactory(SQL_ADD_ITEM, ARGTYPES_ADD_ITEM);
@@ -63,9 +63,10 @@ public class BackTrackingDAOMysqlImpl extends JdbcDaoSupport implements BackTrac
     * @see at.researchstudio.sat.recommender.remote.store.dao.ItemDAO#saveItem(java.lang.String,
     *      java.lang.String, int, java.lang.String)
     */
-    public void track(Integer userId, Integer tenantId, Integer itemFromId, Integer itemToId, Integer assocType) {
+    @Override
+    public void track(Integer userId, Integer tenantId, Integer itemFromId, Integer itemFromType, Integer itemToId, Integer itemToType, Integer recType) {
 
-        Object[] args = {userId, tenantId, itemFromId, itemToId, assocType};
+        Object[] args = {userId, tenantId, itemFromId, itemFromType, itemToId, itemToType, recType};
         try {
             getJdbcTemplate().update(PS_ADD_ITEM.newPreparedStatementCreator(args));
         } catch (Exception e) {
@@ -81,13 +82,14 @@ public class BackTrackingDAOMysqlImpl extends JdbcDaoSupport implements BackTrac
      * @see at.researchstudio.sat.recommender.remote.store.dao.ItemDAO#saveItem(java.lang.String,
      *      java.lang.String, int, java.lang.String)
      */
-    public Integer getItemCount(Integer tenantId, Integer itemFromId, Integer itemToId, Integer assocType) {
+    @Override
+    public Integer getItemCount(Integer tenantId, Integer itemFromId, Integer itemFromTypeId, Integer itemToId, Integer itemToTypeId, Integer recType) {
 
 
         try {
             return getJdbcTemplate()
-                    .queryForInt(SQL_COUNT_ITEM, new Object[]{tenantId, itemFromId, itemToId, assocType},
-                            new int[]{Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER});
+                    .queryForInt(SQL_COUNT_ITEM, new Object[]{tenantId, itemFromId, itemFromTypeId, recType, itemToId, itemToTypeId},
+                            new int[]{Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER});
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug(e);
@@ -102,6 +104,7 @@ public class BackTrackingDAOMysqlImpl extends JdbcDaoSupport implements BackTrac
      *
      * @param tenantId
      */
+    @Override
     public void clear(Integer tenantId) {
         try {
             getJdbcTemplate().update("DELETE FROM backtracking WHERE tenantId = ?", new Object[]{tenantId});

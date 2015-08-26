@@ -56,6 +56,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import org.easyrec.model.plugin.NamedConfiguration;
+import org.easyrec.service.domain.TypeMappingService;
 
 /**
  * This Controller handles the Tenant operation.
@@ -103,6 +104,7 @@ public class RemoteTenantController extends MultiActionController {
     private LogEntryDAO logEntryDAO;
     private NamedConfigurationService namedConfigurationService;
     private PluginRegistry pluginRegistry;
+    private TypeMappingService typeMappingService;
 
     public void setNamedConfigurationService(NamedConfigurationService namedConfigurationService) {
         this.namedConfigurationService = namedConfigurationService;
@@ -158,6 +160,10 @@ public class RemoteTenantController extends MultiActionController {
 
     public void setItemService(ItemService itemService) {
         this.itemService = itemService;
+    }
+
+    public void setTypeMappingService(TypeMappingService typeMappingService) {
+        this.typeMappingService = typeMappingService;
     }
 
     public ModelAndView register(HttpServletRequest request, HttpServletResponse response) {
@@ -448,7 +454,7 @@ public class RemoteTenantController extends MultiActionController {
             // "view"   null
             // "bought" null
             // "rated"  null
-            HashMap<String, List<Assoc>> itemAssocs = new HashMap<String, List<Assoc>>();
+            HashMap<String, List<Assoc>> itemAssocs = new HashMap<>();
             for (String string : assocTypes) {
                 itemAssocs.put(string, new ArrayList<Assoc>());
             }
@@ -483,7 +489,9 @@ public class RemoteTenantController extends MultiActionController {
 
                         Integer count = backTrackingDAO.getItemCount(remoteTenant.getId(),
                                 idMappingDAO.lookup(itemAssocVO.getItemFrom().getItem()),
+                                typeMappingService.getIdOfItemType(remoteTenant.getId(), itemAssocVO.getItemFrom().getType()), 
                                 idMappingDAO.lookup(itemAssocVO.getItemTo().getItem()),
+                                typeMappingService.getIdOfItemType(remoteTenant.getId(), itemAssocVO.getItemTo().getType()),
                                 assocTypeDAO.getIdOfType(remoteTenant.getId(), itemAssocVO.getAssocType()));
 
                         itemTo.setValue(count != null ? count.doubleValue() : null);

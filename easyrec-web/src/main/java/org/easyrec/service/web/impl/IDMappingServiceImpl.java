@@ -34,6 +34,7 @@ import org.easyrec.store.dao.core.types.ItemTypeDAO;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.easyrec.vocabulary.WS;
 
 /**
  * <DESCRIPTION>
@@ -53,11 +54,11 @@ import java.util.List;
  */
 public class IDMappingServiceImpl implements IDMappingService {
 
-    private IDMappingDAO idMappingDAO;
-    private ItemDAO itemDAO;
-    private TenantService tenantService;
-    private AssocTypeDAO assocTypeDAO;
-    private ItemTypeDAO itemTypeDAO;
+    private final IDMappingDAO idMappingDAO;
+    private final ItemDAO itemDAO;
+    private final TenantService tenantService;
+    private final AssocTypeDAO assocTypeDAO;
+    private final ItemTypeDAO itemTypeDAO;
 
 
     public IDMappingServiceImpl(IDMappingDAO idMappingDAO, ItemDAO itemDAO, TenantService tenantService,
@@ -264,7 +265,7 @@ public class IDMappingServiceImpl implements IDMappingService {
     public List<Item> mapListOfItemVOs(List<ItemVO<Integer, String>> inList,
             RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations) {
      
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         Item item = null;
         if (inList != null) {
             for (ItemVO<Integer, String> itemVO : inList) {
@@ -278,13 +279,14 @@ public class IDMappingServiceImpl implements IDMappingService {
                     if (item.isActive()) {
 
                         // set tracking url
-                        // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
+                        // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&ft=3&i=3&it=2&a=4&u=www.flimmit.com
                         String itemUrl = item.getUrl();
 
                         if (remoteTenant.backtrackingEnabled()) {
+                            Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), itemVO.getType());
                             itemUrl = Item
-                                    .getTrackingUrl(session, userId, remoteTenant, 0, itemVO.getItem(),
-                                            BackTrackingController.ASSOC_HISTORY, item.getUrl());
+                                    .getTrackingUrl(session, userId, remoteTenant, 0,0, itemVO.getItem(),itemToType,
+                                            WS.recTypes.get(WS.RECTYPE_HISTORY), item.getUrl());
                         }
 
                         // to make webapp thread-safe, a new item is created
@@ -302,17 +304,18 @@ public class IDMappingServiceImpl implements IDMappingService {
      * This function maps the Items from the coreRec into
      * local Items that contain more information such as description,
      * item url or item image url.
-     * Note 23.10.2008:
-     * The CoreRec does not keep any information about the items so far.
-     * This is why all information about items is kept in a separate
-     * table. It is planned that easyrec will also store itemProfiles
-     * in near future.
+     * @param recommendation
+     * @param remoteTenant
+     * @param userId
+     * @param session
+     * @param numberOfRecommendations
+     * @return 
      */
     @Override
     public List<Item> mapRecommendedItems(
             RecommendationVO<Integer, String> recommendation,
             RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations) {
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         Item item = null;
 
         if (recommendation != null && recommendation.getRecommendedItems() != null) {
@@ -336,7 +339,7 @@ public class IDMappingServiceImpl implements IDMappingService {
 
                         // assocTypeId: recommendations for user
                         if (assocTypeId == null) {
-                            assocTypeId = BackTrackingController.ASSOC_RECOMMENDATIONS_FOR_USER;
+                            assocTypeId = WS.recTypes.get(WS.RECTYPE_RECS_FOR_USER);
                         }
 
                         Integer itemFromId = recommendation.getQueriedItem();
@@ -344,11 +347,13 @@ public class IDMappingServiceImpl implements IDMappingService {
                         // default item fromid = 0 in case of "recommendations for user"
                         if (itemFromId == null) {
                             itemFromId = 0;
-                        }
-
+                        }                        
+                        
                         if (remoteTenant.backtrackingEnabled()) {
-                                itemUrl = Item.getTrackingUrl(session, userId, remoteTenant, itemFromId,
-                                    recommendedItem.getItem().getItem(), assocTypeId, item.getUrl());
+                            Integer itemFromType = itemTypeDAO.getIdOfType(remoteTenant.getId(), recommendation.getQueriedItemType());
+                            Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), recommendedItem.getItem().getType());
+                                itemUrl = Item.getTrackingUrl(session, userId, remoteTenant, itemFromId, itemFromType,
+                                    recommendedItem.getItem().getItem(),itemToType, assocTypeId, item.getUrl());
                         }
 
                         // to make webapp thread-safe, a new item is created
@@ -369,11 +374,16 @@ public class IDMappingServiceImpl implements IDMappingService {
      * This function maps the Items from the coreRec into
      * local Items that contain more information such as description,
      * item url or item image url.
+     * @param rankedItems
+     * @param remoteTenant
+     * @param session
+     * @param numberOfRecommendations
+     * @return 
      */
     @Override
     public List<Item> mapRankedItems(List<RankedItemVO<Integer, String>> rankedItems,
                                      RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         Item item = null;
 
         if (rankedItems != null) {
@@ -392,9 +402,10 @@ public class IDMappingServiceImpl implements IDMappingService {
                         String itemUrl = item.getUrl();
 
                         if (remoteTenant.backtrackingEnabled()) {
+                            Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), rankedItem.getItem().getType());
                             itemUrl = Item
-                                    .getTrackingUrl(session, 0, remoteTenant, 0, rankedItem.getItem().getItem(),
-                                            BackTrackingController.ASSOC_RANKINGS, item.getUrl());
+                                    .getTrackingUrl(session, 0, remoteTenant, 0, 0, rankedItem.getItem().getItem(), itemToType,
+                                            WS.recTypes.get(WS.RECTYPE_RANKING), item.getUrl());
                         }
 
                         // to make webapp thread-safe, a new item is created
@@ -411,7 +422,7 @@ public class IDMappingServiceImpl implements IDMappingService {
     @Override
     public List<Item> mapRatedItems(List<RatingVO<Integer, String>> ratedItems,
                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         Item item = null;
 
         if (ratedItems != null) {
@@ -428,9 +439,10 @@ public class IDMappingServiceImpl implements IDMappingService {
                         String itemUrl = item.getUrl();
 
                         if (remoteTenant.backtrackingEnabled()) {
+                            Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), ratedItem.getItem().getType());
                             itemUrl = Item
-                                    .getTrackingUrl(session, 0, remoteTenant, 0, ratedItem.getItem().getItem(),
-                                            BackTrackingController.ASSOC_RATINGS, item.getUrl());
+                                    .getTrackingUrl(session, 0, remoteTenant, 0, 0, ratedItem.getItem().getItem(), itemToType,
+                                            WS.recTypes.get(WS.RECTYPE_RANKING), item.getUrl());
                         }
 
                         // to make webapp thread-safe, a new item is created
@@ -449,19 +461,19 @@ public class IDMappingServiceImpl implements IDMappingService {
             List<ItemAssocVO<Integer, String>> itemAssocs,
             boolean filterInactiveRules) {
         List<ItemAssocVO<String, String>> rules =
-                new ArrayList<ItemAssocVO<String, String>>();
+                new ArrayList<>();
         ItemAssocVO<String, String> rule = null;
 
         if (itemAssocs != null) {
             for (ItemAssocVO<Integer, String> itemAssoc : itemAssocs) {
                 if (itemAssoc.isActive() || !filterInactiveRules) {
-                    rule = new ItemAssocVO<String, String>(itemAssoc.getId(),
+                    rule = new ItemAssocVO<>(itemAssoc.getId(),
                             tenantService.getTenantById(itemAssoc.getItemFrom().getTenant()).getStringId(),
-                            new ItemVO<String, String>(
+                            new ItemVO<>(
                                     tenantService.getTenantById(itemAssoc.getItemFrom().getTenant()).getStringId(),
                                     idMappingDAO.lookup(itemAssoc.getItemFrom().getItem()),
                                     itemAssoc.getItemFrom().getType()), itemAssoc.getAssocType(),
-                            itemAssoc.getAssocValue(), new ItemVO<String, String>(
+                            itemAssoc.getAssocValue(), new ItemVO<>(
                             tenantService.getTenantById(itemAssoc.getItemTo().getTenant()).getStringId(),
                             idMappingDAO.lookup(itemAssoc.getItemTo().getItem()),
                             itemAssoc.getItemTo().getType()), itemAssoc.getSourceType(),
@@ -479,11 +491,16 @@ public class IDMappingServiceImpl implements IDMappingService {
      * This function maps the Items from the coreRec into
      * local Items that contain more information such as description,
      * item url or item image url.
+     * @param clusterItems
+     * @param remoteTenant
+     * @param session
+     * @param numberOfRecommendations
+     * @return 
      */
     @Override
     public List<Item> mapClusterItems(List<ItemVO<Integer, Integer>> clusterItems,
                                       RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         Item item = null;
 
         if (clusterItems != null) {
@@ -503,8 +520,8 @@ public class IDMappingServiceImpl implements IDMappingService {
 
                         if (remoteTenant.backtrackingEnabled()) {
                             itemUrl = Item
-                                    .getTrackingUrl(session, 0, remoteTenant, 0, clusterItem.getItem(),
-                                            BackTrackingController.ASSOC_CLUSTER, item.getUrl());
+                                    .getTrackingUrl(session, 0, remoteTenant, 0,0, clusterItem.getItem(), clusterItem.getType(),
+                                            WS.recTypes.get(WS.RECTYPE_CLUSTER), item.getUrl());
                         }
 
                         // to make webapp thread-safe, a new item is created

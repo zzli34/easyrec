@@ -68,6 +68,7 @@ import org.easyrec.model.plugin.LogEntry;
 import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
 import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
 import org.easyrec.store.dao.plugin.LogEntryDAO;
+import org.easyrec.store.dao.web.BackTrackingDAO;
 
 /**
  * @author szavrel
@@ -97,6 +98,7 @@ public class EasyRec {
     private final GeneratorContainer generatorContainer;
     private final ObjectMapper objectMapper;
     private final LogEntryDAO logEntryDAO;
+    private final BackTrackingDAO backTrackingDAO;
 
 
     // Jamon Loggers
@@ -104,6 +106,7 @@ public class EasyRec {
     private final static String JAMON_REST_BUY = "rest.buy";
     private final static String JAMON_REST_RATE = "rest.rate";
     private final static String JAMON_REST_ACTION = "rest.action";
+    private final static String JAMON_REST_TRACK = "rest.track";
     private final static String JAMON_REST_ALSO_VIEWED = "rest.alsoviewed";
     private final static String JAMON_REST_ALSO_BOUGHT = "rest.alsobought";
     private final static String JAMON_REST_ALSO_RATED = "rest.alsorated";
@@ -136,7 +139,8 @@ public class EasyRec {
                    GeneratorContainer generatorContainer,
                    String dateFormatString,
                    ObjectMapper objectMapper,
-                   LogEntryDAO logEntryDAO) {
+                   LogEntryDAO logEntryDAO,
+                   BackTrackingDAO backTrackingDAO) {
         this.operatorDAO = operatorDAO;
         this.remoteTenantDAO = remoteTenantDAO;
         this.shopRecommenderService = shopRecommenderService;
@@ -153,6 +157,7 @@ public class EasyRec {
         this.generatorContainer = generatorContainer;
         this.objectMapper = objectMapper;
         this.logEntryDAO = logEntryDAO;
+        this.backTrackingDAO = backTrackingDAO;
     }
 
     @GET
@@ -471,6 +476,103 @@ public class EasyRec {
         }
     }
 
+    @GET
+    @Path("/track")
+    public Response track(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
+                         @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
+                         @QueryParam("sessionid") String sessionId, @QueryParam("itemfromid") String itemFromId,
+                         @QueryParam("itemfromtype") String itemFromType, @QueryParam("itemtoid") String itemToId,
+                         @QueryParam("itemtotype") String itemToType, @QueryParam("rectype") String recType,
+                         @QueryParam("callback") String callback, @QueryParam("token") String token)
+            throws EasyRecException {
+
+        Monitor mon = MonitorFactory.start(JAMON_REST_TRACK);
+
+        if (easyrecSettings.getSecuredAPIMethods().contains("track")) {
+            Operator o = operatorDAO.getOperatorFromToken(token);
+            if (o == null)
+                exceptionResponse(WS.ACTION_TRACK, MSG.WRONG_TOKEN, type, callback);
+            else
+                apiKey = o.getApiKey();
+        }
+
+        // Collect a List of messages for the user to understand,
+        // what went wrong (e.g. Wrong API key).
+        List<Message> messages = new ArrayList<>();
+
+        Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
+
+        if (coreTenantId == null)
+            messages.add(MSG.TENANT_WRONG_TENANT_APIKEY);
+        if (Strings.isNullOrEmpty(sessionId))
+            messages.add(MSG.USER_NO_SESSION_ID);
+        if (itemFromId != null && itemFromId.equals(itemToId))
+            messages.add(MSG.ITEMFROM_EQUAL_ITEMTO);
+        
+        RemoteTenant r = remoteTenantDAO.get(coreTenantId);
+        if (Strings.isNullOrEmpty(itemFromType)) itemFromType = Item.DEFAULT_STRING_ITEM_TYPE;
+        if (Strings.isNullOrEmpty(itemToType)) itemToType = Item.DEFAULT_STRING_ITEM_TYPE;
+        int itemFromTypeId = checkItemType(itemFromType, coreTenantId, tenantId, messages);
+        int itemToTypeId = checkItemType(itemToType, coreTenantId, tenantId, messages);
+        Item itemTo = null;
+        Integer recTypeId = 0;
+        if (itemFromTypeId != 0) {
+            
+            if (!Strings.isNullOrEmpty(itemFromId)) {
+                Item itemFrom = itemDAO.get(r, itemFromId, itemFromType);
+                if (itemFrom == null)
+                    messages.add(MSG.ITEM_FROM_ID_DOES_NOT_EXIST);
+            }
+
+            if (itemToTypeId != 0) {
+                itemTo = itemDAO.get(r, itemToId, itemToType);
+
+                if (itemTo == null)
+                    messages.add(MSG.ITEM_TO_ID_DOES_NOT_EXIST);
+
+                if (recType == null)
+                    messages.add(MSG.REC_TYPE_NEEDED);
+                else {
+                    recTypeId = WS.recTypes.get(recType);
+                    if (recTypeId == null) {                   
+                        try {
+                            recTypeId = typeMappingService.getIdOfAssocType(coreTenantId, recType);
+                        } catch (Exception e) {
+                            messages.add(MSG.ASSOC_TYPE_DOES_NOT_EXIST);
+                        }
+                        if (recTypeId == null) {
+                            messages.add(MSG.REC_TYPE_NEEDED);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (messages.size() > 0) {
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON))
+                throw new EasyRecException(messages, WS.ACTION_TRACK, WS.RESPONSE_TYPE_JSON, callback);
+            else
+                throw new EasyRecException(messages, WS.ACTION_TRACK);
+        }
+
+        // if userid is empty use sessionid instead of the userid
+        userId = Strings.isNullOrEmpty(userId) ? sessionId: userId;
+        
+        backTrackingDAO.track(idMappingDAO.lookup(userId), coreTenantId, Strings.isNullOrEmpty(itemFromId) ? 0: idMappingDAO.lookup(itemFromId), itemFromTypeId, idMappingDAO.lookup(itemToId), itemToTypeId, recTypeId);
+
+        ResponseItem respItem = new ResponseItem(tenantId, WS.ACTION_TRACK, userId, sessionId, null, itemTo);
+        mon.stop();
+
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
+            if (callback != null)
+                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
+                        .build();
+            else
+                return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
+        } else
+            return Response.ok(respItem, WS.RESPONSE_TYPE_XML).build();
+    }
+    
 
     @GET
     @Path("/otherusersalsoviewed")
@@ -1884,6 +1986,21 @@ public class EasyRec {
         }
     }
 
+    private int checkItemType(String itemType, Integer coreTenantId, String tenantId, List<Message> messages) {
+        if (itemType != null)
+            itemType = itemType.trim();
+
+        try {
+            int type = typeMappingService.getIdOfItemType(coreTenantId, itemType, true);
+
+            return type;
+        } catch (IllegalArgumentException ex) {
+            messages.add(MSG.OPERATION_FAILED.append(
+                    String.format(" itemType %s not found for tenant %s", itemType, tenantId)));
+            return 0;
+        }
+    }
+    
     private String checkItemType(String itemType, String type, Integer coreTenantId, String tenantId, String operation,
                                  String callback) {
         return checkItemType(itemType, type, coreTenantId, tenantId, operation, callback, Item.DEFAULT_STRING_ITEM_TYPE);
@@ -1892,7 +2009,7 @@ public class EasyRec {
     private String checkItemType(String itemType, String type, Integer coreTenantId, String tenantId, String operation,
                                  String callback, @Nullable String defaultValue) {
         if (itemType != null)
-            itemType = CharMatcher.WHITESPACE.trimFrom(itemType);
+            itemType = itemType.trim();
 
         if (Strings.isNullOrEmpty(itemType))
             return defaultValue;

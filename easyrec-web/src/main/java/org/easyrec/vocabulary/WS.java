@@ -1,5 +1,7 @@
 package org.easyrec.vocabulary;
 
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,6 +28,7 @@ public class WS implements InitializingBean {
     public final static String ACTION_BUY = "buy";
     public final static String ACTION_RATE = "rate";
     public static final String ACTION_SENDACTION = "sendaction";
+    public static final String ACTION_TRACK = "track";
     public static final String ACTION_MOST_VIEWED = "mostvieweditems";
     public static final String ACTION_MOST_BOUGHT = "mostboughtitems";
     public static final String ACTION_MOST_RATED = "mostrateditems";
@@ -59,8 +62,22 @@ public class WS implements InitializingBean {
     // vocabulary for the profile webservice
     public final static String RESPONSE_TYPE_PATH_JSON = "/json";
     public final static String RESPONSE_TYPE_PATH_XML = "";
-
-
+    
+    // vocabulary for backtracking
+    public static final String RECTYPE_RECS_FOR_USER = "RECS_FOR_USER";
+    public static final String RECTYPE_RANKING = "RANKING";
+    //public static final int RECTYPE_RATINGS = 997;
+    public static final String RECTYPE_CLUSTER = "CLUSTER";
+    public static final String RECTYPE_HISTORY = "HISTORY";
+    
+    public final static BidiMap<String, Integer> recTypes = new DualHashBidiMap<>();
+    static {
+        recTypes.put(RECTYPE_RECS_FOR_USER, 999);
+        recTypes.put(RECTYPE_RANKING, 998);
+        recTypes.put(RECTYPE_CLUSTER, 996);
+        recTypes.put(RECTYPE_HISTORY, 995);
+    }
+    
     public WS(Integer DEFAULT_NUMBER_OF_RESULTS, Integer MAX_NUMBER_OF_RANKING_RESULTS, Integer ACTION_HISTORY_DEPTH) {
         setDEFAULT_NUMBER_OF_RESULTS(DEFAULT_NUMBER_OF_RESULTS);
         setMAX_NUMBER_OF_RANKING_RESULTS(MAX_NUMBER_OF_RANKING_RESULTS);

@@ -465,6 +465,7 @@ public interface ShopRecommenderService {
      * @param itemId            the id of the item that was already viewed (searching for rules containing this item)
      * @param itemType          the type of the item that was already viewed (searching for rules containing this item)
      * @param requestedItemType optional, if set, only items of the requested type are used in the result
+     * @param numberOfResults
      * @return an array of {@link RecommendedItem}s, based on business rules that identify items as 'viewed together'
      * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
      */
@@ -481,10 +482,11 @@ public interface ShopRecommenderService {
      *
      * @param tenant            tenant identifier
      * @param userId            optional user id, only used to filter items the user has already searched (and for logging purposes)
-     * @param sessionId         optional session id, only used to filter items the user has already searched (and for logging purposes)
+     * @param session         optional session id, only used to filter items the user has already searched (and for logging purposes)
      * @param itemId            the id of the item that was already searched (searching for rules containing this item)
      * @param itemType          the type of the item that was already searched (searching for rules containing this item)
      * @param requestedItemType optional, if set, only items of the requested type are used in the result
+     * @param numberOfResults
      * @return an array of {@link RecommendedItem}s, based on business rules that identify items as 'searched together'
      * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
      */

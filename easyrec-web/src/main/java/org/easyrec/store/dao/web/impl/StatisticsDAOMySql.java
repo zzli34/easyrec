@@ -170,18 +170,19 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
             String sAssocType = " 1=1 ";
             if (assocType != null) {
                 if (assocType > 1000) {
-                    sAssocType = " assocType < 100";
+                    sAssocType = " recType < 100";
                 } else {
-                    sAssocType = " assocType = " + assocType;
+                    sAssocType = " recType = " + assocType;
                 }
             }
 
             sql = new StringBuilder().append("SELECT ")
-                    .append("	IF(assocType < 100 || assocType = 999, 1001, assocType) as actionTypeId, ")
-                    .append("	DAY(timestamp) as unit,  ").append("	COUNT(1) as cnt ").append("FROM  ")
+                    // SQL IF Syntax: IF(condition, if branch, else branch)
+                    .append("	IF(recType < 100 || recType = 999, 1001, recType) as actionTypeId, ")
+                    .append("	DAY(actionTime) as unit,  ").append("	COUNT(1) as cnt ").append("FROM  ")
                     .append("	backtracking   ").append("WHERE  ").append("	tenantId = ? AND    ")
-                    .append("	timestamp > ? AND  ").append("	timestamp < ? AND ").append(sAssocType)
-                    .append(" GROUP BY  ").append("	assocType,  ").append("	DAY(timestamp) ");
+                    .append("	actionTime > ? AND  ").append("	actionTime < ? AND ").append(sAssocType)
+                    .append(" GROUP BY  ").append("	recType,  ").append("	DAY(actionTime) ");
 
             rs = getJdbcTemplate().queryForRowSet(sql.toString(), new Object[]{tenant, new Date(from), new Date(to)},
                     new int[]{Types.INTEGER, Types.DATE, Types.DATE});
