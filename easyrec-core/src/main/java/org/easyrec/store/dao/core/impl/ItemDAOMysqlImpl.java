@@ -122,7 +122,7 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
         SQL_HOT_ITEMS = new StringBuilder().append("SELECT ").append("   i.*, count(1) as value ").append(" FROM ")
                 .append("   backtracking b INNER JOIN idmapping m ON (b.itemFromId = m.intId) ")
                 .append(" INNER JOIN item i ON (i.itemid = m.stringId AND i.tenantId = b.tenantId) ")
-                .append(" WHERE b.tenantId = ? ").append(" GROUP BY b.itemFromId, b.tenantId  ")
+                .append(" WHERE b.tenantId = ? ").append(" GROUP BY b.itemFromId, b.itemFromTypeId  ")
                 .append(" ORDER BY value DESC ").toString();
 
 

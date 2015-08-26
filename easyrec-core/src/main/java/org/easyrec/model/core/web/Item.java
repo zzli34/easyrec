@@ -313,21 +313,23 @@ public class Item implements Serializable {
      * @param userId
      * @param tenant
      * @param itemFrom
+     * @param itemFromType
      * @param itemTo
+     * @param itemToType
      * @param assocType
      * @param url
      * @return 
      */
-    public static String getTrackingUrl(Session session, Integer userId, RemoteTenant tenant, Integer itemFrom,
-                                        Integer itemTo, Integer assocType, String url) {
+    public static String getTrackingUrl(Session session, Integer userId, RemoteTenant tenant, Integer itemFrom, Integer itemFromType,
+                                        Integer itemTo, Integer itemToType, Integer assocType, String url) {
 
         try {
             if (!Strings.isNullOrEmpty(tenant.getBacktrackingURL())) {
                 return tenant.getBacktrackingURL() + "/t?" + "r=" + userId + "&t=" + tenant.getId() + "&f=" +
-                    itemFrom + "&i=" + itemTo + "&a=" + assocType + "&u=" + URLEncoder.encode(url, "UTF-8");                
+                    itemFrom + "&ft=" + itemFromType + "&i=" + itemTo + "&it=" + itemToType + "&a=" + assocType + "&u=" + URLEncoder.encode(url, "UTF-8");                
             } else {
                 return Web.getExtendedWebAppPathFromRequestURI(session.getRequest()) + "/t?" + "r=" + userId + "&t=" + tenant.getId() + "&f=" +
-                    itemFrom + "&i=" + itemTo + "&a=" + assocType + "&u=" + URLEncoder.encode(url, "UTF-8");
+                    itemFrom + "&ft=" + itemFromType + "&i=" + itemTo + "&it=" + itemToType + "&a=" + assocType + "&u=" + URLEncoder.encode(url, "UTF-8");
             }
         } catch (Exception e) {
             logger.warn("An error occurred!", e);

@@ -44,12 +44,12 @@ import java.util.Set;
  * @author Roman Cerny
  */
 public class TypeMappingServiceImpl implements TypeMappingService {
-    private ActionTypeDAO actionTypeDAO;
-    private AggregateTypeDAO aggregateTypeDAO;
-    private AssocTypeDAO assocTypeDAO;
-    private ItemTypeDAO itemTypeDAO;
-    private SourceTypeDAO sourceTypeDAO;
-    private ViewTypeDAO viewTypeDAO;
+    private final ActionTypeDAO actionTypeDAO;
+    private final AggregateTypeDAO aggregateTypeDAO;
+    private final AssocTypeDAO assocTypeDAO;
+    private final ItemTypeDAO itemTypeDAO;
+    private final SourceTypeDAO sourceTypeDAO;
+    private final ViewTypeDAO viewTypeDAO;
 
     public TypeMappingServiceImpl(ActionTypeDAO actionTypeDAO, AggregateTypeDAO aggregateTypeDAO,
                                   AssocTypeDAO assocTypeDAO, ItemTypeDAO itemTypeDAO, SourceTypeDAO sourceTypeDAO,
@@ -124,7 +124,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new IAConstraintVO<Integer, String>(
+        return new IAConstraintVO<>(
                 constraint.getNumberOfResults(), viewTypeDAO.getTypeById(tenantId, constraint.getViewType()),
                 sourceTypeDAO.getTypeById(tenantId, constraint.getSourceType()), constraint.getSourceInfo(),
                 constraint.getTenant(), constraint.isActive(), constraint.getSortAsc());
@@ -137,7 +137,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new IAConstraintVO<Integer, Integer>(
+        return new IAConstraintVO<>(
                 typedConstraint.getNumberOfResults(), viewTypeDAO.getIdOfType(tenantId, typedConstraint.getViewType()),
                 sourceTypeDAO.getIdOfType(tenantId, typedConstraint.getSourceType()), typedConstraint.getSourceInfo(),
                 typedConstraint.getTenant(), typedConstraint.isActive(), typedConstraint.getSortAsc());
@@ -150,7 +150,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ItemAssocVO<Integer, String>(
+        return new ItemAssocVO<>(
                 itemAssoc.getId(), itemAssoc.getTenant(), convertItemVO(tenantId, itemAssoc.getItemFrom()),
                 assocTypeDAO.getTypeById(tenantId, itemAssoc.getAssocType()), itemAssoc.getAssocValue(),
                 convertItemVO(tenantId, itemAssoc.getItemTo()),
@@ -166,7 +166,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ItemAssocVO<Integer,Integer>(
+        return new ItemAssocVO<>(
                 typedItemAssoc.getId(), typedItemAssoc.getTenant(),
                 convertTypedItemVO(tenantId, typedItemAssoc.getItemFrom()),
                 assocTypeDAO.getIdOfType(tenantId, typedItemAssoc.getAssocType()), typedItemAssoc.getAssocValue(),
@@ -182,7 +182,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ItemVO<Integer, String>(item.getTenant(),
+        return new ItemVO<>(item.getTenant(),
                 item.getItem(), itemTypeDAO.getTypeById(tenantId, item.getType()));
     }
 
@@ -193,7 +193,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new ItemVO<Integer, Integer>(typedItem.getTenant(),
+        return new ItemVO<>(typedItem.getTenant(),
                 typedItem.getItem(), itemTypeDAO.getIdOfType(tenantId, typedItem.getType()));
     }
 
@@ -204,7 +204,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RankedItemVO<Integer, String>(
+        return new RankedItemVO<>(
                 convertItemVO(tenantId, rankedItem.getItem()),
                 actionTypeDAO.getTypeById(tenantId, rankedItem.getActionType()), rankedItem.getRank(),
                 rankedItem.getCount());
@@ -217,7 +217,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RankedItemVO<Integer, Integer>(
+        return new RankedItemVO<>(
                 convertTypedItemVO(tenantId, typedRankedItem.getItem()),
                 actionTypeDAO.getIdOfType(tenantId, typedRankedItem.getActionType()), typedRankedItem.getRank(),
                 typedRankedItem.getCount());
@@ -230,7 +230,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RatingVO<Integer, String>(
+        return new RatingVO<>(
                 convertItemVO(tenantId, rating.getItem()), rating.getRatingValue(), rating.getCount(),
                 rating.getLastActionTime(), rating.getUser(), rating.getSessionId());
     }
@@ -242,7 +242,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RatingVO<Integer, Integer>(
+        return new RatingVO<>(
                 convertTypedItemVO(tenantId, typedRating.getItem()), typedRating.getRatingValue(),
                 typedRating.getCount(), typedRating.getLastActionTime(), typedRating.getUser(),
                 typedRating.getSessionId());
@@ -255,7 +255,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RecommendationVO<Integer, String>(
+        return new RecommendationVO<>(
                 recommendation.getId(), recommendation.getTenant(), recommendation.getUser(),
                 recommendation.getQueriedItem(), itemTypeDAO.getTypeById(tenantId, recommendation.getQueriedItemType()),
                 assocTypeDAO.getTypeById(tenantId, recommendation.getQueriedAssocType()),
@@ -272,7 +272,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RecommendationVO<Integer, Integer>(
+        return new RecommendationVO<>(
                 typedRecommendation.getId(), typedRecommendation.getTenant(), typedRecommendation.getUser(),
                 typedRecommendation.getQueriedItem(),
                 itemTypeDAO.getIdOfType(tenantId, typedRecommendation.getQueriedItemType()),
@@ -290,7 +290,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RecommendedItemVO<Integer, String>(
+        return new RecommendedItemVO<>(
                 recommendedItem.getId(), convertItemVO(tenantId, recommendedItem.getItem()),
                 recommendedItem.getPredictionValue(), recommendedItem.getRecommendationId(),
                 recommendedItem.getItemAssocId(), recommendedItem.getExplanation());
@@ -303,7 +303,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
             return null;
         }
 
-        return new RecommendedItemVO<Integer, Integer>(
+        return new RecommendedItemVO<>(
                 typedRecommendedItem.getId(), convertTypedItemVO(tenantId, typedRecommendedItem.getItem()),
                 typedRecommendedItem.getPredictionValue(), typedRecommendedItem.getRecommendationId(),
                 typedRecommendedItem.getItemAssocId(), typedRecommendedItem.getExplanation());
@@ -316,7 +316,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ActionVO<Integer, String>> outList = new ArrayList<ActionVO<Integer, String>>();
+        List<ActionVO<Integer, String>> outList = new ArrayList<>();
 
         for (ActionVO<Integer, Integer> action : inList) {
             outList.add(convertActionVO(tenantId, action));
@@ -330,7 +330,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ActionVO<Integer, Integer>> outList = new ArrayList<ActionVO<Integer, Integer>>();
+        List<ActionVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (ActionVO<Integer, String> typedAction : inList) {
             outList.add(convertTypedActionVO(tenantId, typedAction));
@@ -344,7 +344,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<AssociatedItemVO<Integer, String>> outList = new ArrayList<AssociatedItemVO<Integer, String>>();
+        List<AssociatedItemVO<Integer, String>> outList = new ArrayList<>();
 
         for (AssociatedItemVO<Integer, Integer> associatedItem : inList) {
             outList.add(convertAssociatedItemVO(tenantId, associatedItem));
@@ -359,7 +359,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<AssociatedItemVO<Integer, Integer>> outList = new ArrayList<AssociatedItemVO<Integer, Integer>>();
+        List<AssociatedItemVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (AssociatedItemVO<Integer, String> typedAssociatedItem : inList) {
             outList.add(convertTypedAssociatedItemVO(tenantId, typedAssociatedItem));
@@ -374,7 +374,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<IAConstraintVO<Integer, String>> outList = new ArrayList<IAConstraintVO<Integer, String>>();
+        List<IAConstraintVO<Integer, String>> outList = new ArrayList<>();
 
         for (IAConstraintVO<Integer, Integer> constraint : inList) {
             outList.add(convertIAConstraintVO(tenantId, constraint));
@@ -389,7 +389,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<IAConstraintVO<Integer, Integer>> outList = new ArrayList<IAConstraintVO<Integer, Integer>>();
+        List<IAConstraintVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (IAConstraintVO<Integer, String> typedConstraint : inList) {
             outList.add(convertTypedIAConstraintVO(tenantId, typedConstraint));
@@ -404,7 +404,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ItemAssocVO<Integer, String>> outList = new ArrayList<ItemAssocVO<Integer, String>>();
+        List<ItemAssocVO<Integer, String>> outList = new ArrayList<>();
 
         for (ItemAssocVO<Integer,Integer> itemAssoc : inList) {
             outList.add(convertItemAssocVO(tenantId, itemAssoc));
@@ -418,7 +418,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ItemAssocVO<Integer,Integer>> outList = new ArrayList<ItemAssocVO<Integer,Integer>>();
+        List<ItemAssocVO<Integer,Integer>> outList = new ArrayList<>();
 
         for (ItemAssocVO<Integer, String> typedItemAssoc : inList) {
             outList.add(convertTypedItemAssocVO(tenantId, typedItemAssoc));
@@ -432,7 +432,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ItemVO<Integer, String>> outList = new ArrayList<ItemVO<Integer, String>>();
+        List<ItemVO<Integer, String>> outList = new ArrayList<>();
 
         for (ItemVO<Integer, Integer> item : inList) {
             outList.add(convertItemVO(tenantId, item));
@@ -446,7 +446,7 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         if (inList == null) {
             return null;
         }
-        List<ItemVO<Integer, Integer>> outList = new ArrayList<ItemVO<Integer, Integer>>();
+        List<ItemVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (ItemVO<Integer, String> typedItem : inList) {
             outList.add(convertTypedItemVO(tenantId, typedItem));
@@ -454,12 +454,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RankedItemVO<Integer, String>> convertListOfRankedItemVOs(Integer tenantId,
                                                                                            List<RankedItemVO<Integer, Integer>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RankedItemVO<Integer, String>> outList = new ArrayList<RankedItemVO<Integer, String>>();
+        List<RankedItemVO<Integer, String>> outList = new ArrayList<>();
 
         for (RankedItemVO<Integer, Integer> rankedItem : inList) {
             outList.add(convertRankedItemVO(tenantId, rankedItem));
@@ -468,12 +469,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RankedItemVO<Integer, Integer>> convertListOfTypedRankedItemVOs(Integer tenantId,
                                                                                                   List<RankedItemVO<Integer, String>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RankedItemVO<Integer, Integer>> outList = new ArrayList<RankedItemVO<Integer, Integer>>();
+        List<RankedItemVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (RankedItemVO<Integer, String> typedRankedItem : inList) {
             outList.add(convertTypedRankedItemVO(tenantId, typedRankedItem));
@@ -482,12 +484,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RatingVO<Integer, String>> convertListOfRatingVOs(Integer tenantId,
                                                                                     List<RatingVO<Integer, Integer>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RatingVO<Integer, String>> outList = new ArrayList<RatingVO<Integer, String>>();
+        List<RatingVO<Integer, String>> outList = new ArrayList<>();
 
         for (RatingVO<Integer, Integer> rating : inList) {
             outList.add(convertRatingVO(tenantId, rating));
@@ -496,12 +499,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RatingVO<Integer, Integer>> convertListOfTypedRatingVOs(Integer tenantId,
                                                                                           List<RatingVO<Integer, String>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RatingVO<Integer, Integer>> outList = new ArrayList<RatingVO<Integer, Integer>>();
+        List<RatingVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (RatingVO<Integer, String> typedRating : inList) {
             outList.add(convertTypedRatingVO(tenantId, typedRating));
@@ -510,12 +514,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendationVO<Integer, String>> convertListOfRecommendationVO(
             Integer tenantId, List<RecommendationVO<Integer, Integer>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RecommendationVO<Integer, String>> outList = new ArrayList<RecommendationVO<Integer, String>>();
+        List<RecommendationVO<Integer, String>> outList = new ArrayList<>();
 
         for (RecommendationVO<Integer, Integer> recommendation : inList) {
             outList.add(convertRecommendationVO(tenantId, recommendation));
@@ -524,12 +529,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendationVO<Integer, Integer>> convertListOfTypedRecommendationVO(
             Integer tenantId, List<RecommendationVO<Integer, String>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RecommendationVO<Integer, Integer>> outList = new ArrayList<RecommendationVO<Integer, Integer>>();
+        List<RecommendationVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (RecommendationVO<Integer, String> typedRecommendation : inList) {
             outList.add(convertTypedRecommendationVO(tenantId, typedRecommendation));
@@ -538,12 +544,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendedItemVO<Integer, String>> convertListOfRecommendedItemVOs(Integer tenantId,
                                                                                              List<RecommendedItemVO<Integer, Integer>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RecommendedItemVO<Integer, String>> outList = new ArrayList<RecommendedItemVO<Integer, String>>();
+        List<RecommendedItemVO<Integer, String>> outList = new ArrayList<>();
 
         for (RecommendedItemVO<Integer, Integer> recommendedItem : inList) {
             outList.add(convertRecommendedItemVO(tenantId, recommendedItem));
@@ -552,12 +559,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendedItemVO<Integer, Integer>> convertListOfTypedRecommendedItemVOs(Integer tenantId,
                                                                                                    List<RecommendedItemVO<Integer, String>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RecommendedItemVO<Integer, Integer>> outList = new ArrayList<RecommendedItemVO<Integer, Integer>>();
+        List<RecommendedItemVO<Integer, Integer>> outList = new ArrayList<>();
 
         for (RecommendedItemVO<Integer, String> typedRecommendedItem : inList) {
             outList.add(convertTypedRecommendedItemVO(tenantId, typedRecommendedItem));
@@ -566,13 +574,14 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendedItemVO<Integer, String>> convertListOfRecommendedItemVOs(
             List<RecommendedItemVO<Integer, Integer>> inList) {
         if (inList == null) {
             return null;
         }
         Integer tenantId;
-        List<RecommendedItemVO<Integer, String>> outList = new ArrayList<RecommendedItemVO<Integer, String>>();
+        List<RecommendedItemVO<Integer, String>> outList = new ArrayList<>();
 
         for (RecommendedItemVO<Integer, Integer> recommendedItem : inList) {
             if (recommendedItem.getItem() == null) {
@@ -588,12 +597,13 @@ public class TypeMappingServiceImpl implements TypeMappingService {
         return outList;
     }
 
+    @Override
     public List<RecommendedItemVO<Integer, Integer>> convertListOfTypedRecommendedItemVOs(
             List<RecommendedItemVO<Integer, String>> inList) {
         if (inList == null) {
             return null;
         }
-        List<RecommendedItemVO<Integer, Integer>> outList = new ArrayList<RecommendedItemVO<Integer, Integer>>();
+        List<RecommendedItemVO<Integer, Integer>> outList = new ArrayList<>();
 
         Integer tenantId;
         for (RecommendedItemVO<Integer, String> typedRecommendedItem : inList) {
@@ -612,117 +622,145 @@ public class TypeMappingServiceImpl implements TypeMappingService {
 
 
     // get integer based id of type
+    @Override
     public Integer getIdOfActionType(Integer tenantId, String actionType) {
         return actionTypeDAO.getIdOfType(tenantId, actionType);
     }
 
+    @Override
     public Integer getIdOfAggregateType(Integer tenantId, String aggregateType) {
         return aggregateTypeDAO.getIdOfType(tenantId, aggregateType);
     }
 
+    @Override
     public Integer getIdOfAssocType(Integer tenantId, String assocType) {
         return assocTypeDAO.getIdOfType(tenantId, assocType);
     }
 
+    @Override
     public Integer getIdOfAssocType(Integer tenantId, String assocType, Boolean visible) {
         return assocTypeDAO.getIdOfType(tenantId, assocType, visible);
     }
 
+    @Override
     public Integer getIdOfItemType(Integer tenantId, String itemType) {
         return itemTypeDAO.getIdOfType(tenantId, itemType);
     }
 
+    @Override
     public Integer getIdOfItemType(Integer tenantId, String itemType, Boolean visible) {
         return itemTypeDAO.getIdOfType(tenantId, itemType, visible);
     }
 
+    @Override
     public Integer getIdOfSourceType(Integer tenantId, String sourceType) {
         return sourceTypeDAO.getIdOfType(tenantId, sourceType);
     }
 
+    @Override
     public Integer getIdOfViewType(Integer tenantId, String viewType) {
         return viewTypeDAO.getIdOfType(tenantId, viewType);
     }
 
     // get string based id of type
+    @Override
     public String getActionTypeById(Integer tenantId, Integer actionTypeId) {
         return actionTypeDAO.getTypeById(tenantId, actionTypeId);
     }
 
+    @Override
     public String getAggregateTypeById(Integer tenantId, Integer aggregateTypeId) {
         return aggregateTypeDAO.getTypeById(tenantId, aggregateTypeId);
     }
 
+    @Override
     public String getAssocTypeById(Integer tenantId, Integer assocTypeId) {
         return assocTypeDAO.getTypeById(tenantId, assocTypeId);
     }
 
+    @Override
     public String getItemTypeById(Integer tenantId, Integer itemTypeId) {
         return itemTypeDAO.getTypeById(tenantId, itemTypeId);
     }
 
+    @Override
     public String getSourceTypeById(Integer tenantId, Integer sourceTypeId) {
         return sourceTypeDAO.getTypeById(tenantId, sourceTypeId);
     }
 
+    @Override
     public String getViewTypeById(Integer tenantId, Integer viewTypeId) {
         return viewTypeDAO.getTypeById(tenantId, viewTypeId);
     }
 
     // get mappings of types
+    @Override
     public HashMap<String, Integer> getActionTypeMapping(Integer tenantId) {
         return actionTypeDAO.getMapping(tenantId);
     }
 
+    @Override
     public HashMap<String, Integer> getAggregateTypeMapping(Integer tenantId) {
         return aggregateTypeDAO.getMapping(tenantId);
     }
 
+    @Override
     public HashMap<String, Integer> getAssocTypeMapping(Integer tenantId) {
         return assocTypeDAO.getMapping(tenantId);
     }
 
+    @Override
     public HashMap<String, Integer> getItemTypeMapping(Integer tenantId) {
         return itemTypeDAO.getMapping(tenantId);
     }
 
+    @Override
     public HashMap<String, Integer> getSourceTypeMapping(Integer tenantId) {
         return sourceTypeDAO.getMapping(tenantId);
     }
 
+    @Override
     public HashMap<String, Integer> getViewTypeMapping(Integer tenantId) {
         return viewTypeDAO.getMapping(tenantId);
     }
 
     // get set of types
+    @Override
     public Set<String> getActionTypes(Integer tenantId) {
         return actionTypeDAO.getTypes(tenantId);
     }
 
+    @Override
     public Set<String> getAggregateTypes(Integer tenantId) {
         return aggregateTypeDAO.getTypes(tenantId);
     }
 
+    @Override
     public Set<String> getAssocTypes(Integer tenantId) {
         return assocTypeDAO.getTypes(tenantId);
     }
 
+    @Override
     public Set<String> getAssocTypes(Integer tenantId, Boolean visible) {
         return assocTypeDAO.getTypes(tenantId, visible);
     }
 
+    @Override
     public Set<String> getItemTypes(Integer tenantId) {
         return itemTypeDAO.getTypes(tenantId);
     }
 
+    @Override
     public Set<String> getItemTypes(Integer tenantId, Boolean visible) {
         return itemTypeDAO.getTypes(tenantId, visible);
     }
 
+    @Override
     public Set<String> getSourceTypes(Integer tenantId) {
         return sourceTypeDAO.getTypes(tenantId);
     }
 
+    @Override
     public Set<String> getViewTypes(Integer tenantId) {
         return viewTypeDAO.getTypes(tenantId);
     }
