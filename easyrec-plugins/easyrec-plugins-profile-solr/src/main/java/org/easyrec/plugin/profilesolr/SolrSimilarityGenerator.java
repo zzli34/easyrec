@@ -82,8 +82,8 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
     protected void doInstall() throws Exception {
 
 
-        logger.info(pluginFolder.getURL());
-        logger.info(solrFolder.getURL().toString());
+        logger.info("Using plugin folder: " + pluginFolder.getURL());
+        logger.info("Using solr folder: " + solrFolder.getURL().toString());
         
         String t = solrFolder.getURI().getRawSchemeSpecificPart().substring(0, solrFolder.getURI().getRawSchemeSpecificPart().lastIndexOf("!"));
         
@@ -108,32 +108,59 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
         TreeCopy tc = new TreeCopy(solr, solrHomeFolder);
         Files.walkFileTree(solr, tc);
         
+//        EmbeddedSolrServer solrServer = new EmbeddedSolrServer(solrHomeFolder,"easyrec");
+
+//        String urlString = "http://localhost:8983/solr/easyrec";
+//        SolrClient solrClient = new HttpSolrClient(urlString);
+//        if (solrServer == null) throw new Exception("Could not initialized Solr server!");
+//        solrSimilarityService.setSolrClient(solrServer);
+        
+    }
+
+    @Override
+    protected void doInitialize() throws Exception {
+        if (solrHomeFolder == null) {
+            File target = pluginFolder.getFile();
+            solrHomeFolder = Paths.get(target.getPath(),"solr");
+        }
+        if (Files.notExists(solrHomeFolder)) {
+            doInstall();
+        }
+        
         EmbeddedSolrServer solrServer = new EmbeddedSolrServer(solrHomeFolder,"easyrec");
 
 //        String urlString = "http://localhost:8983/solr/easyrec";
 //        SolrClient solrClient = new HttpSolrClient(urlString);
         if (solrServer == null) throw new Exception("Could not initialized Solr server!");
         solrSimilarityService.setSolrClient(solrServer);
-        
     }
+    
+    
     
     @Override
     protected void doExecute(ExecutionControl control, SolrSimilarityStatistics stats) throws Exception {
 
         SolrSimilarityConfiguration configuration = getConfiguration();
-
+        SolrSimilarityConfigurationInt config;
 
         Date start = MySQL.sanitzeForMysql56(new Date());
         stats.setStartDate(start);
-
-        SolrSimilarityConfigurationInt config = solrSimilarityService.mapTypesToConfiguration(configuration);
-        control.updateProgress(1, 4, "Indexing items");
-        solrSimilarityService.addItemsToIndex(config);
-        control.updateProgress(2, 4, "matching profiles");
-        solrSimilarityService.matchProfiles(config, stats);
-        control.updateProgress(3, 4, "removing old rules");
-        solrSimilarityService.removeOldRules(config, stats);
-        control.updateProgress(4, 4, "Finished");
+        try {
+            config = solrSimilarityService.mapTypesToConfiguration(configuration);
+            logger.info("TenantId:" + config.getTenantId());
+        } catch (Exception e) {
+            stats.setException(e.getMessage());
+            config = null;
+        }
+        if (config != null) {
+            control.updateProgress(1, 4, "Indexing items");
+            solrSimilarityService.addItemsToIndex(config);
+            control.updateProgress(2, 4, "matching profiles");
+            solrSimilarityService.matchProfiles(config, stats);
+            control.updateProgress(3, 4, "removing old rules");
+            solrSimilarityService.removeOldRules(config, stats);
+            control.updateProgress(4, 4, "Finished");
+        }
         stats.setEndDate(MySQL.sanitzeForMysql56(new Date()));
         stats.setDuration((stats.getEndDate().getTime() - stats.getStartDate().getTime())/1000);
     }
@@ -152,6 +179,7 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
 
     @Override
     public void destroy() throws Exception {
+        logger.info("Destroying solr plugin!");
         SolrClient sc = solrSimilarityService.getSolrClient();
         if (sc != null) sc.close();
     }

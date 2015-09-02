@@ -18,7 +18,6 @@
 package org.easyrec.controller;
 
 
-import java.util.Set;
 import org.easyrec.store.dao.web.OperatorDAO;
 import org.easyrec.util.core.Security;
 import org.springframework.web.servlet.ModelAndView;

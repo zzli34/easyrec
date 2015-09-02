@@ -1,6 +1,6 @@
 <%@ taglib prefix="easyrec" uri="/WEB-INF/tagLib.tld" %>
 <%--
-  ~ Copyright 2011 Research Studios Austria Forschungsgesellschaft mBH
+  ~ Copyright 2015 Research Studios Austria Forschungsgesellschaft mBH
   ~
   ~ This file is part of easyrec.
   ~
@@ -94,10 +94,10 @@
                 {name: 'storeitemwithprofile', method :'POST'}
             ];
             
-            $scope.host = "http://localhost:8084/easyrec-web/api/1.1/json/profile/";
+            $scope.host = "${webappPath}/api/1.1/json/profile/";
             $scope.apicall = $scope.calls[0];
-            $scope.apikey = "8ab9dc3ffcdac576d0f298043a60517a";
-            $scope.tenantid = "EASYREC_DEMO";
+            $scope.apikey = "${apikey}";
+            $scope.tenantid = "${tenantId}";
             $scope.itemid = "42";
             $scope.itemtype = "ITEM";
             $scope.encode = "json";

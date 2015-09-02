@@ -55,12 +55,14 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * @author szavrel
  */
-public class PluginRegistry implements ApplicationContextAware {
+public class PluginRegistry implements ApplicationContextAware, DisposableBean {
 
     public static final String DEFAULT_PLUGIN_CONFIG_FILE = "easyrec-plugin.xml";
     public static final String GENERATOR_PROP = "generator";
@@ -389,12 +391,19 @@ public class PluginRegistry implements ApplicationContextAware {
                             pluginDAO.deletePlugin(defaultPlugin.getPluginId().getUri(),
                                     installedPlugins.get(defaultPlugin.getPluginId().getUri()));
                         }
+                        installedPlugins.remove(defaultPlugin.getPluginId().getUri());
                     }
 
                     pluginDAO.storePlugin(defaultPlugin);
                     installPlugin(defaultPlugin.getPluginId().getUri(), defaultPlugin.getPluginId().getVersion());
+                    
                 }
             }
+            // set remaining installed plugins to status INSTALLED; need to be initialized manually after update
+            for (Entry<URI,Version> plugin : installedPlugins.entrySet()) {
+                pluginDAO.updatePluginState(plugin.getKey(), plugin.getValue(), LifecyclePhase.INSTALLED.toString());
+            }
+            
         }
 
         // check if assocType "IS_RELATED" exists for all tenants, if not add it
@@ -403,10 +412,17 @@ public class PluginRegistry implements ApplicationContextAware {
             tenantService.insertAssocTypeForTenant(tenantVO.getId(), AssocTypeDAO.ASSOCTYPE_IS_RELATED, true);
         }
     }
-
+  
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.appContext = applicationContext;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        for (ClassPathXmlApplicationContext ctx : contexts.values()) {
+            ctx.close();
+        }
     }
 
     public void setPluginFolder(Resource pluginFolder) { this.pluginFolder = pluginFolder; }

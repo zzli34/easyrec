@@ -53,10 +53,10 @@
                         href="${webappPath}/home?operatorId=${signedInOperatorId}"
                         title="Home"><span>Home</span></a></li>
                 <li<c:if test="${selectedMenu == 'myEasyrec' }"> class="selectedMenu"</c:if>><a
-                        href="${webappPath}/easyrec/overview?operatorId=${signedInOperatorId}&tenantId=EASYREC_DEMO"
+                        href="${webappPath}/easyrec/overview?operatorId=${signedInOperatorId}&tenantId=${tenantId}"
                         title="my easyrec"><span>Management</span></a></li>
                 <li<c:if test="${selectedMenu == 'api' }"> class="selectedMenu"</c:if>><a
-                        href="${webappPath}/API?operatorId=${signedInOperatorId}&tenantId=EASYREC_DEMO"
+                        href="${webappPath}/API?operatorId=${signedInOperatorId}&tenantId=${tenantId}"
                         title="How to implement"><span>API</span></a></li>
             </ul>
         </c:if>

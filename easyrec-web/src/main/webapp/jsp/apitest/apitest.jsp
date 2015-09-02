@@ -10,6 +10,7 @@ servletname
     <option>view</option>
     <option>buy</option>
     <option>rate</option>
+    <option>track</option>
     <option>otherusersalsoviewed</option>
     <option>otherusersalsobought</option>
     <option>itemsratedgoodbyotherusers</option>
