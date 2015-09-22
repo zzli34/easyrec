@@ -127,7 +127,8 @@
 
 .ui-widget-header {
     border: 1px solid #4297d7;
-    background: #0098c3 url(images/ui-bg_gloss-wave_55_0098c3_500x100.png) 50% 50% repeat-x;
+    //background: #0098c3 url(images/ui-bg_gloss-wave_55_0098c3_500x100.png) 50% 50% repeat-x;
+    background-color: #0098c3;
     color: #ffffff;
     font-weight: bold;
 }

@@ -37,7 +37,7 @@
         <label for="description">Description</label>
         <textarea name="description" id="description">${esapi:encodeForHTML(cluster.description)}</textarea> <br>
 
-        <input type="image" src="${webappPath}/img/button_save.png" id="submitCluster" value="save"/>
+        <input type="submit" id="submitCluster" value="Save" class="button--filled easyrecblue" style="font-family: Arial,Helvetica,sans-serif;"/>
     </form>
 </div>
 

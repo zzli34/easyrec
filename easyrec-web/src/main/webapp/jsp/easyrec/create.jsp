@@ -67,8 +67,8 @@
             </div>
             <textarea id="easyrec_description" name="easyrec_description" type="text"></textarea>
 
-            <a id="createTenantSubmit" onclick="registerTenant('${operatorId}')" href="#">
-                <img alt="create" src="${webappPath}/img/button_create.gif"/>
+            <a id="createTenantSubmit" onclick="registerTenant('${operatorId}')" href="#" class="button--filled easyrecblue">Create
+                <!--<img alt="create" src="${webappPath}/img/button_create.gif"/>-->
             </a>
         </form>
     </div>

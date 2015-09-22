@@ -729,6 +729,7 @@ public class EasyRec {
                                          @QueryParam("requesteditemtype") String requestedItemType,
                                          @QueryParam("callback") String callback,
                                          @QueryParam("actiontype") @DefaultValue(TypeMappingService.ACTION_TYPE_VIEW) String actiontype,
+                                         @QueryParam("withProfile") @DefaultValue("false") boolean withProfile,
                                          @QueryParam("token") String token)
             throws EasyRecException {
 
@@ -772,6 +773,9 @@ public class EasyRec {
             try {
                 rec = shopRecommenderService.actionHistory(coreTenantId, userId, session, actiontype, requestedItemType, numberOfResults + 5, numberOfResults); // +5 to compensate for inactive items 
 
+                if (withProfile) {
+                    addProfileDataToItems(rec);
+                }
             } catch (EasyRecRestException sre) {
                 exceptionResponse(WS.ACTION_HISTORY, sre.getMessageObject(), type, callback);
             }

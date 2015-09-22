@@ -137,6 +137,7 @@ public class EasyRecController extends MultiActionController {
             mav.addObject("tenants", remoteTenantDAO.getTenantsFromOperator(operatorId));
 
             Security.setAttribute(request, "tenantId", null);
+            mav.addObject("tenantId", (String) Security.getAttribute(request, "tenantId"));
         } else {
             mav.addObject("page", "home");
         }
@@ -153,6 +154,7 @@ public class EasyRecController extends MultiActionController {
         mav.addObject("update", true);
 
         Security.setAttribute(request, "tenantId", null);
+        mav.addObject("tenantId", (String) Security.getAttribute(request, "tenantId"));
 
         return mav;
     }

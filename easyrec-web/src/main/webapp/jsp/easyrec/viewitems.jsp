@@ -138,8 +138,8 @@
                 </p>
             </div>
 
-            <input type="image" src="${webappPath}/img/button_search.png" id="submitSearch" name="submit"
-                   value="search"/>
+            <input type="submit" class="button--filled easyrecblue" style="font-family: Arial" id="submitSearch" name="submit"
+                   value="Search"/>
         </form>
 
         <script type="text/javascript">

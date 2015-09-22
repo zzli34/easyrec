@@ -46,6 +46,72 @@
     
     easyrecControllers.controller('TestController', ['$scope', '$http', 
         function ($scope, $http) {
+            $scope.calls = [
+                {name: 'view', type :'Actions'},
+                {name: 'buy', type :'Actions'},
+                {name: 'rate', type :'Actions'},
+                {name: 'sendaction', type :'Actions'},    
+                {name: 'track', type :'Actions'},
+                {name: 'otherusersalsoviewed', type :'Recommendations'},
+                {name: 'otherusersalsobought', type :'Recommendations'},
+                {name: 'itemsratedgoodbyotherusers', type :'Recommendations'},
+                {name: 'relateditems',type :'Recommendations'},
+                {name: 'recommendationsforuser',type :'Recommendations'},
+                {name: 'actionhistoryforuser',type :'Recommendations'},
+                {name: 'mostvieweditems',type :'Rankings'},
+                {name: 'mostboughtitems',type :'Rankings'},
+                {name: 'mostrateditems',type :'Rankings'},
+                {name: 'bestrateditems',type :'Rankings'},
+                {name: 'worstrateditems',type :'Rankings'},
+                {name: 'clusters',type :'Cluster'},
+                {name: 'itemsofcluster',type :'Cluster'},
+                {name: 'createcluster',type :'Cluster'},
+                {name: 'importrule',type :'Import & Other'},
+                {name: 'importitem',type :'Import & Other'},
+                {name: 'setitemactive',type :'Import & Other'},
+                {name: 'itemtypes',type :'Import & Other'}
+            ];
+            
+            $scope.host = "${webappPath}/api/1.1/json/";
+            $scope.apicall = $scope.calls[0];
+            $scope.apikey = "${apikey}";
+            $scope.tenantid = "${tenantId}";
+            
+            $scope.req = function() {
+                            
+                var url = $scope.host + $scope.apicall.name;
+                var option = {
+                    apikey : $scope.apikey,
+                    tenantid : $scope.tenantid,
+                    itemid : $scope.itemid,
+                    itemtype : $scope.itemtype,
+                    itemdescription : $scope.itemdescription,
+                    itemurl : $scope.itemurl,
+                    itemimageurl : $scope.itemimageurl
+                };
+
+                var pars = {
+                    method: 'GET',
+                    url: url,
+                    params: option
+                };
+                
+                $http(pars).
+                success(function(data, status){
+                    $scope.status = status;
+                    $scope.data = data;
+                }).
+                error(function(data, status){
+                    $scope.status = status;
+                    $scope.data = data || "Request failed";
+                });
+            };
+        }
+
+    ]);
+    
+    easyrecControllers.controller('TestProfileController', ['$scope', '$http', 
+        function ($scope, $http) {
             
             /**
             * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -153,7 +219,7 @@
     <div class="appendbody" ng-controller="MenuController">
         <h1>Recommendation API</h1>
 
-        <div ng-repeat="template in templates" style="display: inline-block">
+        <div ng-repeat="template in templates" style="display: inline-block" ng-cloak>
             <a ng-if="active !== template" href="javascript:void(0)" ng-click="setActive($index)" style="clear:right">
                 <span>{{template.name}}</span>
             </a>

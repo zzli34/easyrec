@@ -61,8 +61,8 @@
             </div>
             <textarea id="easyrec_description" name="easyrec_description" type="text">${tenant.description}</textarea>
 
-            <a id="createTenantSubmit" onclick="updateTenant('${operatorId}', '${tenant.stringId}')" href="#">
-                <img alt="update" src="${webappPath}/img/button_update.png"/>
+            <a id="createTenantSubmit" onclick="updateTenant('${operatorId}', '${tenant.stringId}')" href="#" class="button--filled easyrecblue">Update
+                <!--<img alt="update" src="${webappPath}/img/button_update.png"/>-->
             </a>
         </form>
     </div>

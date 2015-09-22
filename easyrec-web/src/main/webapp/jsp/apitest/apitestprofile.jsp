@@ -3,8 +3,8 @@
     Created on : 19.08.2015, 11:20:15
     Author     : stephan
 --%>
-<div ng-app="easyrec">
-<div ng-controller="TestController">
+<!--<div ng-app="easyrec">-->
+<div ng-controller="TestProfileController">
     <br/>
     <label id="host">Host: {{host}}</label><br/>
     <br/>
@@ -17,9 +17,6 @@
         <input type="radio" ng-model="encode" value="json">json
         <input type="radio" ng-model="encode" value="form">x-www-form-urlencoded<br/>
     </div>
-<!--    <hr/>
-    apikey<input ng-model="apikey" id="apikey" style="width:100%"><br>
-    tenantid<input ng-model="tenantid" id="tenantid" style="width:100%"><br>-->
     <hr/>
     <label id="apikey" >API Key: {{apikey}}</label><br/>
     <label id="tenantid" >Tenant ID: {{tenantid}}</label><br/>
@@ -47,9 +44,9 @@
     <label>Request:</label><br/>
     {{apicall.method}} {{host}}{{apicall.name}}?apikey={{apikey}}&tenantid={{tenantid}}&itemid={{itemid}}&itemtype={{itemtype}}
     <span ng-show="apicall.name === 'field/load' || apicall.name === 'field/delete'">&path={{path}}</span>
-    <a href="#" ng-click="req()">SEND ACTION</a><br/>
+    <a href="#" class="button--filled easyrecblue" ng-click="req()">Send Action</a><br/>
     <label>Result:</label><br/>
     Status: {{status}}<br/>
     Data: {{data}}
 </div>
-    </div>
+<!--    </div>-->

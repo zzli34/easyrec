@@ -53,7 +53,7 @@
     </div>
     <ul id="itemType" name="itemTypes"></ul>
 
-    <input type="image" src="${webappPath}/img/button_search.png" id="submitSearch" name="submit" value="search"/>
+    <input type="submit" class="button--filled easyrecblue" style="font-family: Arial,Helvetica,sans-serif;" id="submitSearch" name="submit" value="Search"/>
 </form>
 
 <div id="searchresult">

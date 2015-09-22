@@ -7,8 +7,7 @@
     <form id="uploadForm" method="post" action="pluginupload.form?tenantId=${tenantId}&operatorId=${operatorId}"
           enctype="multipart/form-data">
         <input type="file" name="file"/><br>
-        <img alt="upload" src="${webappPath}/img/button_upload.png" onclick="$('#uploadForm').submit()"
-             style="cursor:pointer;">
+        <a href="#" onclick="$('#uploadForm').submit()" class="button--filled easyrecblue">Upload</a>
     </form>
 </div>
 

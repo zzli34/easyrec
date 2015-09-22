@@ -136,7 +136,7 @@ div.fixed {
 }
 
 div.menu {
-    background: transparent url(../img/gradient_blue.gif) repeat-x scroll 0 0; /* IE 6 only */
+    //background: transparent url(../img/gradient_blue.gif) repeat-x scroll 0 0; /* IE 6 only */
     overflow: hidden; /* end */
     background-color: #0098c3;
     height: 79px;
@@ -1285,8 +1285,6 @@ span.pagelinks {
 
 #createTenantForm #createTenantSubmit{
     float: right;
-    padding-right: 22px;
-    padding-top: 5px;
 }
 
 .contentContainer{
@@ -1495,4 +1493,26 @@ div#clusterManagerSearchItems form#searchForm p input#toCreationDate {
 .itemDetailTabContainer div.ui-tabs-panel h1{
     font-size:18px;
     color:#000;
+}
+
+.button--filled {
+    padding: 0.66em 2em;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    border: 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    display: inline-block;
+}
+
+.button--filled:hover {
+    text-decoration: none;
+}
+
+.button--filled.easyrecblue {
+    color: white;
+    background: #0098c3;
 }

@@ -120,15 +120,15 @@ div.fixed {
 }
 
 div.menu_admin {
-    background: transparent url(../img/gradient_green.gif) repeat-x scroll 0 0;
+    //background: transparent url(../img/gradient_green.gif) repeat-x scroll 0 0;
     background-position: top; /* IE 6 only */
     overflow: hidden; /* end */
-    background-color: #6cc010;
+    background-color: #37CD3B;
     height: 79px;
     color: #ffffff;
-    border-left: 1px solid #c0ffc0;
-    border-right: 1px solid #c0ffc0;
-    border-top: 1px solid #c0ffc0;
+    //border-left: 1px solid #c0ffc0;
+    //border-right: 1px solid #c0ffc0;
+    //border-top: 1px solid #c0ffc0;
     -moz-border-radius-topright: 15px;
     -moz-border-radius-topleft: 15px;
     -moz-box-shadow: 0px 0px 13px rgba(0, 0, 0, 0.2);
@@ -527,5 +527,27 @@ td.configvalue div {
 
 td.confighelpbutton {
     width: 30px;
+}
+
+.button--filled {
+    padding: 0.66em 2em;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    border: 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    display: inline-block;
+}
+
+.button--filled:hover {
+    text-decoration: none;
+}
+
+.button--filled.easyrecblue {
+    color: white;
+    background: #0098c3;
 }
 

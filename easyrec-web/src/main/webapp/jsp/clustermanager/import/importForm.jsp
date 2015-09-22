@@ -30,6 +30,6 @@
     <form method='post' action='${webappPath}/clustermanager/clusterimport' enctype='multipart/form-data'>
         <input type="hidden" name="tenantId" value="${tenantId}"/>
         <input id="fileSelect" type='file' name='file'/>
-        <input id="fileSubmit" type='submit' value='upload'/>
+        <input id="fileSubmit" type='submit' value='Upload' class="button--filled easyrecblue"/>
     </form>
 </div>

@@ -35,8 +35,8 @@
             </div>
             <div style="padding-top: 15px;">
                 <div style="float: left;">
-                    <a onclick="signinUser();" href="#">
-                        <img alt="sign in" src="${webappPath}/img/button_signin.gif"/>
+                    <a class="button--filled easyrecblue" onclick="signinUser();" href="#">Sign in
+                        <!--<img alt="sign in" src="${webappPath}/img/button_signin.gif"/>-->
                     </a>
                 </div>
                 <div style="float: right; padding-top: 7px;">
