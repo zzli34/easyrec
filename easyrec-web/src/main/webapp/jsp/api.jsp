@@ -18,8 +18,15 @@
   ~ along with easyrec.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <script src="${webappPath}/js/angular/angular.min.js" type="text/javascript"></script>
+<script src="${webappPath}/api-js/angularjs/easyrec.js" type="text/javascript"></script>
 <script>
-    var easyrec = angular.module('easyrec', ['easyrecControllers']);
+    var easyrec = angular.module('easyrec', ['easyrecControllers', 'easyrecServices']);
+    
+    easyrec.config(['easyrecProvider', function(easyrecProvider){
+        easyrecProvider.setBaseUrl('${webappPath}');
+        easyrecProvider.setApiKey('${apikey}');
+        easyrecProvider.setTenant('${tenantId}');     
+    }]);
     
     var easyrecControllers = angular.module('easyrecControllers', []);
     
@@ -44,8 +51,8 @@
         }
     ]);
     
-    easyrecControllers.controller('TestController', ['$scope', '$http', 
-        function ($scope, $http) {
+    easyrecControllers.controller('TestController', ['$scope', '$http', 'easyrec',
+        function ($scope, $http, easyrec) {
             $scope.calls = [
                 {name: 'view', type :'Actions'},
                 {name: 'buy', type :'Actions'},
@@ -78,33 +85,426 @@
             $scope.tenantid = "${tenantId}";
             
             $scope.req = function() {
-                            
-                var url = $scope.host + $scope.apicall.name;
-                var option = {
-                    apikey : $scope.apikey,
-                    tenantid : $scope.tenantid,
-                    itemid : $scope.itemid,
-                    itemtype : $scope.itemtype,
-                    itemdescription : $scope.itemdescription,
-                    itemurl : $scope.itemurl,
-                    itemimageurl : $scope.itemimageurl
-                };
-
-                var pars = {
-                    method: 'GET',
-                    url: url,
-                    params: option
-                };
-                
-                $http(pars).
-                success(function(data, status){
-                    $scope.status = status;
-                    $scope.data = data;
-                }).
-                error(function(data, status){
-                    $scope.status = status;
-                    $scope.data = data || "Request failed";
-                });
+                       
+                switch ($scope.apicall.name) {
+                    case 'view':
+                        easyrec.view($scope.sessionid, 
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.itemdescription,
+                                $scope.itemurl,
+                                $scope.itemimageurl,
+                                $scope.userid,
+                                $scope.actioninfo,
+                                $scope.actiontime,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'buy':
+                        easyrec.buy($scope.sessionid, 
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.itemdescription,
+                                $scope.itemurl,
+                                $scope.itemimageurl,
+                                $scope.userid,
+                                $scope.actioninfo,
+                                $scope.actiontime,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'rate':
+                        easyrec.rate($scope.sessionid, 
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.itemdescription,
+                                $scope.itemurl,
+                                $scope.itemimageurl,
+                                $scope.userid,
+                                $scope.actioninfo,
+                                $scope.ratingvalue,
+                                $scope.actiontime,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'sendaction':
+                        easyrec.sendaction($scope.sessionid, 
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.itemdescription,
+                                $scope.itemurl,
+                                $scope.itemimageurl,
+                                $scope.userid,
+                                $scope.actioninfo,
+                                $scope.actiontype,
+                                $scope.actionvalue,
+                                $scope.actiontime,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'track':
+                        easyrec.track($scope.sessionid, 
+                                $scope.itemfromid,
+                                $scope.itemfromtype,
+                                $scope.itemtoid,
+                                $scope.itemtotype,
+                                $scope.userid,
+                                $scope.rectype,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'otherusersalsoviewed':
+                        easyrec.alsoviewed($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'otherusersalsobought':
+                        easyrec.alsobought($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'itemsratedgoodbyotherusers':
+                        easyrec.alsogoodrated($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'relateditems':
+                        easyrec.alsoviewed($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.assoctype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'recommendationsforuser':
+                        easyrec.recsforuser($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.actiontype,
+                                $scope.assoctype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'actionhistoryforuser':
+                        easyrec.actionhistoryforuser($scope.sessionid, 
+                                $scope.userid,                
+                                $scope.actiontype,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'mostvieweditems':
+                        easyrec.mostviewed(
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.timeRange,
+                                $scope.startDate,
+                                $scope.endDate,
+                                $scope.clusterid,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'mostboughtitems':
+                        easyrec.mostbought(
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.timeRange,
+                                $scope.startDate,
+                                $scope.endDate,
+                                $scope.clusterid,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'mostrateditems':
+                        easyrec.mostrated(
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.timeRange,
+                                $scope.startDate,
+                                $scope.endDate,
+                                $scope.clusterid,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'bestrateditems':
+                        easyrec.bestrated(
+                                $scope.userid,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.timeRange,
+                                $scope.startDate,
+                                $scope.endDate,
+                                $scope.clusterid,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'worstrateditems':
+                        easyrec.worstrated(
+                                $scope.userid,
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.timeRange,
+                                $scope.startDate,
+                                $scope.endDate,
+                                $scope.clusterid,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'clusters':
+                        easyrec.clusters(
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'itemsofcluster':
+                        easyrec.itemsofcluster(
+                                $scope.numberOfResults,
+                                $scope.requesteditemtype,
+                                $scope.withProfile,
+                                $scope.clusterid,
+                                $scope.strategy,
+                                $scope.usefallback,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'createcluster':
+                        easyrec.createcluster(
+                                $scope.clusterid,
+                                $scope.clusterdescription,
+                                $scope.clusterparent,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'importrule':
+                        easyrec.importrule(
+                                $scope.itemfromid,
+                                $scope.itemfromtype,
+                                $scope.itemtoid,
+                                $scope.itemtotype,
+                                $scope.assoctype,
+                                $scope.assocvalue,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'importitem':
+                        easyrec.importitem(
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.itemdescription,
+                                $scope.itemurl,
+                                $scope.itemimageurl,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'setitemactive':
+                        easyrec.setitemactive(
+                                $scope.itemid,
+                                $scope.itemtype,
+                                $scope.active,
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'itemtypes':
+                        easyrec.itemtypes(
+                                $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                }
+        
+//                var url = $scope.host + $scope.apicall.name;
+//                var option = {
+//                    apikey : $scope.apikey,
+//                    tenantid : $scope.tenantid,
+//                    itemid : $scope.itemid,
+//                    itemtype : $scope.itemtype,
+//                    itemdescription : $scope.itemdescription,
+//                    itemurl : $scope.itemurl,
+//                    itemimageurl : $scope.itemimageurl
+//                };
+//
+//                var pars = {
+//                    method: 'GET',
+//                    url: url,
+//                    params: option
+//                };
+//                
+//                $http(pars).
+//                success(function(data, status){
+//                    $scope.status = status;
+//                    $scope.data = data;
+//                }).
+//                error(function(data, status){
+//                    $scope.status = status;
+//                    $scope.data = data || "Request failed";
+//                });
             };
         }
 
@@ -226,12 +626,6 @@
             <span ng-if="active === template" class="bullmenu">{{template.name}}</span>
             <span ng-show="!$last"> &nbsp;&bull;  </span>
         </div>
-<!--        <a href="javascript:void(0)" onclick="startAPITest()" style="clear:right">
-            <span>Test the API</span>
-        </a> &nbsp;&bull;
-        <a href="javascript:void(0)" onclick="startProfileAPITest()" style="clear:right">
-            <span>Test the Profile API</span>
-        </a>-->
 
         <div id="content" ng-include="active.url"/>
 
@@ -250,8 +644,6 @@
     </p>
 
     <br/>
-
-    <br/><br/>
     <table width="100%">
         <tr>
             <td colspan="2"><span class="headline">Actions</span>
