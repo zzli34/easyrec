@@ -100,10 +100,11 @@
 
                 <label for="itemTypeName"> Enter the name of the new item type </label>
                 <input type="text" id="itemTypeName" name="itemTypeName"/>
+                
+                <br>
 
-                <a style="float:right;" href="javascript:void(0)" onclick="submitItemTypeForm();">
-                    <img src="${webappPath}/img/button_create.gif">
-                </a>
+                <input type="submit" class="button--filled easyrecblue" style="font-family: Arial" id="submitSearch" name="submit"
+                   value="Create"/>
             </form>
         </div>
     </div>

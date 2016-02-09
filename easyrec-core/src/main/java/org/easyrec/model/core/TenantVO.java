@@ -1,4 +1,4 @@
-/**Copyright 2010 Research Studios Austria Forschungsgesellschaft mBH
+/**Copyright 2015 Research Studios Austria Forschungsgesellschaft mBH
  *
  * This file is part of easyrec.
  *

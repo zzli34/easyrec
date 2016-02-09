@@ -93,9 +93,8 @@
             <label for="assocTypeName"> Enter the name of the new assoc type </label>
             <input type="text" id="assocTypeName" name="assocTypeName"/>
 
-            <a style="float:right;" href="javascript:void(0)" onclick="submitAssocTypeForm();">
-                <img src="${webappPath}/img/button_create.gif">
-            </a>
+            <input type="submit" class="button--filled easyrecblue" style="font-family: Arial" id="submitSearch" name="submit"
+                   value="Create"/>
         </form>
     </div>
 </div>

@@ -21,6 +21,7 @@ import org.easyrec.utils.spring.store.dao.TableCreatingDAO;
 
 import java.util.HashMap;
 import java.util.Set;
+import org.easyrec.model.core.ActionTypeVO;
 
 /**
  * This interface provides methods to manage <code>ActionType</code> entries within an easyrec database.
@@ -46,15 +47,22 @@ public interface ActionTypeDAO extends TableCreatingDAO {
     public final static String DEFAULT_NAME_COLUMN_NAME = "name";
     public final static String DEFAULT_ID_COLUMN_NAME = "id";
     public final static String DEFAULT_HAS_VALUE_COLUMN_NAME = "hasvalue";
+    public final static String DEFAULT_WEIGHT_COLUMN_NAME = "weight";
 
     // methods
     public int insertOrUpdate(Integer tenantId, String actionType);
 
     public int insertOrUpdate(Integer tenantId, String actionType, Boolean visible);
     
+    public int insertOrUpdate(Integer tenantId, String actionType, Boolean visible, Integer weight);
+    
     public int insertOrUpdate(Integer tenantId, String actionType, Integer id);
     
     public int insertOrUpdate(Integer tenantId, String actionType, Integer id, boolean hasValue);
+    
+    public int insertOrUpdate(Integer tenantId, String actionType, Integer id, boolean hasValue, Integer weight);
+    
+    public int insertOrUpdate(ActionTypeVO actionType);
 
     public String getTypeById(Integer tenantId, final Integer id);
 
@@ -64,5 +72,9 @@ public interface ActionTypeDAO extends TableCreatingDAO {
 
     public Set<String> getTypes(Integer tenantId);
     
-    public Boolean hasValue(Integer tenantId, final String actionType );
+    public Set<ActionTypeVO> getTypeVOs(Integer tenantId);
+    
+    public Boolean hasValue(Integer tenantId, final String actionType);
+    
+    public Integer getWeight(Integer tenantId, String actionType);
 }

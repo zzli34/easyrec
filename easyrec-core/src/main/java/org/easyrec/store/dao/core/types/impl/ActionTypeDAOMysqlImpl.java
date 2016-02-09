@@ -34,6 +34,8 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
+import org.easyrec.model.core.ActionTypeVO;
+import static org.easyrec.store.dao.core.types.ActionTypeDAO.DEFAULT_NAME_COLUMN_NAME;
 
 /**
  * This class provides a Mysql implementation of the {@link org.easyrec.store.dao.core.types.ActionTypeDAO} interface.
@@ -164,7 +166,7 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
     }
 
     @Override
-    public int insertOrUpdate(Integer tenantId, String actionType, Integer id, boolean hasValue) {
+    public int insertOrUpdate(Integer tenantId, String actionType, Integer id, boolean hasValue, Integer weight) {
         // validate
         if (tenantId == null) {
             throw new IllegalArgumentException("missing constraints: missing 'tenantId'");
@@ -193,6 +195,8 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
         query.append(DEFAULT_ID_COLUMN_NAME);
         query.append("=?, ");
         query.append(DEFAULT_HAS_VALUE_COLUMN_NAME);
+        query.append("=?, ");
+        query.append(DEFAULT_WEIGHT_COLUMN_NAME);
         query.append("=?");
 
         Object[] args;
@@ -204,15 +208,20 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
             query.append("=? AND ");
             query.append(DEFAULT_NAME_COLUMN_NAME);
             query.append("=?");
-            args = new Object[]{tenantId, actionType, id, hasValue, tenantId, actionType};
-            argTypes = new int[]{Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.BOOLEAN, Types.INTEGER, Types.VARCHAR};
+            args = new Object[]{tenantId, actionType, id, hasValue, weight,  tenantId, actionType};
+            argTypes = new int[]{Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.BOOLEAN, Types.INTEGER, Types.INTEGER, Types.VARCHAR};
         } else {
-            args = new Object[]{tenantId, actionType, id, hasValue};
-            argTypes = new int[]{Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.BOOLEAN};
+            args = new Object[]{tenantId, actionType, id, hasValue, weight};
+            argTypes = new int[]{Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.BOOLEAN, Types.INTEGER};
         }
         return getJdbcTemplate().update(query.toString(), args, argTypes);
     }
 
+    
+    @Override
+    public int insertOrUpdate(Integer tenantId, String actionType, Integer id, boolean hasValue) {
+        return insertOrUpdate(tenantId, actionType, id, hasValue, 1);
+    }
     
     @Override
     public int insertOrUpdate(Integer tenantId, String actionType, Integer id) {
@@ -226,17 +235,26 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
     }
 
     @Override
+    public int insertOrUpdate(ActionTypeVO actionType) {
+        return insertOrUpdate(actionType.getTenantId(), actionType.getName(), actionType.getId(), actionType.getHasValue(), actionType.getWeight());
+    }
+
+    @Override
     @InvalidatesCache
     public int insertOrUpdate(Integer tenantId, String actionType, Boolean visible) {
+        return insertOrUpdate(tenantId, actionType, visible, 1);
+    }
+    
+    @Override
+    @InvalidatesCache
+    public int insertOrUpdate(Integer tenantId, String actionType, Boolean visible, Integer weight) {
         Integer newId = existsType(tenantId, actionType);
         if (newId == null) {
             newId = getMaxActionTypeId(tenantId) + 1;
         }
-        insertOrUpdate(tenantId, actionType, newId, visible);
+        insertOrUpdate(tenantId, actionType, newId, visible, weight);
         return newId;
     }
-
-    
     
     @LongCacheable
     @Override
@@ -314,6 +332,48 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
         return getJdbcTemplate().query(sqlQuery.toString(), args, argTypes, rse);
     }
 
+    
+    @LongCacheable
+    @Override
+    public Set<ActionTypeVO> getTypeVOs(Integer tenantId) {
+        // validate
+        if (tenantId == null) {
+            throw new IllegalArgumentException("missing constraints: missing 'tenantId'");
+        }
+        ResultSetExtractor<Set<ActionTypeVO>> rse = new ResultSetExtractor<Set<ActionTypeVO>>() {
+            public Set<ActionTypeVO> extractData(ResultSet rs) {
+                Set<ActionTypeVO> types = new TreeSet<ActionTypeVO>();
+                try {
+                    while (rs.next()) {
+                        types.add(new ActionTypeVO(
+                                DaoUtils.getIntegerIfPresent(rs, DEFAULT_TENANT_COLUMN_NAME),
+                                DaoUtils.getStringIfPresent(rs, DEFAULT_NAME_COLUMN_NAME),
+                                DaoUtils.getIntegerIfPresent(rs, DEFAULT_ID_COLUMN_NAME),
+                                DaoUtils.getBooleanIfPresent(rs, DEFAULT_HAS_VALUE_COLUMN_NAME),
+                                DaoUtils.getIntegerIfPresent(rs, DEFAULT_WEIGHT_COLUMN_NAME)
+                        ));
+                    }
+                    return types;
+                } catch (SQLException e) {
+                    logger.error("error occured", e);
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        StringBuilder sqlQuery = new StringBuilder("SELECT * FROM ");
+        sqlQuery.append(DEFAULT_TABLE_NAME);
+        sqlQuery.append(" WHERE ");
+        sqlQuery.append(DEFAULT_TENANT_COLUMN_NAME);
+        sqlQuery.append("=?");
+        sqlQuery.append(" ORDER BY ");
+        sqlQuery.append(DEFAULT_NAME_COLUMN_NAME);
+
+        Object[] args = {tenantId};
+        int[] argTypes = {Types.INTEGER};
+        return getJdbcTemplate().query(sqlQuery.toString(), args, argTypes, rse);
+    }
+    
     @Override
     @LongCacheable
     public Boolean hasValue(Integer tenantId, String actionType) {
@@ -334,6 +394,28 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
         int[] argt = {Types.INTEGER, Types.VARCHAR};
 
         return getJdbcTemplate().queryForObject(sqlQuery.toString(), args, argt, Boolean.class);
+    }
+    
+    @Override
+    @LongCacheable
+    public Integer getWeight(Integer tenantId, String actionType) {
+        // validate
+        if (tenantId == null) {
+            throw new IllegalArgumentException("missing constraints: missing 'tenantId'");
+        }
+        if (actionType == null) {
+            return null;
+        }
+        
+        StringBuilder sqlQuery = new StringBuilder("SELECT ");
+        sqlQuery.append(DEFAULT_WEIGHT_COLUMN_NAME).append(" FROM ").append(DEFAULT_TABLE_NAME);
+        sqlQuery.append(" WHERE ").append(DEFAULT_TENANT_COLUMN_NAME).append("=? AND ");
+        sqlQuery.append(DEFAULT_NAME_COLUMN_NAME).append("=?");
+
+        Object[] args = {tenantId, actionType};
+        int[] argt = {Types.INTEGER, Types.VARCHAR};
+
+        return getJdbcTemplate().queryForObject(sqlQuery.toString(), args, argt, Integer.class);
     }
 
     

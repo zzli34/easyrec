@@ -33,9 +33,8 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
+import org.easyrec.model.core.ActionTypeVO;
 
 /**
  * This controller contains ItemType specific views to manage the itemTypes for a tenant.
@@ -76,15 +75,13 @@ public class ActionTypeController extends MultiActionController {
         if (!itemTypeName.equals(itemTypeName.replaceAll("[^A-Z_0-9]+", ""))) {
             return "Only use machine readable UPPERCASE names containing 0-9, A-Z and _ ";
         }
-
-
         return "";
     }
 
 
     /*
-    * This view displays a list of all ItemTypes available.
-    * If the parameter itemTypeName is set a new item type will be created.
+    * This view displays a list of all ActionTypes available.
+    * If the parameter actionTypeName is set a new item type will be created.
     */
     public ModelAndView actiontypes(HttpServletRequest request, HttpServletResponse httpServletResponse) {
         ModelAndView mav = new ModelAndView("easyrec/actiontypes");
@@ -94,38 +91,38 @@ public class ActionTypeController extends MultiActionController {
 
         String actionTypeName = ServletUtils.getSafeParameter(request, "actionTypeName", "").toUpperCase();
         boolean actionTypeHasValue = ServletUtils.getSafeParameter(request, "actionTypeHasValue", "false").equals("true");
-
+        Integer actionTypeWeight = Integer.parseInt(ServletUtils.getSafeParameter(request, "actionTypeWeight", "1"));
+        
+        String editActionTypeName = ServletUtils.getSafeParameter(request, "editActionTypeName", "").toUpperCase();
+        boolean editActionTypeHasValue = ServletUtils.getSafeParameter(request, "editActionTypeHasValue", "false").equals("true");
+        Integer editActionTypeWeight = Integer.parseInt(ServletUtils.getSafeParameter(request, "editActionTypeWeight", "1"));
+        
         if (signedInOperator != null) {
-
             if (!"".equals(actionTypeName)) {
-                //create a new item type if the itemTypeName parameter is set
-
+                //create a new item type if the actionTypeName parameter is set
                 String error = isValidActionTypeName(actionTypeName);
-
                 if ("".equals(error)) {
-                    actionTypeDAO.insertOrUpdate(remoteTenant.getId(), actionTypeName, actionTypeHasValue);
+                    actionTypeDAO.insertOrUpdate(remoteTenant.getId(), actionTypeName, actionTypeHasValue, actionTypeWeight);
                 } else {
                     mav.addObject("error", error);
                 }
             }
-
-            Set<String> actionTypes = actionTypeDAO.getTypes(remoteTenant.getId());
-            Map<String,Boolean> valueMap = new HashMap<String,Boolean>();
-
-            for (String actionType : actionTypes) {
-                boolean hasValue = actionTypeDAO.hasValue(remoteTenant.getId(), actionType);
-                valueMap.put(actionType,hasValue);
+            if (!"".equals(editActionTypeName)) {
+                //create a new item type if the actionTypeName parameter is set
+                String error = isValidActionTypeName(editActionTypeName);
+                if ("".equals(error)) {
+                    actionTypeDAO.insertOrUpdate(remoteTenant.getId(), editActionTypeName, editActionTypeHasValue, editActionTypeWeight);
+                } else {
+                    mav.addObject("error", error);
+                }
             }
+            Set<ActionTypeVO> actionTypes = actionTypeDAO.getTypeVOs(remoteTenant.getId());
 
             mav.addObject("apiKey", signedInOperator.getApiKey());
-            mav.addObject("itemTypes", actionTypeDAO.getTypes(remoteTenant.getId()));
-            mav.addObject("valueMap",valueMap);
+            mav.addObject("actionTypes", actionTypes);
             mav.addObject("tenants", remoteTenantDAO.getTenantsFromOperator(remoteTenant.getOperatorId()));
         }
-
-
         return mav;
     }
-
 
 }

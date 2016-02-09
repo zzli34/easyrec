@@ -55,11 +55,13 @@ public class TupleCounterMemoryTroveImpl implements TupleCounter {
         counter = 0;
     }
 
+    @Override
     public void init() {
         map.clear();
         counter = 0;
     }
 
+    @Override
     public void count(ItemVO<Integer, Integer> item1, ItemVO<Integer, Integer> item2)
             throws Exception {
         ItemVO<Integer, Integer> mainKey, subKey;
@@ -89,8 +91,9 @@ public class TupleCounterMemoryTroveImpl implements TupleCounter {
         set.put(subKey, cnt);
     }
 
+    @Override
     public ArrayList<TupleVO> getTuples(final int support) throws Exception {
-        final ArrayList<TupleVO> ret = new ArrayList<TupleVO>();
+        final ArrayList<TupleVO> ret = new ArrayList<>();
 //        Set<ItemVO<Integer, Integer>> mainKeys = map.keySet();
 
         Set<Entry<ItemVO<Integer, Integer>, TObjectIntHashMap<ItemVO<Integer, Integer>>>> entries = map.entrySet();
@@ -107,6 +110,7 @@ public class TupleCounterMemoryTroveImpl implements TupleCounter {
         return ret;
     }
 
+    @Override
     public int size() throws Exception {
         return counter;
     }

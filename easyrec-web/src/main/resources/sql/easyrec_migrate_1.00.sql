@@ -9,6 +9,7 @@ ALTER TABLE backtracking CHANGE COLUMN assocType recType INT(11) UNSIGNED NOT NU
 ALTER TABLE backtracking DROP INDEX assoc;
 ALTER TABLE backtracking ADD INDEX assoc(tenantId, itemFromId, itemFromTypeId, recType, itemToId, itemToTypeId);
 
+ALTER TABLE actiontype ADD COLUMN weight INT(11) NOT NULL DEFAULT 1;
 
 -- update database version
 TRUNCATE TABLE easyrec;

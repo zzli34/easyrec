@@ -31,16 +31,50 @@
                 resizable:false,
                 autoOpen:false
             });
+            
+    var editDialog = $("#editActionTypeForm").dialog(
+            {
+                modal:true,
+                title:"Edit Action Type",
+                width:430,
+                height:300,
+                resizable:false,
+                autoOpen:false,
+                open: function() {
+                    var actionType = $(this).data('actionType');
+                    console.log(actionType);
+                    $("#editActionTypeForm #editActionTypeName").val(actionType.name);
+                    $("#editActionTypeForm #editActionTypeHasValue").attr("checked", actionType.hasValue);
+                    $("#editActionTypeForm #editActionTypeWeight").val(actionType.weight);
+                }
+            });
 
     function showCreateNewActionTypeForm() {
-       createDialog.dialog("open")
+       createDialog.dialog("open");
+    }
+    
+    function showEditNewActionTypeForm(id, name, hasValue, weight) {
+       var actionType = {id: id, name: name, hasValue: hasValue, weight: weight};
+       console.log(actionType);
+       editDialog.data('actionType', actionType).dialog("open");
     }
 
     function submitActionTypeForm() {
-        var parameters = jQuery.param($.merge($( ".ui-dialog:visible" ).find("#actionTypeHasValue:checked"),$(".ui-dialog:visible #actionTypeForm input:not([type=checkbox])")));
+        var params = $.merge($(".ui-dialog:visible" ).find("#actionTypeHasValue:checked"),$(".ui-dialog:visible #actionTypeForm input:not([type=checkbox])"));
+        params = $.merge(params, $(".ui-dialog:visible #actionTypeWeight value"));
+        var parameters = jQuery.param(params);        
         $(".ui-tabs-panel:not(.ui-tabs-hide)").load("${webappPath}/tenant/actiontypes?" + parameters);
-        createDialog.dialog("close")
+        createDialog.dialog("close");
     }
+    
+    function submitEditActionTypeForm() {
+        var params = $.merge($(".ui-dialog:visible" ).find("#editActionTypeHasValue:checked"),$(".ui-dialog:visible #editActionTypeForm input:not([type=checkbox])"));
+        params = $.merge(params, $(".ui-dialog:visible #editActionTypeWeight value"));
+        var parameters = jQuery.param(params);        
+        $(".ui-tabs-panel:not(.ui-tabs-hide)").load("${webappPath}/tenant/actiontypes?" + parameters);
+        editDialog.dialog("close");
+    }
+    
 </script>
 <div>
 
@@ -69,12 +103,18 @@
             add new Action Type
         </a>
 
-        <display:table name="itemTypes" class="tableData" id="row" pagesize="0">
+        <display:table name="actionTypes" class="tableData" id="row" pagesize="0">
             <display:column title="Action Type Name" sortable="false">
-                ${row}
+                ${row.name}
             </display:column>
             <display:column title="Has Value" sortable="false">
-                ${valueMap[row]}
+                ${row.hasValue}
+            </display:column>
+            <display:column title="Weight" sortable="false">
+                ${row.weight}
+            </display:column>
+            <display:column title="Action" sortable="false">
+                <a href="javascript:void(0);" onclick="showEditNewActionTypeForm(${row.id}, '${row.name}', ${row.hasValue}, ${row.weight})">Edit</a>
             </display:column>
         </display:table>
 
@@ -100,10 +140,43 @@
                 <label for="actionTypeHasValue"> Do you want to use action type values? </label>
                 <input type="checkbox" id="actionTypeHasValue" name="actionTypeHasValue" value="true"/> Yes
 
+                <br>
+                
+                <label for="actionTypeWeight"> Here you can enter a custom weight for the action type that can be used for weighted calculations later on </label>
+                <input type="text" id="actionTypeWeight" name="actionTypeWeight" value="1"/>
 
-                <a style="float:right;margin-top:90px;" href="javascript:void(0)" onclick="submitActionTypeForm();">
-                    <img src="${webappPath}/img/button_create.gif">
-                </a>
+                <br>
+
+                <input type="submit" class="button--filled easyrecblue" style="font-family: Arial" id="submitActionType" name="submit"
+                   value="Create"/>
+            </form>
+        </div>
+    </div>
+                
+    <div id="editActionTypeForm" style="display:none;">
+        <h1>Edit action type</h1>
+        <div>
+            <form id="editActionTypeForm" onsubmit="submitEditActionTypeForm(); return false;">
+                <input type="hidden" name="tenantId" value="${tenantId}"/>
+                <input type="hidden" name="operatorId" value="${operatorId}"/>
+
+                <label for="editActionTypeName"> Enter the name of the new action type </label>
+                <input type="text" id="editActionTypeName" name="editActionTypeName" disabled="true"/>
+
+                <br>
+
+                <label for="editActionTypeHasValue"> Do you want to use action type values? </label>
+                <input type="checkbox" id="editActionTypeHasValue" name="editActionTypeHasValue" value="true"/> Yes
+
+                <br>
+                
+                <label for="editActionTypeWeight"> Here you can enter a custom weight for the action type that can be used for weighted calculations later on </label>
+                <input type="text" id="editActionTypeWeight" name="editActionTypeWeight" value="1"/>
+
+                <br>
+
+                <input type="submit" class="button--filled easyrecblue" style="font-family: Arial" id="submitEditActionType" name="submit"
+                   value="Edit"/>
             </form>
         </div>
     </div>
