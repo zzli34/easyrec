@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import org.easyrec.model.core.ActionTypeVO;
+import static org.easyrec.store.dao.core.types.ActionTypeDAO.DEFAULT_ID_COLUMN_NAME;
 import static org.easyrec.store.dao.core.types.ActionTypeDAO.DEFAULT_NAME_COLUMN_NAME;
 
 /**
@@ -346,9 +347,9 @@ public class ActionTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl impleme
                 try {
                     while (rs.next()) {
                         types.add(new ActionTypeVO(
-                                DaoUtils.getIntegerIfPresent(rs, DEFAULT_TENANT_COLUMN_NAME),
-                                DaoUtils.getStringIfPresent(rs, DEFAULT_NAME_COLUMN_NAME),
                                 DaoUtils.getIntegerIfPresent(rs, DEFAULT_ID_COLUMN_NAME),
+                                DaoUtils.getStringIfPresent(rs, DEFAULT_NAME_COLUMN_NAME),
+                                DaoUtils.getIntegerIfPresent(rs, DEFAULT_TENANT_COLUMN_NAME),
                                 DaoUtils.getBooleanIfPresent(rs, DEFAULT_HAS_VALUE_COLUMN_NAME),
                                 DaoUtils.getIntegerIfPresent(rs, DEFAULT_WEIGHT_COLUMN_NAME)
                         ));

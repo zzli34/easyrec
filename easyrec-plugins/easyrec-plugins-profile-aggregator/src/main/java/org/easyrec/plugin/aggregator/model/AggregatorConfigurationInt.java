@@ -43,6 +43,7 @@ public class AggregatorConfigurationInt {
     private HashMap<String,FieldConfiguration> actionFields = new HashMap<>();
     private HashMap<String,FieldConfiguration> profileFields = new HashMap<>();
     private Configuration configuration;
+    private HashMap<Integer, Integer> weights = new HashMap<>();
 
     public AggregatorConfigurationInt() {
 
@@ -160,6 +161,12 @@ public class AggregatorConfigurationInt {
     public void setHasProfileFieldThreshold(boolean hasProfileFieldThreshold) {
         this.hasProfileFieldThreshold = hasProfileFieldThreshold;
     }
-    
-    
+
+    public HashMap<Integer, Integer> getWeights() {
+        return weights;
+    }
+
+    public void setWeights(HashMap<Integer, Integer> weights) {
+        this.weights = weights;
+    }
 }

@@ -131,7 +131,7 @@ public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilari
 
 //        String urlString = "http://localhost:8983/solr/easyrec";
 //        SolrClient solrClient = new HttpSolrClient(urlString);
-        if (solrServer == null) throw new Exception("Could not initialized Solr server!");
+        if (solrServer == null) throw new Exception("Could not initialize Solr server!");
         solrSimilarityService.setSolrClient(solrServer);
     }
     

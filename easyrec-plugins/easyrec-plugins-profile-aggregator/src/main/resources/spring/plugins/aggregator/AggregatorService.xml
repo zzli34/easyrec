@@ -19,5 +19,6 @@
         <constructor-arg ref="idMappingDAO"/>
         <constructor-arg ref="itemTypeDAO"/>
         <constructor-arg ref="aggregatorLogEntryDAO"/>
+        <constructor-arg ref="actionTypeDAO"/>
     </bean>
 </beans>

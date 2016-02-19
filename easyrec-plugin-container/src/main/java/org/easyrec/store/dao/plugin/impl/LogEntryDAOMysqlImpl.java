@@ -80,7 +80,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
 
             return jaxbElement.getValue();
         } catch (Exception e) {
-            logger.warn("Unable to unmarshal configuration", e);
+            logger.warn("Unable to unmarshal configuration");
             return GeneratorConfigurationConstants.CONF_UNMARSHAL_FAILED;
         }
     }
@@ -106,7 +106,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
 
             return jaxbElement.getValue();
         } catch (Exception e) {
-            logger.warn("Unable to unmarshal configuration", e);
+            logger.warn("Unable to unmarshal configuration");
             return StatisticsConstants.STATS_UNMARSHAL_FAILED;
         }
     }

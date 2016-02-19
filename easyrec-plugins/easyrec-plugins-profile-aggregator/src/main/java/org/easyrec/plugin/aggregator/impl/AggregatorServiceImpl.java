@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import org.apache.commons.collections.KeyValue;
 import org.apache.commons.collections.keyvalue.DefaultKeyValue;
+import org.easyrec.model.core.ActionTypeVO;
 import org.easyrec.model.core.ActionVO;
 import org.easyrec.model.core.ItemVO;
 import org.easyrec.model.core.web.Item;
@@ -44,6 +45,7 @@ import org.easyrec.plugin.aggregator.store.dao.AggregatorLogEntryDAO;
 import org.easyrec.service.core.impl.JSONProfileServiceImpl;
 import org.easyrec.store.dao.IDMappingDAO;
 import org.easyrec.store.dao.core.ItemDAO;
+import org.easyrec.store.dao.core.types.ActionTypeDAO;
 import org.easyrec.store.dao.core.types.ItemTypeDAO;
 
 /**
@@ -53,7 +55,7 @@ import org.easyrec.store.dao.core.types.ItemTypeDAO;
  * SAT, Research Studios Austria</p>
  * <p/>
  * <p><b>Copyright:&nbsp;</b>
- * (c) 2007</p>
+ * (c) 2015</p>
  * <p/>
  *
  * @author Stephan Zavrel
@@ -67,19 +69,21 @@ public class AggregatorServiceImpl implements AggregatorService {
     private IDMappingDAO idMappingDAO;
     private ItemTypeDAO itemTypeDAO;
     private AggregatorLogEntryDAO logEntryDAO;
+    private ActionTypeDAO actionTypeDAO;
 
     // logging
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    public AggregatorServiceImpl(TypeMappingService typeMappingService, TenantService tenantService, AggregatorActionDAO aggregatorActionDAO, JSONProfileServiceImpl jsonProfileService, ItemDAO itemDAO, IDMappingDAO idMappingDAO, ItemTypeDAO itemTypeDAO, AggregatorLogEntryDAO logEntryDAO) {
+    public AggregatorServiceImpl(TypeMappingService typeMappingService, TenantService tenantService, AggregatorActionDAO aggregatorActionDAO, JSONProfileServiceImpl jsonProfileService, ItemDAO itemDAO, IDMappingDAO idMappingDAO, ItemTypeDAO itemTypeDAO, AggregatorLogEntryDAO logEntryDAO, ActionTypeDAO actionTypeDAO) {
         this.typeMappingService = typeMappingService;
         this.tenantService = tenantService;
         this.aggregatorActionDAO = aggregatorActionDAO;
         this.jsonProfileService = jsonProfileService;
-        this.itemDAO = itemDAO;
+        this.itemDAO = itemDAO;   
         this.idMappingDAO = idMappingDAO;
         this.itemTypeDAO = itemTypeDAO;
         this.logEntryDAO = logEntryDAO;
+        this.actionTypeDAO = actionTypeDAO;
     }
 
     @Override
@@ -119,7 +123,7 @@ public class AggregatorServiceImpl implements AggregatorService {
                     //get fields stuff here
                         for (FieldConfiguration fc : configurationInt.getProfileFields().values()) {
                             if ((fc.getItemType()==null) || (action.getItem().getType().equals(fc.getItemType()))) {
-                                addFieldToTmpProfile(fc, profile, tmpProfile);
+                                addFieldToTmpProfile(fc, profile, tmpProfile, configurationInt.getWeights().get(action.getActionType()));
                             }
                         }
                     }
@@ -132,7 +136,7 @@ public class AggregatorServiceImpl implements AggregatorService {
                 if (!Strings.isNullOrEmpty(actionInfo)) {
                     Object actionProfile = configurationInt.getConfiguration().jsonProvider().parse(actionInfo);
                     for (FieldConfiguration fc : configurationInt.getActionFields().values()) {
-                        addFieldToTmpProfile(fc, actionProfile, tmpProfile);
+                        addFieldToTmpProfile(fc, actionProfile, tmpProfile, configurationInt.getWeights().get(action.getActionType()));
                     }
                 }
             }
@@ -148,7 +152,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         
     }
 
-    private void addFieldToTmpProfile(FieldConfiguration fc, Object sourceProfile, HashMap<String,HashMap<String,Integer>> userProfile) {
+    private void addFieldToTmpProfile(FieldConfiguration fc, Object sourceProfile, HashMap<String,HashMap<String,Integer>> userProfile, Integer weight) {
         try {
             ArrayList<String> fields = new ArrayList<>();
             Object field = fc.getJsonPath().read(sourceProfile);
@@ -174,9 +178,9 @@ public class AggregatorServiceImpl implements AggregatorService {
             for (String field1 : fields) {
                 Integer counter = outputField.get(field1);
                 if (counter == null) { 
-                    counter = 1;
+                    counter = weight;
                 } else {
-                    counter++;
+                    counter += weight;
                 }
                 outputField.put(field1, counter);  
             }
@@ -279,6 +283,12 @@ public class AggregatorServiceImpl implements AggregatorService {
             throw new Exception(sb);
         }
         ret.setAssocType(assocTypeId);
+        
+        Set<ActionTypeVO> actionTypes = actionTypeDAO.getTypeVOs(configuration.getTenantId());
+        Map<Integer,Integer> weights = ret.getWeights();
+        for (ActionTypeVO actionType : actionTypes) {
+            weights.put(actionType.getId(), actionType.getWeight());
+        }
         
         if (!Strings.isNullOrEmpty(configuration.getActionInfoFields())) {
             String[] fields = configuration.getActionInfoFields().replaceAll("\n", "").split(";");
