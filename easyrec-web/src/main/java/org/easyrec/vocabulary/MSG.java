@@ -95,13 +95,13 @@ public class MSG {
     public static final Message NOT_SIGNED_IN = new ErrorMessage(
             209, "Please sign in first!");
     public static final Message TENANT_AUTHENTICATION_FAILED = new ErrorMessage(
-            210, "Authetication at Recommender failed!");
+            210, "Authentication with Recommender failed!");
     public static final Message TENANT_REMOVE_FAILED = new ErrorMessage(
             211, "Tenant could not be removed!");
     public static final Message TENANT_RESET = new ErrorMessage(
             212, "Tenant successfully reset!");
     public static final Message TENANT_RESET_FAILED = new ErrorMessage(
-            213, "Reseting Tenant failed!");
+            213, "Resetting Tenant failed!");
     public static final Message TENANT_WRONG_TENANT = new ErrorMessage(
             214, "Tenant does not exist!");
     public static final Message TENANT_WRONG_TENANT_APIKEY = new ErrorMessage(
