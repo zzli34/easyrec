@@ -53,6 +53,7 @@ CREATE TABLE actiontype (
   name varchar(50) NOT NULL,
   id int(11) NOT NULL,
   hasvalue bit(1) NOT NULL DEFAULT b'0',
+  weight INT(11) NOT NULL DEFAULT 1,
   UNIQUE KEY tenantId (tenantId,name),
   UNIQUE KEY tenantId_2 (tenantId,id)
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1 COMMENT='Table containing actiontypes';
