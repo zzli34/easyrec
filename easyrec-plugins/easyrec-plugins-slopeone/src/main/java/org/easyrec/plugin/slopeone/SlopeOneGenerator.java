@@ -28,6 +28,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.TenantVO;
+import org.easyrec.plugin.generator.RunConditionEnabled;
 import org.easyrec.plugin.model.Version;
 import org.easyrec.plugin.slopeone.model.*;
 import org.easyrec.plugin.slopeone.store.dao.ActionDAO;
@@ -41,7 +42,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import org.easyrec.plugin.generator.RunConditionEnabled;
 
 /**
  * Implementation of the Slope One algorithm [1] as an easyrec-Generator.
@@ -63,7 +63,6 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
     private ActionDAO actionDAO;
     private DeviationDAO deviationDAO;
     private LogEntryDAO logEntryDAO;
-    private TypeMappingService typeMappingService;
 
     public SlopeOneGenerator() {
         super(DISPLAY_NAME, ID, VERSION, SlopeOneConfiguration.class, SlopeOneStats.class);
@@ -82,7 +81,7 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void setTypeMappingService(final TypeMappingService typeMappingService) {
-        this.typeMappingService = typeMappingService;
+        super.setTypeMappingService(typeMappingService);
     }
 
     @Override
@@ -115,7 +114,8 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
     @Override
     public boolean evaluateRuncondition(Date lastRun) {
         if (lastRun == null) return true; // never run before so execute anyway+
-        Integer objActionTypeId = typeMappingService.getIdOfActionType(getConfiguration().getTenantId(), getConfiguration().getActionType());
+        Integer objActionTypeId = getTypeMappingService().getIdOfActionType(getConfiguration().getTenantId(), getConfiguration()
+          .getActionType());
         if (objActionTypeId == null) return false; // error with configuration, so do not run
         int actionsSinceLastRun = actionDAO.getNumberOfActions(getConfiguration().getTenantId(), objActionTypeId, lastRun);
         return actionsSinceLastRun >= 1;
@@ -139,32 +139,32 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
         List<String> stringItemTypes = configuration.getItemTypes();
 
         if (stringItemTypes.isEmpty())
-            stringItemTypes = Lists.newArrayList(typeMappingService.getItemTypes(tenantId, true));
+            stringItemTypes = Lists.newArrayList(getTypeMappingService().getItemTypes(tenantId, true));
 
         TIntSet itemTypes = new TIntHashSet(stringItemTypes.size());
 
         for (String stringItemType : stringItemTypes) {
-            Integer objItemTypeId = typeMappingService.getIdOfItemType(tenantId, stringItemType);
+            Integer objItemTypeId = getTypeMappingService().getIdOfItemType(tenantId, stringItemType);
             objItemTypeId = Preconditions.checkNotNull(objItemTypeId, "configuration value 'itemType'=%stats is " +
                     "invalid.", stringItemType);
 
             itemTypes.add(objItemTypeId);
         }
 
-        Integer objActionTypeId = typeMappingService.getIdOfActionType(tenantId, configuration.getActionType());
+        Integer objActionTypeId = getTypeMappingService().getIdOfActionType(tenantId, configuration.getActionType());
         objActionTypeId = Preconditions.checkNotNull(objActionTypeId, "configuration value 'actionType'=%s is invalid.",
                 configuration.getActionType());
 
-        Integer objViewTypeId = typeMappingService.getIdOfViewType(tenantId, configuration.getViewType());
+        Integer objViewTypeId = getTypeMappingService().getIdOfViewType(tenantId, configuration.getViewType());
         objViewTypeId = Preconditions.checkNotNull(objViewTypeId, "configuration value 'viewType'=%s is invalid.",
                 configuration.getViewType());
 
         Integer objAssocTypeId =
-                typeMappingService.getIdOfAssocType(tenantId, configuration.getAssociationType());
+                getTypeMappingService().getIdOfAssocType(tenantId, configuration.getAssociationType());
         objAssocTypeId = Preconditions.checkNotNull(objAssocTypeId, "configuration value 'assocType'=%s is invalid.",
                 configuration.getAssociationType());
 
-        Integer objSourceTypeId = typeMappingService.getIdOfSourceType(tenantId, getId().toString());
+        Integer objSourceTypeId = getTypeMappingService().getIdOfSourceType(tenantId, getId().toString());
         objSourceTypeId = Preconditions.checkNotNull(objSourceTypeId, "configuration value 'sourceType'=%s is invalid.",
                 getId().toString());
 
@@ -238,7 +238,6 @@ public class SlopeOneGenerator extends GeneratorPluginSupport<SlopeOneConfigurat
     @Override
     protected void doInitialize() throws Exception {
         tenantService = getTenantService();
-        typeMappingService = (TypeMappingService) getTypeMappingService();
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
