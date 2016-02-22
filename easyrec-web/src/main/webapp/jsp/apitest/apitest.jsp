@@ -25,6 +25,8 @@ userid<input ng-model="userid" id="userid" style="width:100%"><br>
 </div>
 <div ng-show="(apicall.type === 'Actions' && apicall.name !== 'track') || (apicall.type === 'Recommendations' && (apicall.name !== 'recommendationsforuser') && (apicall.name !== 'actionhistoryforuser')) || apicall.name === 'setitemactive' || apicall.name === 'importitem'">
 itemid*<input ng-model="itemid" id="itemid" style="width:100%"><br>
+</div>
+<div ng-show="(apicall.type === 'Actions' && apicall.name !== 'track') || (apicall.type === 'Recommendations' && (apicall.name !== 'recommendationsforuser') && (apicall.name !== 'actionhistoryforuser')) || apicall.name === 'setitemactive' || apicall.name === 'importitem' || apicall.name === 'additemtype' || apicall.name === 'deleteitemtype'">
 itemtype<input ng-model="itemtype" id="itemtype" style="width:100%"><br>  
 </div>
 <div ng-show="(apicall.type === 'Actions' && apicall.name !== 'track') || apicall.name === 'importitem'">
@@ -88,6 +90,9 @@ assocvalue<input ng-model="assocvalue" id="assocvalue" style="width:100%"><br>
 </div>
 <div ng-show="apicall.name === 'setitemactive'">
 active<input ng-model="isactive" id="active" style="width:100%"><br>
+</div>
+<div ng-show="apicall.name === 'additemtype'">
+visible<input ng-model="visible" id="visible" style="width:100%"><br>
 </div>
 token<input ng-model="token" id="token" style="width:100%"><br>
 <label>Request:</label><br/>

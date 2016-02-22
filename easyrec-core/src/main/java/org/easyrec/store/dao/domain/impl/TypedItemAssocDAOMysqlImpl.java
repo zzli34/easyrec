@@ -206,6 +206,12 @@ public class TypedItemAssocDAOMysqlImpl extends
     }
 
     @Override
+    public int removeItemAssocByTenantAndItemType(Integer tenantId, String itemType) {
+        return itemAssocDAO
+                .removeItemAssocByTenantAndItemType(tenantId, typeMappingService.getIdOfItemType(tenantId, itemType));
+    }
+    
+    @Override
     public int updateItemAssocUsingPrimaryKey(ItemAssocVO<Integer, String> itemAssoc) {
         Integer tenantId = itemAssoc.getTenant();
         if (tenantId == null) {

@@ -76,7 +76,9 @@
                 {name: 'importrule',type :'Import & Other'},
                 {name: 'importitem',type :'Import & Other'},
                 {name: 'setitemactive',type :'Import & Other'},
-                {name: 'itemtypes',type :'Import & Other'}
+                {name: 'itemtypes',type :'Import & Other'},
+                {name: 'additemtype',type :'Import & Other'},
+                {name: 'deleteitemtype',type :'Import & Other'}
             ];
             
             $scope.host = "${webappPath}/api/1.1/json/";
@@ -469,6 +471,31 @@
                     case 'itemtypes':
                         easyrec.itemtypes(
                                 $scope.token).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'additemtype':
+                        easyrec.additemtype(
+                                $scope.token, 
+                                $scope.itemtype,
+                                $scope.visible).then(
+                            function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data;
+                                }, function(data, status) {
+                                $scope.status = status;
+                                $scope.data = data || "Request failed"; 
+                        });
+                        break;
+                    case 'deleteitemtype':
+                        easyrec.deleteitemtype(
+                                $scope.token,
+                                $scope.itemtype).then(
                             function(data, status) {
                                 $scope.status = status;
                                 $scope.data = data;

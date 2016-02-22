@@ -31,6 +31,9 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.Properties;
 import org.easyrec.service.core.ClusterService;
+import org.easyrec.store.dao.core.ActionDAO;
+import org.easyrec.store.dao.core.ItemAssocDAO;
+import org.easyrec.store.dao.core.ItemDAO;
 
 /**
  * Implementation of the {@link org.easyrec.service.core.TenantService} interface.
@@ -69,11 +72,15 @@ public class TenantServiceImpl implements TenantService {
     private ViewTypeDAO viewTypeDAO;
     private AuthenticationDAO authenticationDAO;
     private ClusterService clusterService;
+    private ItemAssocDAO itemAssocDAO;
+    private ActionDAO actionDAO;
+    private ItemDAO itemDAO;
 
     public TenantServiceImpl(TenantDAO tenantDAO, TenantConfigVO tenantConfig, ActionTypeDAO actionTypeDAO,
                              AggregateTypeDAO aggregateTypeDAO, AssocTypeDAO assocTypeDAO, ItemTypeDAO itemTypeDAO,
                              SourceTypeDAO sourceTypeDAO, ViewTypeDAO viewTypeDAO,
-                             AuthenticationDAO authenticationDAO) {
+                             AuthenticationDAO authenticationDAO, ItemAssocDAO itemAssocDAO,
+                             ActionDAO actionDAO, ItemDAO itemDAO) {
         this.tenantDAO = tenantDAO;
         this.defaultTenantConfig = tenantConfig;
         this.actionTypeDAO = actionTypeDAO;
@@ -83,6 +90,9 @@ public class TenantServiceImpl implements TenantService {
         this.sourceTypeDAO = sourceTypeDAO;
         this.viewTypeDAO = viewTypeDAO;
         this.authenticationDAO = authenticationDAO;
+        this.itemAssocDAO  = itemAssocDAO;
+        this.actionDAO = actionDAO;
+        this.itemDAO = itemDAO;
     }
 
     // interface 'TenantService' implementation
@@ -215,7 +225,46 @@ public class TenantServiceImpl implements TenantService {
     public int insertItemTypeForTenant(Integer tenantId, String itemType, boolean visible) {
         return itemTypeDAO.insertOrUpdate(tenantId, itemType, visible);
     }
+
+    @Override
+    public String isValidItemTypeName(String itemTypeName) {
+
+        if (itemTypeName.contains(" ")) {
+            return "The item type name cannot contain spaces.";
+        }
+
+        if ("CLUSTER".equals(itemTypeName)) {
+            return "CLUSTER is a reserved item type name used for the easyrec clusters.";
+        }
+
+        if ("ITEM".equals(itemTypeName)) {
+            return "ITEM is a reserved item type name used by easyrec.";
+        }
+        
+        if (!itemTypeName.equals(itemTypeName.replaceAll("[^A-Z_0-9]+", ""))) {
+            return "Only use machine readable UPPERCASE names containing 0-9, A-Z and _ ";
+        }
+
+        return "";
+    }
+
+    @Override
+    public void deleteItemTypeForTenant(Integer tenantId, Integer itemType) throws Exception {
+        // TODO:  
+        // delete all Rules with itemtype
+        itemAssocDAO.removeItemAssocByTenantAndItemType(tenantId, itemType);
+        // delete all actions with itemtype
+        actionDAO.removeActionsByTenantAndItemType(tenantId, itemType);
+        // TODO: check for itemTypes in plugin configurations
+        // delete all items with itemtype
+        String it = itemTypeDAO.getTypeById(tenantId, itemType);
+        itemDAO.remove(tenantId, it);
+        // delete itemType
+        itemTypeDAO.deleteTypeById(tenantId, itemType);
+        logger.info("Successfully removed itemType " + it + " and all references!");
+    }
     
+    @Override
     public int insertActionTypeForTenant(Integer tenantId, String actionType, boolean hasvalue) {
         return actionTypeDAO.insertOrUpdate(tenantId, actionType, tenantId, hasvalue);
     }
@@ -390,5 +439,28 @@ public class TenantServiceImpl implements TenantService {
         this.clusterService = clusterService;
     }
 
+    public ItemAssocDAO getItemAssocDAO() {
+        return itemAssocDAO;
+    }
+
+    public void setItemAssocDAO(ItemAssocDAO itemAssocDAO) {
+        this.itemAssocDAO = itemAssocDAO;
+    }
+
+    public ActionDAO getActionDAO() {
+        return actionDAO;
+    }
+
+    public void setActionDAO(ActionDAO actionDAO) {
+        this.actionDAO = actionDAO;
+    }
+
+    public ItemDAO getItemDAO() {
+        return itemDAO;
+    }
+
+    public void setItemDAO(ItemDAO itemDAO) {
+        this.itemDAO = itemDAO;
+    }
 
 }

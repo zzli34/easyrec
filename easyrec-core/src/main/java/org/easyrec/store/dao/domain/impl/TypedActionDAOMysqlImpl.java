@@ -101,6 +101,11 @@ public class TypedActionDAOMysqlImpl extends
     }
 
     @Override
+    public int removeActionsByTenantAndItemType(Integer tenant, String itemType) {
+        return actionDAO.removeActionsByTenantAndItemType(tenant, tenant);
+    }
+    
+    @Override
     public Iterator<ActionVO<Integer, String>> getActionIterator(int bulkSize) {
         return new ResultSetIteratorMysql<>(getDataSource(),
                 bulkSize, getActionIteratorQueryString(), actionVORowMapper);

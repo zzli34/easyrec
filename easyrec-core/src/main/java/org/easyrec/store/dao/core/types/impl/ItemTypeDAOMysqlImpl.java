@@ -20,6 +20,7 @@ package org.easyrec.store.dao.core.types.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
@@ -37,6 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -301,6 +303,38 @@ public class ItemTypeDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
         }
 
         return getJdbcTemplate().update(query.toString(), args, argTypes);
+    }
+
+    @InvalidatesCache
+    @Override
+    public int deleteTypeById(Integer tenantId, Integer id) {
+        if (tenantId == null) {
+            throw new IllegalArgumentException("missing 'tenantId'");
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("removing 'itemType' for tenant " + tenantId);
+        }
+
+        StringBuilder sqlString = new StringBuilder("DELETE FROM ");
+        sqlString.append(DEFAULT_TABLE_NAME);
+        sqlString.append(" WHERE ");
+        
+        List<Object> args = Lists.newArrayList();
+        List<Integer> argt = Lists.newArrayList();
+
+        // add constraints to the query
+        sqlString.append(DEFAULT_TENANT_COLUMN_NAME);
+        sqlString.append("=? AND ");
+
+        args.add(tenantId);
+        argt.add(Types.INTEGER);
+        
+        sqlString.append(DEFAULT_ID_COLUMN_NAME).append("=?");
+        args.add(id);
+        argt.add(Types.INTEGER);
+        
+        return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
     }
 
     @Override
