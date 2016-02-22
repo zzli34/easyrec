@@ -31,10 +31,12 @@ import org.easyrec.model.core.transfer.TimeConstraintVO;
 import org.easyrec.model.core.web.Item;
 import org.easyrec.model.core.web.RemoteTenant;
 import org.easyrec.model.core.web.Session;
-import org.easyrec.model.web.*;
+import org.easyrec.model.web.Recommendation;
+import org.easyrec.model.web.RecommendedItem;
 import org.easyrec.model.web.enums.TimeRange;
-import org.easyrec.service.core.ProfileService;
+import org.easyrec.rest.nodomain.exception.EasyRecRestException;
 import org.easyrec.service.core.ClusterService;
+import org.easyrec.service.core.ProfileService;
 import org.easyrec.service.core.TenantService;
 import org.easyrec.service.domain.DomainActionService;
 import org.easyrec.service.domain.DomainItemAssocService;
@@ -43,11 +45,11 @@ import org.easyrec.service.domain.TypeMappingService;
 import org.easyrec.service.web.IDMappingService;
 import org.easyrec.service.web.ItemService;
 import org.easyrec.service.web.nodomain.ShopRecommenderService;
-import org.easyrec.rest.nodomain.exception.EasyRecRestException;
 import org.easyrec.store.dao.IDMappingDAO;
 import org.easyrec.store.dao.core.ItemDAO;
 import org.easyrec.store.dao.core.types.AssocTypeDAO;
 import org.easyrec.store.dao.web.RemoteTenantDAO;
+import org.easyrec.utils.collection.CollectionUtils;
 import org.easyrec.utils.spring.log.annotation.IOLog;
 import org.easyrec.utils.spring.profile.annotation.Profiled;
 import org.easyrec.vocabulary.MSG;
@@ -424,10 +426,12 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Profiled
     @Override
     public Recommendation alsoBoughtItems(Integer tenantId, String userId, String itemId, String itemType,
-                                          String requestedItemType, Session session, Integer numberOfResults)
+                                          String requestedItemType, Session session, Integer numberOfResults,
+                                          Integer offset)
             throws EasyRecRestException {
 
         Recommendation rec;
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
         Item i = itemDAO.get(remoteTenant, itemId, itemType);
 
@@ -447,14 +451,14 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoBoughtItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
-                                                itemType),
-                                        requestedItemType);
+                                                 new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
+                                                              itemType),
+                                                 requestedItemType);
                 monCore.stop();
 
                 List<Item> items = idMappingService
                         .mapRecommendedItems(recommendation, remoteTenant, idMappingDAO.lookup(userId), session,
-                                numberOfResults);
+                                numberOfResults, offset);
 
                 rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_OTHER_USERS_ALSO_BOUGHT, userId,
                         session.getSessionId(), i, items);
@@ -472,9 +476,10 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Profiled
     @Override
     public Recommendation alsoViewedItems(Integer tenantId, String userId, String itemId, String itemType,
-                                          String requestedItemType, Session session, Integer numberOfResults)
+                                          String requestedItemType, Session session, Integer numberOfResults, Integer
+                                                offset)
             throws EasyRecRestException {
-
+        offset = CollectionUtils.getSafeOffset(offset);
         Recommendation rec;
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
         Item i = itemDAO.get(remoteTenant, itemId, itemType);
@@ -495,14 +500,14 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoViewedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
-                                                itemType),
-                                        requestedItemType);
+                                                 new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
+                                                              itemType),
+                                                 requestedItemType);
                 monCore.stop();
 
                 List<Item> items = idMappingService
                         .mapRecommendedItems(recommendation, remoteTenant, idMappingDAO.lookup(userId), session,
-                                numberOfResults);
+                                numberOfResults, offset);
 
                 rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_OTHER_USERS_ALSO_VIEWED, userId,
                         session.getSessionId(), i, items);
@@ -521,9 +526,11 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Profiled
     @Override
     public Recommendation alsoGoodRatedItems(Integer tenantId, String userId, String itemId, String itemType,
-                                             String requestedItemType, Session session, Integer numberOfResults)
+                                             String requestedItemType, Session session, Integer numberOfResults, Integer
+                                                   offset)
             throws EasyRecRestException {
         Recommendation rec;
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         Item i = itemDAO.get(remoteTenant, itemId, itemType);
@@ -544,14 +551,14 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                 RecommendationVO<Integer, String> recommendation =
                         domainRecommenderService
                                 .alsoGoodRatedItems(tenantId, idMappingDAO.lookup(userId), session.getSessionId(),
-                                        new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
-                                                itemType),
-                                        requestedItemType);
+                                                    new ItemVO<>(tenantId, idMappingDAO.lookup(itemId),
+                                                                 itemType),
+                                                    requestedItemType);
                 monCore.stop();
 
                 List<Item> items = idMappingService
                         .mapRecommendedItems(recommendation, remoteTenant, idMappingDAO.lookup(userId), session,
-                                numberOfResults);
+                                numberOfResults, offset);
 
                 rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_ITEMS_RATED_GOOD_BY_OTHER_USERS, userId,
                         session.getSessionId(), i, items);
@@ -573,10 +580,11 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @IOLog
     @Profiled
     @Override
-    public List<Item> mostBoughtItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults, String timeRange,
+    public List<Item> mostBoughtItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults,
+                                      Integer offset, String timeRange,
                                       TimeConstraintVO constraint, Session session) {
         List<Item> items;
-
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         if (logger.isDebugEnabled()) {
@@ -591,7 +599,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
         Element e = cache.get(cacheKey);
         if ((e != null) && (!e.isExpired())) {
             items = itemService.filterDeactivatedItems((List<Item>) e.getValue());
-            return items.subList(0, Math.min(items.size(), numberOfResults));
+            return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
         }
         if (constraint == null) constraint = new TimeConstraintVO();
         adjustConstraint(constraint, TimeRange.getEnumFromString(timeRange));
@@ -618,21 +626,22 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
 
-        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS);
+        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS,0);
 
         cache.put(new Element(cacheKey, items));
-
-        return items.subList(0, Math.min(items.size(), numberOfResults));
+        return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
     }
 
-    @SuppressWarnings({"unchecked"})
+
+  @SuppressWarnings({"unchecked"})
     @IOLog
     @Profiled
     @Override
-    public List<Item> mostViewedItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults, String timeRange,
+    public List<Item> mostViewedItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults,
+                                      Integer offset, String timeRange,
                                       TimeConstraintVO constraint, Session session) {
         List<Item> items;
-
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         if (logger.isDebugEnabled()) {
@@ -648,7 +657,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
         if ((e != null) && (!e.isExpired())) {
             logger.debug("most viewed - cache hit");
             items = itemService.filterDeactivatedItems((List<Item>) e.getValue());
-            return items.subList(0, Math.min(items.size(), numberOfResults));
+            return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
         }
         if (constraint == null) constraint = new TimeConstraintVO();
         adjustConstraint(constraint, TimeRange.getEnumFromString(timeRange));
@@ -674,20 +683,21 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
 
-        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS);
+        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS,0);
 
         cache.put(new Element(cacheKey, items));
-        return items.subList(0, Math.min(items.size(), numberOfResults));
+        return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
     }
 
     @SuppressWarnings({"unchecked"})
     @IOLog
     @Profiled
     @Override
-    public List<Item> mostRatedItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults, String timeRange,
+    public List<Item> mostRatedItems(Integer tenantId, String itemType, Integer cluster, Integer numberOfResults,
+                                     Integer offset, String timeRange,
                                      TimeConstraintVO constraint, Session session) {
         List<Item> items;
-
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         if (logger.isDebugEnabled()) {
@@ -702,7 +712,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
         Element e = cache.get(cacheKey);
         if ((e != null) && (!e.isExpired())) {
             items = itemService.filterDeactivatedItems((List<Item>) e.getValue());
-            return items.subList(0, Math.min(items.size(), numberOfResults));
+            return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
         }
         if (constraint == null) constraint = new TimeConstraintVO();
         adjustConstraint(constraint, TimeRange.getEnumFromString(timeRange));
@@ -728,19 +738,20 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
 
-        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS);
+        items = idMappingService.mapRankedItems(rankedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS,0);
 
         cache.put(new Element(cacheKey, items));
-        return items.subList(0, Math.min(items.size(), numberOfResults));
+        return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
     }
 
     @Override
-    public List<Item> itemsOfCluster(Integer tenant, String clusterName, Integer numberOfResults, String strategy,
+    public List<Item> itemsOfCluster(Integer tenant, String clusterName, Integer numberOfResults,Integer offset,
+                                     String strategy,
                                      Boolean useFallback, Integer itemType, Session session)
             throws EasyRecRestException {
         List<Item> items;
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenant);
-
+        offset = CollectionUtils.getSafeOffset(offset);
         if (logger.isDebugEnabled())
             logger.debug("<ITEMS_OF_CLUSTER@" + remoteTenant.getStringId() + "> " + " requesting items of cluster " +
                     clusterName);
@@ -754,9 +765,9 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                     clusterService.getItemsOfCluster(cluster, strategy, useFallback, numberOfResults, itemType);
 
             items = idMappingService.mapClusterItems(clusterItems, remoteTenant, session,
-                    WS.MAX_NUMBER_OF_RANKING_RESULTS);
+                    WS.MAX_NUMBER_OF_RANKING_RESULTS, 0);
 
-            return items.subList(0, Math.min(items.size(), numberOfResults));
+            return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
         } else {
             throw new EasyRecRestException(MSG.CLUSTER_NOT_EXISTS);
         }
@@ -771,9 +782,9 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Profiled
     @Override
     public List<Item> worstRatedItems(Integer tenantId, String userId, String itemType, Integer numberOfResults,
-                                      String timeRange, TimeConstraintVO constraint, Session session) {
+                                      Integer offset, String timeRange, TimeConstraintVO constraint, Session session) {
         List<Item> items;
-
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         if (logger.isDebugEnabled()) {
@@ -788,7 +799,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
             Element e = cache.get(tenantId + WS.ACTION_WORST_RATED + itemType + timeRange);
             if ((e != null) && (!e.isExpired())) {
                 items = itemService.filterDeactivatedItems((List<Item>) e.getValue());
-                return items.subList(0, Math.min(items.size(), numberOfResults));
+                return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
             }
             if (constraint == null) constraint = new TimeConstraintVO();
             adjustConstraint(constraint, TimeRange.getEnumFromString(timeRange));
@@ -816,10 +827,10 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
 
-        items = idMappingService.mapRatedItems(ratedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS);
+        items = idMappingService.mapRatedItems(ratedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS, 0);
 
         if ((userId == null)) cache.put(new Element(tenantId + WS.ACTION_WORST_RATED + itemType + timeRange, items));
-        return items.subList(0, Math.min(items.size(), numberOfResults));
+        return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -827,9 +838,9 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     @Profiled
     @Override
     public List<Item> bestRatedItems(Integer tenantId, String userId, String itemType, Integer numberOfResults,
-                                     String timeRange, TimeConstraintVO constraint, Session session) {
+                                     Integer offset, String timeRange, TimeConstraintVO constraint, Session session) {
         List<Item> items;
-
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
 
         if (logger.isDebugEnabled()) {
@@ -844,7 +855,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
             Element e = cache.get(tenantId + WS.ACTION_BEST_RATED + itemType + timeRange);
             if ((e != null) && (!e.isExpired())) {
                 items = itemService.filterDeactivatedItems((List<Item>) e.getValue());
-                return items.subList(0, Math.min(items.size(), numberOfResults));
+                return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
             }
             if (constraint == null) constraint = new TimeConstraintVO();
             adjustConstraint(constraint, TimeRange.getEnumFromString(timeRange));
@@ -873,13 +884,13 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
 
-        items = idMappingService.mapRatedItems(ratedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS);
+        items = idMappingService.mapRatedItems(ratedItems, remoteTenant, session, WS.MAX_NUMBER_OF_RANKING_RESULTS, 0);
 
         if ((userId == null)) cache.put(new Element(tenantId + WS.ACTION_BEST_RATED + itemType + timeRange, items));
-        return items.subList(0, Math.min(items.size(), numberOfResults));
+        return CollectionUtils.getSafeSubList(items, offset, numberOfResults);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
     // Recommendations
     ///////////////////////////////////////////////////////////////////////////////////////////////
     @IOLog
@@ -919,8 +930,9 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
         monCore.stop();
         List<Item> items = idMappingService.mapRecommendedItems(recommendation, remoteTenant,
-                idMappingDAO.lookup(userId), session,
-                numberOfRecommendations);  // session needed for building backtracking url (session.getRequest())
+                idMappingDAO.lookup(userId), session, // session needed for building backtracking url (session.getRequest()),
+                numberOfRecommendations, 0); // offset = 0
+
 
 
         rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_RECOMMENDATIONS_FOR_USER, userId, null,
@@ -936,10 +948,10 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     public Recommendation actionHistory(Integer tenantId, String userId, Session session,
                                                     String consideredActionType, String consideredItemType, 
                                                     Integer numberOfLastActionsConsidered,
-                                                    Integer numberOfRecommendations) throws EasyRecRestException {
+                                                    Integer numberOfRecommendations, Integer offset) throws EasyRecRestException {
         Recommendation rec;
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
-
+        offset = CollectionUtils.getSafeOffset(offset);
         Monitor monCore = MonitorFactory.start(JAMON_REST_ACTION_HISTORY_CORE);
         List<ItemVO<Integer, String>> recommendation =
                 domainRecommenderService.getActionHistory(tenantId, 
@@ -955,7 +967,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                                                             remoteTenant, 
                                                             idMappingDAO.lookup(userId), 
                                                             session, 
-                                                            numberOfRecommendations);
+                                                            numberOfRecommendations, offset);
 
         rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_HISTORY, userId, 
                 null, // no sessionId needed
@@ -971,10 +983,10 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
                                                     String consideredActionType, String consideredItemType, 
                                                     Integer numberOfLastActionsConsidered,
                                                     String assocType, String requestedItemType,
-                                                    Integer numberOfRecommendations) throws EasyRecRestException {
+                                                    Integer numberOfRecommendations, Integer offset) throws EasyRecRestException {
         Recommendation rec;
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
-
+        offset = CollectionUtils.getSafeOffset(offset);
         Double ratingThreshold = null;
         if (consideredActionType.equals(TypeMappingService.ACTION_TYPE_RATE)) {
             ratingThreshold = tenantService.getTenantById(tenantId).getRatingRangeNeutral();
@@ -988,7 +1000,8 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
         monCore.stop();
         List<Item> items = idMappingService.mapRecommendedItems(recommendation, remoteTenant,
                 idMappingDAO.lookup(userId), session,
-                numberOfRecommendations);  // session needed for building backtracking url (session.getRequest())
+                numberOfRecommendations, offset);  // session needed for building backtracking url (session
+                // .getRequest())
 
 
         rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_RECOMMENDATIONS_FOR_USER, userId, null,
@@ -1004,7 +1017,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     public Recommendation itemsForUser(Integer tenantId, String userId, Session session,
                                        String consideredActionType, String consideredItemType, Integer numberOfLastActionsConsidered,
                                        String assocType, String requestedItemType,
-                                       Integer numberOfRecommendations) throws EasyRecRestException {
+                                       Integer numberOfRecommendations, Integer offset) throws EasyRecRestException {
 
         Recommendation rec = null;
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
@@ -1022,7 +1035,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
             List<Item> items = idMappingService
                     .mapRecommendedItems(recommendation, remoteTenant, idMappingDAO.lookup(userId), session,
-                            numberOfRecommendations);
+                            numberOfRecommendations, offset);
 
             rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_RECOMMENDATIONS_FOR_USER, userId, null, null, items);
 
@@ -1056,10 +1069,11 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
     @Override
     public Recommendation relatedItems(Integer tenantId, String assocType, String userId, String itemId, String itemType,
-                                       String requestedItemType, Session session, Integer numberOfResults)
+                                       String requestedItemType, Session session, Integer numberOfResults, Integer offset)
             throws EasyRecRestException {
 
         Recommendation rec = null;
+        offset = CollectionUtils.getSafeOffset(offset);
         RemoteTenant remoteTenant = remoteTenantDAO.get(tenantId);
         Item i = null;
         
@@ -1089,7 +1103,7 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
 
             List<Item> items = idMappingService
                     .mapRecommendedItems(recommendation, remoteTenant, idMappingDAO.lookup(userId), session,
-                            numberOfResults);
+                            numberOfResults, offset);
 
             rec = new Recommendation(remoteTenant.getStringId(), WS.ACTION_RELATED_ITEMS, userId,
                     session.getSessionId(),
@@ -1210,7 +1224,9 @@ public class ShopRecommenderServiceImpl implements ShopRecommenderService {
     }
 
 
-    // getter/setter
+
+
+  // getter/setter
     @SuppressWarnings({"UnusedDeclaration"})
     public DomainRecommenderService getDomainRecommenderService() {
         return domainRecommenderService;

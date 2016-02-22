@@ -59,7 +59,8 @@ actiontype*<input ng-model="actiontype" id="actiontype" style="width:100%"><br>
 actionvalue<input ng-model="actionvalue" id="actionvalue" style="width:100%"><br>
 </div>
 <div ng-show="apicall.type === 'Recommendations' || apicall.type === 'Rankings' || apicall.name === 'itemsofcluster'">
-<hr/>
+<hr>
+offset<input ng-model="offset" id="offset" style="width:100%"><br>
 numberOfResults<input ng-model="numberOfResults" id="numberOfResults" style="width:100%"><br>
 requesteditemtype<input ng-model="requesteditemtype" id="requesteditemtype" style="width:100%"><br>
 withProfile<input ng-model="withProfile" id="withProfile" style="width:100%"><br>

@@ -190,6 +190,7 @@
                                 $scope.userid,                
                                 $scope.itemid,
                                 $scope.itemtype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -207,6 +208,7 @@
                                 $scope.userid,                
                                 $scope.itemid,
                                 $scope.itemtype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -224,6 +226,7 @@
                                 $scope.userid,                
                                 $scope.itemid,
                                 $scope.itemtype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -242,6 +245,7 @@
                                 $scope.itemid,
                                 $scope.itemtype,
                                 $scope.assoctype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -259,6 +263,7 @@
                                 $scope.userid,                
                                 $scope.actiontype,
                                 $scope.assoctype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -275,6 +280,7 @@
                         easyrec.actionhistoryforuser($scope.sessionid, 
                                 $scope.userid,                
                                 $scope.actiontype,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -289,6 +295,7 @@
                         break;
                     case 'mostvieweditems':
                         easyrec.mostviewed(
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -307,6 +314,7 @@
                         break;
                     case 'mostboughtitems':
                         easyrec.mostbought(
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -325,6 +333,7 @@
                         break;
                     case 'mostrateditems':
                         easyrec.mostrated(
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -344,6 +353,7 @@
                     case 'bestrateditems':
                         easyrec.bestrated(
                                 $scope.userid,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -363,6 +373,7 @@
                     case 'worstrateditems':
                         easyrec.worstrated(
                                 $scope.userid,
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,
@@ -392,6 +403,7 @@
                         break;
                     case 'itemsofcluster':
                         easyrec.itemsofcluster(
+                                $scope.offset,
                                 $scope.numberOfResults,
                                 $scope.requesteditemtype,
                                 $scope.withProfile,

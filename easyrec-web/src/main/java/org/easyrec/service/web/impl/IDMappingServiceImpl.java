@@ -19,22 +19,24 @@ package org.easyrec.service.web.impl;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import org.easyrec.controller.BackTrackingController;
 import org.easyrec.model.core.*;
 import org.easyrec.model.core.web.Item;
 import org.easyrec.model.core.web.RemoteTenant;
 import org.easyrec.model.core.web.Session;
-import org.easyrec.model.web.*;
+import org.easyrec.model.web.RankedItem;
+import org.easyrec.model.web.Rating;
+import org.easyrec.model.web.RecommendedItem;
 import org.easyrec.service.core.TenantService;
 import org.easyrec.service.web.IDMappingService;
 import org.easyrec.store.dao.IDMappingDAO;
 import org.easyrec.store.dao.core.ItemDAO;
 import org.easyrec.store.dao.core.types.AssocTypeDAO;
 import org.easyrec.store.dao.core.types.ItemTypeDAO;
+import org.easyrec.utils.collection.CollectionUtils;
+import org.easyrec.vocabulary.WS;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.easyrec.vocabulary.WS;
 
 /**
  * <DESCRIPTION>
@@ -263,10 +265,13 @@ public class IDMappingServiceImpl implements IDMappingService {
     
     @Override
     public List<Item> mapListOfItemVOs(List<ItemVO<Integer, String>> inList,
-            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations) {
+            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations, Integer
+                                             offset) {
      
         List<Item> items = new ArrayList<>();
         Item item = null;
+        offset = CollectionUtils.getSafeOffset(offset);
+        int skippedItemsDueToOffset = 0; //keep track of no of items we skip due to the specified offset
         if (inList != null) {
             for (ItemVO<Integer, String> itemVO : inList) {
 
@@ -277,22 +282,26 @@ public class IDMappingServiceImpl implements IDMappingService {
 
                 if (item != null) {
                     if (item.isActive()) {
+                        if (skippedItemsDueToOffset < offset) {
+                          //skip the item and count it
+                          skippedItemsDueToOffset ++;
+                        } else {
+                          // set tracking url
+                          // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&ft=3&i=3&it=2&a=4&u=www.flimmit.com
+                          String itemUrl = item.getUrl();
 
-                        // set tracking url
-                        // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&ft=3&i=3&it=2&a=4&u=www.flimmit.com
-                        String itemUrl = item.getUrl();
-
-                        if (remoteTenant.backtrackingEnabled()) {
+                          if (remoteTenant.backtrackingEnabled()) {
                             Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), itemVO.getType());
                             itemUrl = Item
-                                    .getTrackingUrl(session, userId, remoteTenant, 0,0, itemVO.getItem(),itemToType,
-                                            WS.recTypes.get(WS.RECTYPE_HISTORY), item.getUrl());
-                        }
+                              .getTrackingUrl(session, userId, remoteTenant, 0, 0, itemVO.getItem(), itemToType,
+                                              WS.recTypes.get(WS.RECTYPE_HISTORY), item.getUrl());
+                          }
 
-                        // to make webapp thread-safe, a new item is created
-                        items.add(new Item(item.getId(), item.getTenantId(), item.getItemId(), item.getItemType(),
-                                item.getDescription(), itemUrl, item.getImageUrl(), null,
-                                true, item.getCreationDate()));
+                          // to make webapp thread-safe, a new item is created
+                          items.add(new Item(item.getId(), item.getTenantId(), item.getItemId(), item.getItemType(),
+                                             item.getDescription(), itemUrl, item.getImageUrl(), null,
+                                             true, item.getCreationDate()));
+                        }
                     }
                 }
             }
@@ -314,10 +323,12 @@ public class IDMappingServiceImpl implements IDMappingService {
     @Override
     public List<Item> mapRecommendedItems(
             RecommendationVO<Integer, String> recommendation,
-            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations) {
+            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations, Integer
+              offset) {
         List<Item> items = new ArrayList<>();
         Item item = null;
-
+        offset = CollectionUtils.getSafeOffset(offset);
+        int skippedItemsDueToOffset = 0; //keep track of no of items we skip due to the specified offset
         if (recommendation != null && recommendation.getRecommendedItems() != null) {
             for (RecommendedItemVO<Integer, String> recommendedItem : recommendation.getRecommendedItems()) {
 
@@ -327,42 +338,48 @@ public class IDMappingServiceImpl implements IDMappingService {
                         recommendedItem.getItem().getType());
 
 
-                if (item != null) {
-                    if (item.isActive()) {
+                if (item != null && item.isActive()) {
+                    if (skippedItemsDueToOffset < offset) {
+                      //skip the item and count it
+                      skippedItemsDueToOffset ++;
+                    } else {
 
-                        // set tracking url
-                        // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
-                        String itemUrl = item.getUrl();
+                      // set tracking url
+                      // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
+                      String itemUrl = item.getUrl();
 
-                        Integer assocTypeId = assocTypeDAO
-                                .getIdOfType(remoteTenant.getId(), recommendation.getQueriedAssocType());
+                      Integer assocTypeId = assocTypeDAO
+                        .getIdOfType(remoteTenant.getId(), recommendation.getQueriedAssocType());
 
-                        // assocTypeId: recommendations for user
-                        if (assocTypeId == null) {
-                            assocTypeId = WS.recTypes.get(WS.RECTYPE_RECS_FOR_USER);
-                        }
+                      // assocTypeId: recommendations for user
+                      if (assocTypeId == null) {
+                        assocTypeId = WS.recTypes.get(WS.RECTYPE_RECS_FOR_USER);
+                      }
 
-                        Integer itemFromId = recommendation.getQueriedItem();
+                      Integer itemFromId = recommendation.getQueriedItem();
 
-                        // default item fromid = 0 in case of "recommendations for user"
-                        if (itemFromId == null) {
-                            itemFromId = 0;
-                        }                        
-                        
-                        if (remoteTenant.backtrackingEnabled()) {
-                            Integer itemFromType = itemTypeDAO.getIdOfType(remoteTenant.getId(), recommendation.getQueriedItemType());
-                            Integer itemToType = itemTypeDAO.getIdOfType(remoteTenant.getId(), recommendedItem.getItem().getType());
-                                itemUrl = Item.getTrackingUrl(session, userId, remoteTenant, itemFromId, itemFromType,
-                                    recommendedItem.getItem().getItem(),itemToType, assocTypeId, item.getUrl());
-                        }
+                      // default item fromid = 0 in case of "recommendations for user"
+                      if (itemFromId == null) {
+                        itemFromId = 0;
+                      }
 
-                        // to make webapp thread-safe, a new item is created
-                        // because this item contains request specific information
-                        //if (recommendedItem.getPredictionValue() > 0) {
-                        items.add(new Item(item.getId(), item.getTenantId(), item.getItemId(), item.getItemType(),
-                                item.getDescription(), itemUrl, item.getImageUrl(),
-                                recommendedItem.getPredictionValue(), true, item.getCreationDate()));
-                        //}
+                      if (remoteTenant.backtrackingEnabled()) {
+                        Integer itemFromType = itemTypeDAO
+                          .getIdOfType(remoteTenant.getId(), recommendation.getQueriedItemType());
+                        Integer itemToType = itemTypeDAO
+                          .getIdOfType(remoteTenant.getId(), recommendedItem.getItem().getType());
+                        itemUrl = Item.getTrackingUrl(session, userId, remoteTenant, itemFromId, itemFromType,
+                                                      recommendedItem.getItem().getItem(), itemToType, assocTypeId,
+                                                      item.getUrl());
+                      }
+
+                      // to make webapp thread-safe, a new item is created
+                      // because this item contains request specific information
+                      //if (recommendedItem.getPredictionValue() > 0) {
+                      items.add(new Item(item.getId(), item.getTenantId(), item.getItemId(), item.getItemType(),
+                                         item.getDescription(), itemUrl, item.getImageUrl(),
+                                         recommendedItem.getPredictionValue(), true, item.getCreationDate()));
+                      //}
                     }
                 }
             }
@@ -382,10 +399,12 @@ public class IDMappingServiceImpl implements IDMappingService {
      */
     @Override
     public List<Item> mapRankedItems(List<RankedItemVO<Integer, String>> rankedItems,
-                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
+                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                     Integer offset) {
         List<Item> items = new ArrayList<>();
         Item item = null;
-
+        offset = CollectionUtils.getSafeOffset(offset);
+        int skippedItemsDueToOffset = 0; //keep track of no of items we skip due to the specified offset
         if (rankedItems != null) {
             for (RankedItemVO<Integer, String> rankedItem : rankedItems) {
 
@@ -394,8 +413,11 @@ public class IDMappingServiceImpl implements IDMappingService {
                 item = itemDAO.get(remoteTenant, idMappingDAO.lookup(rankedItem.getItem().getItem()),
                         rankedItem.getItem().getType());
 
-                if (item != null) {
-                    if (item.isActive()) {
+                if (item != null && item.isActive()) {
+                    if (skippedItemsDueToOffset < offset) {
+                      //skip the item and count it
+                      skippedItemsDueToOffset ++;
+                    } else {
 
                         // set tracking url
                         // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
@@ -421,19 +443,23 @@ public class IDMappingServiceImpl implements IDMappingService {
 
     @Override
     public List<Item> mapRatedItems(List<RatingVO<Integer, String>> ratedItems,
-                                    RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
+                                    RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                    Integer offset) {
         List<Item> items = new ArrayList<>();
         Item item = null;
-
+        offset = CollectionUtils.getSafeOffset(offset);
+        int skippedItemsDueToOffset = 0; //keep track of no of items we skip due to the specified offset
         if (ratedItems != null) {
             for (RatingVO<Integer, String> ratedItem : ratedItems) {
                 if (items.size() >= numberOfRecommendations) break;
                 item = itemDAO.get(remoteTenant, idMappingDAO.lookup(ratedItem.getItem().getItem()),
                         ratedItem.getItem().getType());
 
-                if (item != null) {
-                    if (item.isActive()) {
-
+                if (item != null && item.isActive()) {
+                    if (skippedItemsDueToOffset < offset) {
+                      //skip the item and count it
+                      skippedItemsDueToOffset ++;
+                    } else {
                         // set tracking url
                         // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
                         String itemUrl = item.getUrl();
@@ -499,10 +525,12 @@ public class IDMappingServiceImpl implements IDMappingService {
      */
     @Override
     public List<Item> mapClusterItems(List<ItemVO<Integer, Integer>> clusterItems,
-                                      RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations) {
+                                      RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                      Integer offset) {
         List<Item> items = new ArrayList<>();
         Item item = null;
-
+        offset = CollectionUtils.getSafeOffset(offset);
+        int skippedItemsDueToOffset = 0; //keep track of no of items we skip due to the specified offset
         if (clusterItems != null) {
             for (ItemVO<Integer, Integer> clusterItem : clusterItems) {
 
@@ -511,9 +539,11 @@ public class IDMappingServiceImpl implements IDMappingService {
                 item = itemDAO.get(remoteTenant, idMappingDAO.lookup(clusterItem.getItem()),
                         itemTypeDAO.getTypeById(clusterItem.getTenant(), clusterItem.getType()));
 
-                if (item != null) {
-                    if (item.isActive()) {
-
+                if (item != null && item.isActive()) {
+                    if (skippedItemsDueToOffset < offset) {
+                      //skip the item and count it
+                      skippedItemsDueToOffset ++;
+                    } else {
                         // set tracking url
                         // e.g. http://localhost:8084/easyrec-web/t?t=1&f=2&t=3&a=4&u=www.flimmit.com
                         String itemUrl = item.getUrl();

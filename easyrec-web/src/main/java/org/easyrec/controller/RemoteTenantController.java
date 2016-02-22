@@ -20,17 +20,19 @@ package org.easyrec.controller;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.easyrec.model.core.web.*;
 import org.easyrec.model.core.ItemAssocVO;
 import org.easyrec.model.core.TenantVO;
+import org.easyrec.model.core.web.*;
 import org.easyrec.model.plugin.LogEntry;
-import org.easyrec.model.web.*;
+import org.easyrec.model.plugin.NamedConfiguration;
+import org.easyrec.model.web.Assoc;
 import org.easyrec.plugin.container.PluginRegistry;
 import org.easyrec.plugin.generator.Generator;
 import org.easyrec.plugin.generator.GeneratorConfiguration;
 import org.easyrec.plugin.model.PluginId;
 import org.easyrec.plugin.stats.GeneratorStatistics;
 import org.easyrec.service.core.TenantService;
+import org.easyrec.service.domain.TypeMappingService;
 import org.easyrec.service.web.ItemService;
 import org.easyrec.service.web.NamedConfigurationService;
 import org.easyrec.service.web.PluginScheduler;
@@ -55,8 +57,6 @@ import org.springframework.web.util.HtmlUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import org.easyrec.model.plugin.NamedConfiguration;
-import org.easyrec.service.domain.TypeMappingService;
 
 /**
  * This Controller handles the Tenant operation.
@@ -690,35 +690,37 @@ public class RemoteTenantController extends MultiActionController {
 
             if ("mostviewed".equals(assocType) || Strings.isNullOrEmpty(assocType)) {
                 List<Item> items =
-                        shopRecommenderService.mostViewedItems(remoteTenant.getId(), null, null, 50, timerange, null,
+                        shopRecommenderService.mostViewedItems(remoteTenant.getId(), null, null, 50, 0, timerange,
+                                                               null,
                                 new Session(null, request.getRemoteAddr()));
                 mav.addObject("items", items);
             }
 
             if ("mostbought".equals(assocType)) {
                 List<Item> items =
-                        shopRecommenderService.mostBoughtItems(remoteTenant.getId(), null, null, 50, timerange, null,
+                        shopRecommenderService.mostBoughtItems(remoteTenant.getId(), null, null, 50, 0, timerange,
+                                                               null,
                                 new Session(null, request.getRemoteAddr()));
                 mav.addObject("items", items);
             }
 
             if ("mostrated".equals(assocType)) {
                 List<Item> items =
-                        shopRecommenderService.mostRatedItems(remoteTenant.getId(), null, null, 50, timerange, null,
+                        shopRecommenderService.mostRatedItems(remoteTenant.getId(), null, null, 50, 0, timerange, null,
                                 new Session(null, request.getRemoteAddr()));
                 mav.addObject("items", items);
             }
 
             if ("bestrated".equals(assocType)) {
                 List<Item> items =
-                        shopRecommenderService.bestRatedItems(remoteTenant.getId(), null, null, 50, timerange, null,
+                        shopRecommenderService.bestRatedItems(remoteTenant.getId(), null, null, 50, 0, timerange, null,
                                 new Session(null, request.getRemoteAddr()));
                 mav.addObject("items", items);
             }
 
             if ("worstrated".equals(assocType)) {
                 List<Item> items =
-                        shopRecommenderService.worstRatedItems(remoteTenant.getId(), null, null, 50, timerange, null,
+                        shopRecommenderService.worstRatedItems(remoteTenant.getId(), null, null, 50, 0, timerange, null,
                                 new Session(null, request.getRemoteAddr()));
                 mav.addObject("items", items);
             }

@@ -26,16 +26,17 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
-import java.io.IOException;
-import java.text.ParseException;
 import org.easyrec.exception.core.ClusterException;
 import org.easyrec.model.core.ClusterVO;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
 import org.easyrec.model.core.web.*;
+import org.easyrec.model.plugin.LogEntry;
 import org.easyrec.model.plugin.NamedConfiguration;
 import org.easyrec.model.plugin.archive.ArchivePseudoConfiguration;
 import org.easyrec.model.plugin.archive.ArchivePseudoGenerator;
 import org.easyrec.model.plugin.archive.ArchivePseudoStatistics;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
+import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
 import org.easyrec.model.web.EasyRecSettings;
 import org.easyrec.model.web.Recommendation;
 import org.easyrec.plugin.configuration.GeneratorContainer;
@@ -51,6 +52,8 @@ import org.easyrec.service.web.nodomain.ShopRecommenderService;
 import org.easyrec.store.dao.IDMappingDAO;
 import org.easyrec.store.dao.core.ItemDAO;
 import org.easyrec.store.dao.core.types.AssocTypeDAO;
+import org.easyrec.store.dao.plugin.LogEntryDAO;
+import org.easyrec.store.dao.web.BackTrackingDAO;
 import org.easyrec.store.dao.web.OperatorDAO;
 import org.easyrec.store.dao.web.RemoteTenantDAO;
 import org.easyrec.utils.MyUtils;
@@ -62,13 +65,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.easyrec.model.plugin.LogEntry;
-import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingConfiguration;
-import org.easyrec.model.plugin.sessiontousermapping.SessionToUserMappingGenerator;
-import org.easyrec.store.dao.plugin.LogEntryDAO;
-import org.easyrec.store.dao.web.BackTrackingDAO;
 
 /**
  * @author szavrel
@@ -582,6 +582,7 @@ public class EasyRec {
                                          @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                          @QueryParam("sessionid") String sessionId, @QueryParam("itemid") String itemId,
                                          @QueryParam("numberOfResults") Integer numberOfResults,
+                                         @QueryParam("offset") @DefaultValue("0") Integer offset,
                                          @QueryParam("itemtype") String itemType,
                                          @QueryParam("requesteditemtype") String requestedItemType,
                                          @QueryParam("callback") String callback,
@@ -618,7 +619,7 @@ public class EasyRec {
                 numberOfResults = WS.DEFAULT_NUMBER_OF_RESULTS;
 
             rec = shopRecommenderService.alsoViewedItems(coreTenantId, userId, itemId, itemType, requestedItemType,
-                    session, numberOfResults);
+                    session, numberOfResults, offset);
             //added by FK on 2012-12-18 for adding profile data to recommendations.
             if (withProfile) {
                 addProfileDataToItems(rec);
@@ -644,6 +645,7 @@ public class EasyRec {
     public Response recommendationsForUser(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                            @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                            @QueryParam("numberOfResults") Integer numberOfResults,
+                                           @QueryParam("offset") @DefaultValue("0") Integer offset,
                                            @QueryParam("requesteditemtype") String requestedItemType,
                                            @QueryParam("callback") String callback,
                                            @QueryParam("actiontype") @DefaultValue(TypeMappingService.ACTION_TYPE_VIEW) String actiontype,
@@ -702,7 +704,7 @@ public class EasyRec {
         if (rec == null || rec.getRecommendedItems().isEmpty()) {
             try {
                 rec = shopRecommenderService.itemsBasedOnActionHistory(coreTenantId, userId, session, actiontype, null, WS.ACTION_HISTORY_DEPTH, associationType,
-                        requestedItemType, numberOfResults);
+                        requestedItemType, numberOfResults, offset);
                 //added by FK on 2012-12-18 for adding profile data to recommendations.
                 if (withProfile) {
                     addProfileDataToItems(rec);
@@ -728,6 +730,7 @@ public class EasyRec {
     public Response actionHistoryForUser(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                          @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                          @QueryParam("numberOfResults") Integer numberOfResults,
+                                         @QueryParam("offset") @DefaultValue("0") Integer offset,
                                          @QueryParam("requesteditemtype") String requestedItemType,
                                          @QueryParam("callback") String callback,
                                          @QueryParam("actiontype") @DefaultValue(TypeMappingService.ACTION_TYPE_VIEW) String actiontype,
@@ -773,7 +776,9 @@ public class EasyRec {
 
         if (rec == null || rec.getRecommendedItems().isEmpty()) {
             try {
-                rec = shopRecommenderService.actionHistory(coreTenantId, userId, session, actiontype, requestedItemType, numberOfResults + 5, numberOfResults); // +5 to compensate for inactive items 
+                rec = shopRecommenderService.actionHistory(coreTenantId, userId, session, actiontype,
+                                                           requestedItemType, numberOfResults + 5, numberOfResults,
+                                                           offset); // +5 to compensate for inactive items
 
                 if (withProfile) {
                     addProfileDataToItems(rec);
@@ -800,6 +805,7 @@ public class EasyRec {
                                          @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                          @QueryParam("sessionid") String sessionId, @QueryParam("itemid") String itemId,
                                          @QueryParam("numberOfResults") Integer numberOfResults,
+                                         @QueryParam("offset") @DefaultValue("0") Integer offset,
                                          @QueryParam("itemtype") String itemType,
                                          @QueryParam("requesteditemtype") String requestedItemType,
                                          @QueryParam("callback") String callback,
@@ -837,7 +843,7 @@ public class EasyRec {
                 numberOfResults = WS.DEFAULT_NUMBER_OF_RESULTS;
 
             rec = shopRecommenderService.alsoBoughtItems(coreTenantId, userId, itemId, itemType, requestedItemType,
-                    session, numberOfResults);
+                    session, numberOfResults, offset);
             //added by FK on 2012-12-18 for adding profile data to recommendations.
             if (withProfile) {
                 addProfileDataToItems(rec);
@@ -865,6 +871,7 @@ public class EasyRec {
                                                @QueryParam("sessionid") String sessionId,
                                                @QueryParam("itemid") String itemId,
                                                @QueryParam("numberOfResults") Integer numberOfResults,
+                                               @QueryParam("offset") @DefaultValue("0") Integer offset,
                                                @QueryParam("itemtype") String itemType,
                                                @QueryParam("requesteditemtype") String requestedItemType,
                                                @QueryParam("callback") String callback,
@@ -902,7 +909,7 @@ public class EasyRec {
                 numberOfResults = WS.DEFAULT_NUMBER_OF_RESULTS;
 
             rec = shopRecommenderService.alsoGoodRatedItems(coreTenantId, userId, itemId, itemType, requestedItemType,
-                    session, numberOfResults);
+                    session, numberOfResults, offset);
             //added by FK on 2012-12-18 for adding profile data to recommendations.
             if (withProfile) {
                 addProfileDataToItems(rec);
@@ -928,6 +935,7 @@ public class EasyRec {
     public Response mostBoughtItems(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                     @QueryParam("tenantid") String tenantId,
                                     @QueryParam("numberOfResults") Integer numberOfResults,
+                                    @QueryParam("offset") @DefaultValue("0") Integer offset,
                                     @QueryParam("timeRange") String timeRange,
                                     @QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
                                     @QueryParam("requesteditemtype") String requesteditemtype,
@@ -971,7 +979,8 @@ public class EasyRec {
 
         if (tc != null) {
             items = shopRecommenderService.mostBoughtItems(coreTenantId, requesteditemtype,
-                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, timeRange, tc,
+                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, offset,
+                                                           timeRange, tc,
                     new Session(null, request));
 
             rr = new Recommendation(tenantId, WS.ACTION_MOST_BOUGHT, null, null, null, items);
@@ -997,6 +1006,7 @@ public class EasyRec {
     public Response mostViewedItems(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                     @QueryParam("tenantid") String tenantId,
                                     @QueryParam("numberOfResults") Integer numberOfResults,
+                                    @QueryParam("offset") @DefaultValue("0") Integer offset,
                                     @QueryParam("timeRange") String timeRange,
                                     @QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
                                     @QueryParam("requesteditemtype") String requestedItemType,
@@ -1042,7 +1052,9 @@ public class EasyRec {
 
         if (tc != null) {
             items = shopRecommenderService.mostViewedItems(coreTenantId, requestedItemType,
-                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, timeRange, tc,
+                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, offset,
+                                                           timeRange,
+                                                           tc,
                     new Session(null, request));
 
             rr = new Recommendation(tenantId, WS.ACTION_MOST_VIEWED, null, null, null, items);
@@ -1068,6 +1080,7 @@ public class EasyRec {
     public Response mostRatedItems(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                    @QueryParam("tenantid") String tenantId,
                                    @QueryParam("numberOfResults") Integer numberOfResults,
+                                   @QueryParam("offset") @DefaultValue("0") Integer offset,
                                    @QueryParam("timeRange") String timeRange, @QueryParam("startDate") String startDate,
                                    @QueryParam("endDate") String endDate,
                                    @QueryParam("requesteditemtype") String requestedItemType,
@@ -1111,7 +1124,7 @@ public class EasyRec {
 
         if (tc != null) {
             items = shopRecommenderService.mostRatedItems(coreTenantId, requestedItemType,
-                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS,
+                    cluster, numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, offset,
                     timeRange, tc, new Session(null, request));
 
             rr = new Recommendation(tenantId, WS.ACTION_MOST_RATED, null, null, null, items);
@@ -1139,6 +1152,7 @@ public class EasyRec {
                                       @QueryParam("tenantid") String tenantId,
                                       @QueryParam("clusterid") String clusterId,
                                       @QueryParam("numberOfResults") Integer numberOfResults,
+                                      @QueryParam("offset") @DefaultValue("0") Integer offset,
                                       @QueryParam("strategy") String strategy,
                                       @QueryParam("usefallback") @DefaultValue("false") Boolean useFallback,
                                       @QueryParam("requesteditemtype") String requestedItemType,
@@ -1178,7 +1192,8 @@ public class EasyRec {
                 Integer coreItemType = typeMappingService.getIdOfItemType(coreTenantId, requestedItemType);
 
                 items = shopRecommenderService.itemsOfCluster(coreTenantId, clusterId,
-                        numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, strategy, useFallback,
+                        numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, offset, strategy,
+                                                              useFallback,
                         coreItemType, new Session(null, request));
 
                 recommendation = new Recommendation(tenantId, WS.ACTION_ITEMS_OF_CLUSTER, null, null, null, items);
@@ -1207,6 +1222,7 @@ public class EasyRec {
     public Response bestRatedItems(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                    @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                    @QueryParam("numberOfResults") Integer numberOfResults,
+                                   @QueryParam("offset") @DefaultValue("0") Integer offset,
                                    @QueryParam("timeRange") String timeRange, @QueryParam("startDate") String startDate,
                                    @QueryParam("endDate") String endDate,
                                    @QueryParam("requesteditemtype") String requestedItemType,
@@ -1214,57 +1230,59 @@ public class EasyRec {
                                    @QueryParam("withProfile") @DefaultValue("false") boolean withProfile,
                                    @QueryParam("token") String token)
             throws EasyRecException {
+            Monitor mon = MonitorFactory.start(JAMON_REST_BEST_RATED);
 
-        Monitor mon = MonitorFactory.start(JAMON_REST_BEST_RATED);
-
-        if (easyrecSettings.getSecuredAPIMethods().contains("bestrateditems")) {
-            Operator o = operatorDAO.getOperatorFromToken(token);
-            if (o == null)
-                exceptionResponse(WS.ACTION_BEST_RATED, MSG.WRONG_TOKEN, type, callback);
-            else
-                apiKey = o.getApiKey();
-        }
-
-        Recommendation rr = null;
-        Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
-
-        if (coreTenantId == null)
-            exceptionResponse(WS.ACTION_BEST_RATED, MSG.TENANT_WRONG_TENANT_APIKEY, type, callback);
-
-        RemoteTenant r = remoteTenantDAO.get(coreTenantId);
-
-        if (r.isMaxActionLimitExceeded())
-            exceptionResponse(WS.ACTION_BEST_RATED, MSG.MAXIMUM_ACTIONS_EXCEEDED, type, callback);
-
-        TimeConstraintVO tc = checkTimeConstraints(startDate, endDate);
-
-        if (tc == null)
-            exceptionResponse(WS.ACTION_BEST_RATED, MSG.DATE_PARSE, type, callback);
-
-        requestedItemType = checkItemType(requestedItemType, type, coreTenantId, tenantId, WS.ACTION_BEST_RATED, callback, null);
-        List<Item> items;
-
-        if (tc != null) {
-            items = shopRecommenderService.bestRatedItems(coreTenantId, userId, requestedItemType,
-                    numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, timeRange, tc,
-                    new Session(null, request));
-
-            rr = new Recommendation(tenantId, WS.ACTION_BEST_RATED, null, null, null, items);
-            //added by FK on 2012-12-18 for adding profile data to recommendations.
-            if (withProfile) {
-                addProfileDataToItems(rr);
+            if (easyrecSettings.getSecuredAPIMethods().contains("bestrateditems")) {
+                Operator o = operatorDAO.getOperatorFromToken(token);
+                if (o == null)
+                    exceptionResponse(WS.ACTION_BEST_RATED, MSG.WRONG_TOKEN, type, callback);
+                else
+                    apiKey = o.getApiKey();
             }
-        }
 
-        mon.stop();
+            Recommendation rr = null;
+            Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
 
-        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
-            if (callback != null)
-                return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
-            else
-                return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
-        } else
-            return Response.ok(rr, WS.RESPONSE_TYPE_XML).build();
+            if (coreTenantId == null)
+                exceptionResponse(WS.ACTION_BEST_RATED, MSG.TENANT_WRONG_TENANT_APIKEY, type, callback);
+
+            RemoteTenant r = remoteTenantDAO.get(coreTenantId);
+
+            if (r.isMaxActionLimitExceeded())
+                exceptionResponse(WS.ACTION_BEST_RATED, MSG.MAXIMUM_ACTIONS_EXCEEDED, type, callback);
+
+            TimeConstraintVO tc = checkTimeConstraints(startDate, endDate);
+
+            if (tc == null)
+                exceptionResponse(WS.ACTION_BEST_RATED, MSG.DATE_PARSE, type, callback);
+
+            requestedItemType = checkItemType(requestedItemType, type, coreTenantId, tenantId, WS.ACTION_BEST_RATED,
+                                              callback, null);
+            List<Item> items;
+
+            if (tc != null) {
+                items = shopRecommenderService.bestRatedItems(coreTenantId, userId, requestedItemType,
+                                                              numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS,
+                                                              offset, timeRange, tc,
+                                                              new Session(null, request));
+
+                rr = new Recommendation(tenantId, WS.ACTION_BEST_RATED, null, null, null, items);
+                //added by FK on 2012-12-18 for adding profile data to recommendations.
+                if (withProfile) {
+                    addProfileDataToItems(rr);
+                }
+            }
+
+            mon.stop();
+
+            if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
+                if (callback != null)
+                    return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                else
+                    return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
+            } else
+                return Response.ok(rr, WS.RESPONSE_TYPE_XML).build();
+
     }
 
     @GET
@@ -1272,6 +1290,7 @@ public class EasyRec {
     public Response worstRatedItems(@PathParam("type") String type, @QueryParam("apikey") String apiKey,
                                     @QueryParam("tenantid") String tenantId, @QueryParam("userid") String userId,
                                     @QueryParam("numberOfResults") Integer numberOfResults,
+                                    @QueryParam("offset") @DefaultValue("0") Integer offset,
                                     @QueryParam("timeRange") String timeRange,
                                     @QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
                                     @QueryParam("requesteditemtype") String requestedItemType,
@@ -1311,7 +1330,7 @@ public class EasyRec {
 
         if (tc != null) {
             items = shopRecommenderService.worstRatedItems(coreTenantId, userId, requestedItemType,
-                    numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, timeRange, tc,
+                    numberOfResults != null ? numberOfResults : WS.DEFAULT_NUMBER_OF_RESULTS, offset, timeRange, tc,
                     new Session(null, request));
 
             rr = new Recommendation(tenantId, WS.ACTION_WORST_RATED, null, null, null, items);
@@ -1339,6 +1358,7 @@ public class EasyRec {
                                  @QueryParam("assoctype") String assocType, @QueryParam("userid") String userId,
                                  @QueryParam("sessionid") String sessionId, @QueryParam("itemid") String itemId,
                                  @QueryParam("numberOfResults") Integer numberOfResults,
+                                 @QueryParam("offset") @DefaultValue("0") Integer offset,
                                  @QueryParam("itemtype") String itemType,
                                  @QueryParam("requesteditemtype") String requestedItemType,
                                  @QueryParam("callback") String callback,
@@ -1387,8 +1407,9 @@ public class EasyRec {
             if ((numberOfResults == null) || (numberOfResults > WS.DEFAULT_NUMBER_OF_RESULTS))
                 numberOfResults = WS.DEFAULT_NUMBER_OF_RESULTS;
 
-            rec = shopRecommenderService.relatedItems(coreTenantId, assocType, userId, itemId, itemType, requestedItemType, session,
-                    numberOfResults);
+            rec = shopRecommenderService.relatedItems(coreTenantId, assocType, userId, itemId, itemType,
+                                                      requestedItemType, session,
+                    numberOfResults, offset);
             //added by FK on 2012-12-18 for adding profile data to recommendations.
             if (withProfile) {
                 addProfileDataToItems(rec);

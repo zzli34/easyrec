@@ -77,17 +77,21 @@ public interface IDMappingService {
     public List<Item> mapListOfItemVOs(List<ItemVO<Integer, Integer>> inList, RemoteTenant remoteTenant);
     
     public List<Item> mapListOfItemVOs(List<ItemVO<Integer, String>> inList,
-            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations);
+            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations, Integer
+                                         offset);
 
     public List<Item> mapRecommendedItems(
             RecommendationVO<Integer, String> recommendation,
-            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations);
+            RemoteTenant remoteTenant, Integer userId, Session session, Integer numberOfRecommendations, Integer
+              offset);
 
     public List<Item> mapRankedItems(List<RankedItemVO<Integer, String>> rankedItems,
-                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations);
+                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                     Integer offset);
 
     public List<Item> mapRatedItems(List<RatingVO<Integer, String>> ratedItems,
-                                    RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations);
+                                    RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                    Integer offset);
 
 
     public List<ItemAssocVO<String, String>> mapItemAssocs(
@@ -95,6 +99,7 @@ public interface IDMappingService {
             boolean filterInactiveRules);
 
     public List<Item> mapClusterItems(List<ItemVO<Integer, Integer>> clusterItems,
-                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations);
+                                     RemoteTenant remoteTenant, Session session, Integer numberOfRecommendations,
+                                      Integer offset);
 
 }

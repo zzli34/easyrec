@@ -194,7 +194,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            alsoviewed: function(sessionid, userid, itemid, itemtype, numberOfResults, requesteditemtype, withProfile, token) {
+            alsoviewed: function(sessionid, userid, itemid, itemtype, offset, numberOfResults, requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/otherusersalsoviewed',
                 {params : {
@@ -205,6 +205,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         itemid: itemid,
                         itemtype: itemtype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile : withProfile,
                         token: token
@@ -220,7 +221,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            alsobought: function(sessionid, userid, itemid, itemtype, numberOfResults, requesteditemtype, withProfile, token) {
+            alsobought: function(sessionid, userid, itemid, itemtype, offset, numberOfResults, requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/otherusersalsobought',
                 {params : {
@@ -231,6 +232,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         itemid: itemid,
                         itemtype: itemtype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile : withProfile,
                         token: token
@@ -246,7 +248,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            alsogoodrated: function(sessionid, userid, itemid, itemtype, numberOfResults, requesteditemtype, withProfile, token) {
+            alsogoodrated: function(sessionid, userid, itemid, itemtype, offset, numberOfResults, requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/itemsratedgoodbyotherusers',
                 {params : {
@@ -257,6 +259,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         itemid: itemid,
                         itemtype: itemtype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile : withProfile,
                         token: token
@@ -272,7 +275,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            relateditems: function(sessionid, userid, itemid, itemtype, assoctype, numberOfResults, requesteditemtype, withProfile, token) {
+            relateditems: function(sessionid, userid, itemid, itemtype, assoctype, offset, numberOfResults, requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/relateditems',
                 {params : {
@@ -284,6 +287,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         itemtype : itemtype,
                         assoctype : assoctype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile: withProfile,
                         token : token
@@ -311,7 +315,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
              * @param {type} token
              * @returns {$q@call;defer.promise}
              */
-            recsforuser: function(sessionid, userid, actiontype, assoctype, numberOfResults,  requesteditemtype, withProfile, token) {
+            recsforuser: function(sessionid, userid, actiontype, assoctype, offset, numberOfResults,  requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/recommendationsforuser',
                 {params : {
@@ -322,6 +326,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         actiontype : actiontype,
                         assoctype : assoctype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile: withProfile,
                         token : token
@@ -337,7 +342,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            actionhistoryforuser: function(sessionid, userid, actiontype, numberOfResults, requesteditemtype, withProfile, token) {
+            actionhistoryforuser: function(sessionid, userid, actiontype, offset, numberOfResults, requesteditemtype, withProfile, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/actionhistoryforuser',
                 {params : {
@@ -347,6 +352,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         userid : userid,
                         actiontype : actiontype,
                         requesteditemtype : requesteditemtype,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         withProfile: withProfile,
                         token : token
@@ -362,7 +368,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            mostviewed: function(numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
+            mostviewed: function(offset, numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/mostvieweditems',
                 {params : {
@@ -374,6 +380,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         startDate : startDate,
                         endDate : endDate,
                         clusterid : clusterid,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         token: token
                     }
@@ -388,7 +395,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            mostbought: function(numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
+            mostbought: function(offset, numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/mostboughtitems',
                 {params : {
@@ -400,6 +407,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         startDate : startDate,
                         endDate : endDate,
                         clusterid : clusterid,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         token: token
                     }
@@ -414,7 +422,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            mostrated: function(numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
+            mostrated: function(offset, numberOfResults, requesteditemtype, withProfile, timeRange, startDate, endDate, clusterid, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/mostrateditems',
                 {params : {
@@ -426,6 +434,7 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                         startDate : startDate,
                         endDate : endDate,
                         clusterid : clusterid,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         token: token
                     }
@@ -440,13 +449,14 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            bestrated: function(userid, numberOfResults, requesteditemtype, withProfile, timerange, startDate, endDate, token) {
+            bestrated: function(userid, offset, numberOfResults, requesteditemtype, withProfile, timerange, startDate, endDate, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/bestrateditems',
                 {params : {
                         apikey: apikey,
                         tenantid: tenant,
                         userid : userid,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         requesteditemtype : requesteditemtype,
                         withProfile : withProfile,
@@ -466,13 +476,14 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            worstrated: function(userid, numberOfResults, requesteditemtype, withProfile, timerange, startDate, endDate, token) {
+            worstrated: function(userid, offset, numberOfResults, requesteditemtype, withProfile, timerange, startDate, endDate, token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/bestrateditems',
                 {params : {
                         apikey: apikey,
                         tenantid: tenant,
                         userid : userid,
+                        offset : offset,
                         numberOfResults : numberOfResults,
                         requesteditemtype : requesteditemtype,
                         withProfile : withProfile,
@@ -511,12 +522,13 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
-            itemsofcluster: function(numberOfResults, requesteditemtype, withProfile, clusterid, strategy, usefallback,token) {
+            itemsofcluster: function(offset, numberOfResults, requesteditemtype, withProfile, clusterid, strategy, usefallback,token) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/itemsofcluster',
                 {params : {
                         apikey: apikey,
                         tenantid: tenant,
+                        offset : offset,
                         numberOfResults: numberOfResults,
                         requesteditemtype: requesteditemtype,
                         withProfile: withProfile,
