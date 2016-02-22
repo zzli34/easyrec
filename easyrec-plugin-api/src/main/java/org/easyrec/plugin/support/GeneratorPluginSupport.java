@@ -6,6 +6,7 @@ import org.easyrec.plugin.model.Version;
 import org.easyrec.plugin.stats.GeneratorStatistics;
 import org.easyrec.service.core.ItemAssocService;
 import org.easyrec.service.core.TenantService;
+import org.easyrec.service.domain.TypeMappingService;
 import org.easyrec.store.dao.core.ItemAssocDAO;
 
 import javax.sql.DataSource;
@@ -19,7 +20,7 @@ public abstract class GeneratorPluginSupport<C extends GeneratorConfiguration, S
     private DataSource satRecommenderDS;
     private ItemAssocDAO itemAssocDAO;
     private TenantService tenantService;
-    private Object typeMappingService;
+    private TypeMappingService typeMappingService;
     private ItemAssocService itemAssocService;
     private Class<C> configClass;
 
@@ -89,11 +90,11 @@ public abstract class GeneratorPluginSupport<C extends GeneratorConfiguration, S
         this.tenantService = tenantService;
     }
 
-    public Object getTypeMappingService() {
+    public TypeMappingService getTypeMappingService() {
         return typeMappingService;
     }
 
-    public void setTypeMappingService(final Object typeMappingService) {
+    public void setTypeMappingService(final TypeMappingService typeMappingService) {
         this.typeMappingService = typeMappingService;
     }
 
