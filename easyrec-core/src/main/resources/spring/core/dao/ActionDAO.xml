@@ -17,7 +17,7 @@
     <bean id="actionDAO"
           class="org.easyrec.store.dao.core.impl.ActionDAOMysqlImpl">
         <constructor-arg ref="easyrecDataSource"/>
-        <constructor-arg ref="tenantService"/>
+        <constructor-arg ref="tenantDAO"/>
         <constructor-arg ref="easyrecSqlScriptService"/>
         <constructor-arg ref="assocTypeDAO" />
     </bean>

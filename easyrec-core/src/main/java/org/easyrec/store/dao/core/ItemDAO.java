@@ -161,6 +161,14 @@ public interface ItemDAO extends BasicDAO {
      * @param itemType
      */
     public void remove(Integer tenantId, String itemId, String itemType);
+    
+    /**
+     * This function removes an item with the given key.
+     *
+     * @param tenantId
+     * @param itemType
+     */
+    public void remove(Integer tenantId, String itemType) throws Exception;
 
     /**
      * This function returns all items of a tenant in a given range(LIMIT ?,?) and

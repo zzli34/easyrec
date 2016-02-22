@@ -47,6 +47,7 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import org.easyrec.store.dao.core.TenantDAO;
 
 /**
  * This class provides a Mysql implementation of the {@link org.easyrec.store.dao.core.ActionDAO} interface.
@@ -78,13 +79,14 @@ public class ActionDAOMysqlImpl extends
     private static final int[] ARG_TYPES_INSERT;
     private static final String SQL_INSERT_ACTION;
     private static final String SQL_REMOVE_ACTIONS;
+    private static final String SQL_REMOVE_ACTIONS_BY_ITEMTYPE;
     private static final String SQL_MULTIUSER_SESSIONS;
     private static final String SQL_USERIDSPERSESSION;
     private static final String SQL_UPDATE_ACTION_BY_SESSIONID;
     private static final PreparedStatementCreatorFactory PS_INSERT_ACTION;
 
     // members
-    private TenantService tenantService;
+    private TenantDAO tenantDAO;
     private AssocTypeDAO assocTypeDAO;
 
     private ActionVORowMapper actionVORowMapper = new ActionVORowMapper();
@@ -112,6 +114,9 @@ public class ActionDAOMysqlImpl extends
         SQL_REMOVE_ACTIONS = new StringBuilder("DELETE FROM ").append(DEFAULT_TABLE_NAME).append(" WHERE ")
                 .append(DEFAULT_TENANT_COLUMN_NAME).append("=? ").toString();
         
+        SQL_REMOVE_ACTIONS_BY_ITEMTYPE = new StringBuilder("DELETE FROM ").append(DEFAULT_TABLE_NAME).append(" WHERE ")
+                .append(DEFAULT_TENANT_COLUMN_NAME).append("=? AND ").append(DEFAULT_ITEM_TYPE_COLUMN_NAME).append("=?").toString();
+        
         SQL_MULTIUSER_SESSIONS = "SELECT " + DEFAULT_SESSION_COLUMN_NAME + " FROM " + DEFAULT_TABLE_NAME + " WHERE " +
                 DEFAULT_TENANT_COLUMN_NAME + "=? AND " + DEFAULT_ACTION_TIME_COLUMN_NAME + ">? GROUP BY " + DEFAULT_SESSION_COLUMN_NAME + " HAVING COUNT(DISTINCT(" + DEFAULT_USER_COLUMN_NAME + "))>1";
         
@@ -124,10 +129,10 @@ public class ActionDAOMysqlImpl extends
     }
 
     // constructor
-    public ActionDAOMysqlImpl(DataSource dataSource, TenantService tenantService,
+    public ActionDAOMysqlImpl(DataSource dataSource, TenantDAO tenantDAO,
                               SqlScriptService sqlScriptService, AssocTypeDAO assocTypeDAO) {
         super(sqlScriptService);
-        this.tenantService = tenantService;
+        this.tenantDAO = tenantDAO;
         this.assocTypeDAO = assocTypeDAO;
         setDataSource(dataSource);
 
@@ -226,6 +231,20 @@ public class ActionDAOMysqlImpl extends
         return rowsAffected;
     }
 
+    @Override
+    public int removeActionsByTenantAndItemType(Integer tenant, Integer itemType) {
+        if (tenant == null) {
+            throw new IllegalArgumentException("'tenantId' must not be 'null'!");
+        }
+
+        Object[] args = {tenant, itemType};
+        int[] argTypes = {Types.INTEGER, Types.INTEGER};
+
+        int rowsAffected = getJdbcTemplate().update(SQL_REMOVE_ACTIONS_BY_ITEMTYPE, args, argTypes);
+
+        return rowsAffected;
+    }
+    
     @Override
     public Iterator<ActionVO<Integer, Integer>> getActionIterator(int bulkSize) {
         return new ResultSetIteratorMysql<>(getDataSource(),
@@ -783,7 +802,7 @@ public class ActionDAOMysqlImpl extends
             }
             query.append("?");
 
-            args.add(tenantService.getTenantById(tenantId).getRatingRangeNeutral());
+            args.add(tenantDAO.getTenantById(tenantId).getRatingRangeNeutral());
             argt.add(Types.DOUBLE);
         }
 

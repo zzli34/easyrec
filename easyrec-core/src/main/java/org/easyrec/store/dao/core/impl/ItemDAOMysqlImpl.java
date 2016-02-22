@@ -74,6 +74,7 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
     private static final String SQL_DEACTIVATE_ITEM;
     private static final String SQL_REMOVE_ITEM;
     private static final String SQL_REMOVE_ITEMS;
+    private static final String SQL_REMOVE_ITEMS_BY_TYPE;
     private static final String SQL_HOT_ITEMS;
     private static final String SQL_SEARCH_ITEMS_START;
     private static final String SQL_SEARCH_ITEMS_COUNT_START;
@@ -147,6 +148,9 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
 
         SQL_REMOVE_ITEMS = new StringBuilder().append(" DELETE FROM ").append(DEFAULT_TABLE_NAME)
                 .append(" WHERE TENANTID = ? ").toString();
+        
+        SQL_REMOVE_ITEMS_BY_TYPE = new StringBuilder().append(" DELETE FROM ").append(DEFAULT_TABLE_NAME)
+                .append(" WHERE TENANTID = ? AND ITEMTYPE = ?").toString();
 
         SQL_SEARCH_ITEMS_START =
                 "SELECT id, tenantId, itemId, itemType, description, url, imageUrl, active, creationDate FROM " +
@@ -372,6 +376,21 @@ public class ItemDAOMysqlImpl extends BasicDAOMysqlImpl implements ItemDAO {
 //            itemCache.remove(makeCacheKey(tenantId, itemType, itemId));
         } catch (Exception e) {
             if (logger.isDebugEnabled()) logger.debug("failed to remove item from db or cache", e);
+        }
+    }
+    
+    @Override
+    public void remove(Integer tenantId, String itemType) throws Exception {
+        Object[] args = {tenantId, itemType};
+        int[] argTypes = {Types.INTEGER, Types.VARCHAR};
+
+        try {
+            getJdbcTemplate().update(SQL_REMOVE_ITEMS_BY_TYPE, args, argTypes);
+            cache.removeAll();
+//            itemCache.remove(makeCacheKey(tenantId, itemType, itemId));
+        } catch (Exception e) {
+            if (logger.isDebugEnabled()) logger.debug("failed to remove item from db or cache", e);
+            throw e;
         }
     }
 

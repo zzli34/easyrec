@@ -648,6 +648,47 @@ easyrecServices.provider('easyrec', function easyrecProvider() {
                 });
                 return deferred.promise;
             },
+            additemtype: function(token, itemtype, visible) {
+                var deferred = $q.defer();
+                $http.get(baseUrl + '/api/1.1/json/additemtype',
+                {params : {
+                        apikey: apikey,
+                        tenantid: tenant,
+                        token: token,
+                        itemtype: itemtype,
+                        visible: visible
+                    }
+                }).success(function(data, status) {
+                    if (!angular.isArray(data)) {
+                        deferred.resolve(data);
+                    } else { //was error
+                        deferred.reject(data);
+                    }
+                }).error(function(data, status) {
+                    deferred.reject(status + data);
+                });
+                return deferred.promise;
+            },
+            deleteitemtype: function(token, itemtype) {
+                var deferred = $q.defer();
+                $http.get(baseUrl + '/api/1.1/json/deleteitemtype',
+                {params : {
+                        apikey: apikey,
+                        tenantid: tenant,
+                        token: token,
+                        itemtype: itemtype
+                    }
+                }).success(function(data, status) {
+                    if (!angular.isArray(data)) {
+                        deferred.resolve(data);
+                    } else { //was error
+                        deferred.reject(data);
+                    }
+                }).error(function(data, status) {
+                    deferred.reject(status + data);
+                });
+                return deferred.promise;
+            },
             getprofile: function(itemid, itemtype) {
                 var deferred = $q.defer();
                 $http.get(baseUrl + '/api/1.1/json/profile/load',

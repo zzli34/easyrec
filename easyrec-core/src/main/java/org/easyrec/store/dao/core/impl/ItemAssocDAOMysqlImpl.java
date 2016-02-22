@@ -1164,6 +1164,41 @@ public class ItemAssocDAOMysqlImpl extends
         return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
     }
 
+    @Override
+    public int removeItemAssocByTenantAndItemType(Integer tenantId, Integer itemType) {
+        if (tenantId == null) {
+            throw new IllegalArgumentException("missing 'tenantId'");
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("removing 'itemAssocs' for tenant " + tenantId);
+        }
+
+        StringBuilder sqlString = new StringBuilder("DELETE FROM ");
+        sqlString.append(DEFAULT_TABLE_NAME);
+        sqlString.append(" WHERE ");
+        
+        List<Object> args = Lists.newArrayList();
+        List<Integer> argt = Lists.newArrayList();
+
+        // add constraints to the query
+        sqlString.append(DEFAULT_TENANT_COLUMN_NAME);
+        sqlString.append("=? AND ");
+
+        args.add(tenantId);
+        argt.add(Types.INTEGER);
+        
+        sqlString.append(DEFAULT_ITEM_FROM_TYPE_COLUMN_NAME).append("=? OR ");
+        args.add(itemType);
+        argt.add(Types.INTEGER);
+        
+        sqlString.append(DEFAULT_ITEM_TO_TYPE_COLUMN_NAME).append("=?");
+        args.add(itemType);
+        argt.add(Types.INTEGER);
+        
+        return getJdbcTemplate().update(sqlString.toString(), args.toArray(), Ints.toArray(argt));
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // private methods
     private void validateUniqueKey(ItemAssocVO<Integer,Integer> itemAssoc) {

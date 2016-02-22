@@ -123,6 +123,12 @@ public interface BaseItemAssocDAO<IA, AI, IT, AT, I, C> extends TableCreatingDAO
      * specified changeDate will be removed.
      */
     public int removeItemAssocByTenant(Integer tenantId, AT assocType, Integer sourceType, Date changeDate);
+    
+    /**
+     * This Removes all ItemAssocs for a given tenant and itemType.
+     * All ItemAssocs matching the given criteria will be removed.
+     */
+    public int removeItemAssocByTenantAndItemType(Integer tenantId, IT itemType);
 
     /**
      * This Removes all ItemAssocs for a given tenant which have a assoc value below a specified threshold.

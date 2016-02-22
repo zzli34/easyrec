@@ -41,6 +41,8 @@ public class WS implements InitializingBean {
     public static final String ACTION_ITEMS_OF_CLUSTER = "itemsofcluster";
     public static final String ACTION_SET_ITEM_ACTIVE = "setitemactive:";
     public static final String ACTION_ITEMTYPES = "itemtypes";
+    public static final String ACTION_ADDITEMTYPE = "additemtype";
+    public static final String ACTION_DELETEITEMTYPE = "deleteitemtype";
     public static final String ACTION_CLUSTERS = "clusters";
     public static final String ACTION_HISTORY = "actionhistory";
     public static final String ACTION_START_PLUGINS = "startplugins";

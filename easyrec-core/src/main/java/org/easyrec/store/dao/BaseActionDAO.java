@@ -91,6 +91,15 @@ public interface BaseActionDAO<A, RI, AT, IT, I, RAT, T, U> extends TableCreatin
      * @return number of actions that were removed
      */
     public int removeActionsByTenant(T tenant);
+    
+        /**
+     * Removes all actions by the given tenant and itemType.
+     *
+     * @param tenant the id of the tenant whichs action should be removed
+     * @param itemType the itemType of the actions to be removed
+     * @return number of actions that were removed
+     */
+    public int removeActionsByTenantAndItemType(T tenant, IT itemType);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Actions

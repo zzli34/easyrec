@@ -20,6 +20,9 @@
         <constructor-arg ref="sourceTypeDAO"/>
         <constructor-arg ref="viewTypeDAO"/>
         <constructor-arg ref="authenticationDAO"/>
+        <constructor-arg ref="itemAssocDAO"/>
+        <constructor-arg ref="actionDAO"/>
+        <constructor-arg ref="itemDAO"/>
         <property name="clusterService" ref="clusterService" />
     </bean>
 </beans>

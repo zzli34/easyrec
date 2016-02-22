@@ -57,6 +57,5 @@
     <import resource="classpath:spring/core/dao/types/ItemTypeDAO.xml"/>
     <import resource="classpath:spring/core/dao/types/SourceTypeDAO.xml"/>
     <import resource="classpath:spring/core/dao/types/ViewTypeDAO.xml"/>
-    <import resource="classpath:spring/core/dao/types/ProfiledItemTypeDAO.xml"/>
 
 </beans>

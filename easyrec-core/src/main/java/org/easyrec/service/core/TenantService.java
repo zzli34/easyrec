@@ -57,8 +57,14 @@ public interface TenantService {
     public int insertAssocTypeForTenant(Integer tenantId, String assocType, boolean visible);
 
     public void insertSourceTypeForTenant(Integer tenantId, String sourceType);
+    
+    public String isValidItemTypeName(String itemTypeName);
 
     public int insertItemTypeForTenant(Integer tenantId, String itemType, boolean visible);
+    
+    public void deleteItemTypeForTenant(Integer tenantId, Integer itemType) throws Exception;
+    
+    public int insertActionTypeForTenant(Integer tenantId, String actionType, boolean hasvalue);
 
     public boolean removeTenantWithTypes(TenantVO tenant);
 

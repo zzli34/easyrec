@@ -57,6 +57,8 @@ public interface ItemTypeDAO extends TableCreatingDAO {
     public int insertOrUpdate(Integer tenantId, String itemType, Integer id, Boolean visible);
 
     public String getTypeById(Integer tenantId, final Integer id);
+    
+    public int deleteTypeById(Integer tenantId, Integer id);
 
     public Integer getIdOfType(Integer tenantId, final String itemType);
 

@@ -122,6 +122,8 @@ public class EasyRec {
     private final static String JAMON_REST_ITEM_ACTIVE = "rest.item.active.rule";
     private final static String JAMON_REST_RELATED_ITEMS = "rest.related.items";
     private final static String JAMON_REST_ITEMTYPES = "rest.itemtypes";
+    private final static String JAMON_REST_ADDITEMTYPE = "rest.additemtype";
+    private final static String JAMON_REST_DELETEITEMTYPE = "rest.deleteitemtype";
     private final static String JAMON_REST_CLUSTERS = "rest.clusters";
     private final static String JAMON_REST_ITEMS_OF_CLUSTERS = "rest.items.from.clusters";
     private final static String JAMON_REST_ACTIONHISTORY = "rest.history";
@@ -1508,6 +1510,102 @@ public class EasyRec {
             }
         } else {
             return Response.ok(responseItemTypes, WS.RESPONSE_TYPE_XML).build();
+        }
+    }
+    
+    @GET
+    @Path("/additemtype")
+    public Response addItemType(@PathParam("type") String type,
+                              @QueryParam("apikey") String apiKey,
+                              @QueryParam("tenantid") String tenantId,
+                              @QueryParam("itemtype") String itemType,
+                              @QueryParam("visible") @DefaultValue("true") Boolean visible,
+                              @QueryParam("callback") String callback,
+                              @QueryParam("token") String token)
+            throws EasyRecException {
+        Monitor mon = MonitorFactory.start(JAMON_REST_ADDITEMTYPE);
+
+        if (easyrecSettings.getSecuredAPIMethods().contains("itemtypes")) {
+            Operator o = operatorDAO.getOperatorFromToken(token);
+            if (o == null)
+                exceptionResponse(WS.ACTION_ADDITEMTYPE, MSG.WRONG_TOKEN, type, callback);
+            else
+                apiKey = o.getApiKey();
+        }
+
+        Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
+
+        if (coreTenantId == null)
+            exceptionResponse(WS.ACTION_ADDITEMTYPE, MSG.TENANT_WRONG_TENANT_APIKEY, type, callback);
+        
+        String error = tenantService.isValidItemTypeName(itemType);
+        
+        if (!"".equals(error))
+            exceptionResponse(WS.ACTION_ADDITEMTYPE, new ErrorMessage(998, error), type, callback);
+        
+        Integer newId = tenantService.insertItemTypeForTenant(coreTenantId, itemType, visible);        
+         
+        mon.stop();
+        
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
+            if (callback != null) {
+                return Response.ok(new JSONWithPadding(newId, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+            } else {
+                return Response.ok(newId, WS.RESPONSE_TYPE_JSON).build();
+            }
+        } else {
+            return Response.ok(newId, WS.RESPONSE_TYPE_XML).build();
+        }
+        
+    }
+    
+    @GET
+    @Path("/deleteitemtype")
+    public Response deleteItemType(@PathParam("type") String type,
+                              @QueryParam("apikey") String apiKey,
+                              @QueryParam("tenantid") String tenantId,
+                              @QueryParam("itemtype") String itemType,
+                              @QueryParam("callback") String callback,
+                              @QueryParam("token") String token)
+            throws EasyRecException {
+        Monitor mon = MonitorFactory.start(JAMON_REST_DELETEITEMTYPE);
+
+        if (easyrecSettings.getSecuredAPIMethods().contains("itemtypes")) {
+            Operator o = operatorDAO.getOperatorFromToken(token);
+            if (o == null)
+                exceptionResponse(WS.ACTION_DELETEITEMTYPE, MSG.WRONG_TOKEN, type, callback);
+            else
+                apiKey = o.getApiKey();
+        }
+
+        Integer coreTenantId = operatorDAO.getTenantId(apiKey, tenantId);
+
+        if (coreTenantId == null)
+            exceptionResponse(WS.ACTION_DELETEITEMTYPE, MSG.TENANT_WRONG_TENANT_APIKEY, type, callback);
+        
+        String error = tenantService.isValidItemTypeName(itemType);
+        
+        if (!"".equals(error))
+            exceptionResponse(WS.ACTION_DELETEITEMTYPE, new ErrorMessage(998, error), type, callback);
+        
+        try {
+            Integer typeId = typeMappingService.getIdOfItemType(coreTenantId, itemType);    
+            tenantService.deleteItemTypeForTenant(coreTenantId, typeId);
+        } catch (IllegalArgumentException iae) {
+            exceptionResponse(WS.ACTION_DELETEITEMTYPE, new ErrorMessage(998, "Item type does not exist!"), type, callback);
+        } catch (Exception e) {
+            exceptionResponse(WS.ACTION_DELETEITEMTYPE, new ErrorMessage(998, e.getMessage()), type, callback);
+        }
+        mon.stop();
+        
+        if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
+            if (callback != null) {
+                return Response.ok(new JSONWithPadding("itemType " + itemType + " and all references successfuly removed!", callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+            } else {
+                return Response.ok("itemType " + itemType + " and all references successfuly removed!", WS.RESPONSE_TYPE_JSON).build();
+            }
+        } else {
+            return Response.ok("itemType " + itemType + " and all references successfuly removed!", WS.RESPONSE_TYPE_XML).build();
         }
     }
 

@@ -65,20 +65,7 @@ public class ItemTypeController extends MultiActionController {
 
     public String isValidItemTypeName(String itemTypeName) {
 
-        if (itemTypeName.contains(" ")) {
-            return "The item type name cannot contain spaces.";
-        }
-
-        if ("CLUSTER".equals(itemTypeName)) {
-            return "CLUSTER is a reserved item type name used for the easyrec clusters.";
-        }
-
-        if (!itemTypeName.equals(itemTypeName.replaceAll("[^A-Z_0-9]+", ""))) {
-            return "Only use machine readable UPPERCASE names containing 0-9, A-Z and _ ";
-        }
-
-
-        return "";
+        return tenantService.isValidItemTypeName(itemTypeName);
     }
 
 
@@ -99,7 +86,7 @@ public class ItemTypeController extends MultiActionController {
             if (!"".equals(itemTypeName)) {
                 //create a new item type if the itemTypeName parameter is set
 
-                String error = isValidItemTypeName(itemTypeName);
+                String error = tenantService.isValidItemTypeName(itemTypeName);
 
                 if ("".equals(error)) {
                     tenantService.insertItemTypeForTenant(remoteTenant.getId(), itemTypeName, true);
