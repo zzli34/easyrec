@@ -21,10 +21,10 @@ CREATE TABLE action (
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1 COMMENT='Table containing user actions';
 
 --
--- Table structure for table easyrec.actionarchive
+-- Table structure for table easyrec.actionarch
 --
-DROP TABLE IF EXISTS actionarchive;
-CREATE TABLE actionarchive (
+DROP TABLE IF EXISTS actionarch;
+CREATE TABLE actionarch (
   id int(11) unsigned NOT NULL,
   tenantId int(11) NOT NULL,
   userId int(11) default NULL,
@@ -34,13 +34,9 @@ CREATE TABLE actionarchive (
   itemTypeId int(11) NOT NULL,
   actionTypeId int(11) NOT NULL,
   ratingValue int(11) default NULL,
-  searchSucceeded tinyint(1) default NULL,
-  numberOfFoundItems int(11) default NULL,
-  description varchar(500) CHARACTER SET utf8 default NULL,
+  actionInfo varchar(500) CHARACTER SET utf8 default NULL,
   actionTime datetime NOT NULL,
   PRIMARY KEY  (id),
-  KEY action_reader (tenantId,userId,actionTypeId,itemTypeId),
-  KEY tenantId (tenantId,actionTime)
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1 COMMENT='Table containing archived actions';
 
 --

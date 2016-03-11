@@ -41,7 +41,7 @@ import org.easyrec.utils.io.MySQL;
 public class AggregatorGenerator extends GeneratorPluginSupport<AggregatorConfiguration, AggregatorStatistics> implements RunConditionEnabled {
 
     public static final String DISPLAY_NAME = "User Profile Aggregator";
-    public static final Version VERSION = new Version("0.98");
+    public static final Version VERSION = new Version("1.00");
     public static final URI ID = URI.create("http://www.easyrec.org/plugins/UPA");
     public static final String ITEMTYPE_USER = "USER";
 

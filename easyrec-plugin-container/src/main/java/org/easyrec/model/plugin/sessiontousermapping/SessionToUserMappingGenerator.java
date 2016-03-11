@@ -33,7 +33,7 @@ import org.easyrec.utils.spring.store.ResultSetIteratorMysql;
 public class SessionToUserMappingGenerator extends GeneratorPluginSupport<SessionToUserMappingConfiguration, SessionToUserMappingStatistics> {
 
     public static final String DISPLAY_NAME = "Session-to-User-mapping";
-    public static final PluginId ID = new PluginId("http://www.easyrec.org/internal/SessionToUserMapping", "0.98");
+    public static final PluginId ID = new PluginId("http://www.easyrec.org/internal/SessionToUserMapping", "1.00");
     public static final int ASSOCTYPE = -1;
 
     private ActionDAO actionDAO;

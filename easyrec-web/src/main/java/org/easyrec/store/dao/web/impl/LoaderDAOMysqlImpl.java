@@ -162,21 +162,95 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
                     logger.info("Executing migrate script: " + f.getName());
                     sqlScriptService.executeSqlScript(new FileSystemResource(f).getInputStream());
                 }
+                if (scriptVersion == 0.96) {
+                    update_0_96f();
+                }
+                if (scriptVersion == 0.98) {
+                    update_0_98();
+                }
+                if (scriptVersion == 1.00) {
+                    update_1_00();
+                }
             }
         }
 
-        if (installedVersion < 0.96f) {
-            update_0_96f();
-            // logs are not converted from ruleminerlog -> plugin_log
-        }
-
-        if (installedVersion < 0.98) {
-            update_0_98();
-        }
+//        if (installedVersion < 0.96f) {
+//            update_0_96f();
+//            // logs are not converted from ruleminerlog -> plugin_log
+//        }
+//
+//        if (installedVersion < 0.98) {
+//            update_0_98();
+//        }
 
         //updateVersion(); // done in migrate script!
     }
 
+    private void update_1_00() {
+        
+        logger.info("executing 'update_1_00()'...");
+        
+        
+        logger.info("checking action table colums...");
+        final HashMap<String, Integer> actionColumnList = new HashMap<>();
+        getJdbcTemplate().query("SHOW COLUMNS FROM action", new RowCallbackHandler() {
+            public void processRow(ResultSet resultSet) throws SQLException {
+                String column = resultSet.getString("Field");
+                actionColumnList.put(column, 1);
+            }
+        });
+        
+        if (actionColumnList.containsKey("searchSucceeded")) {
+            getJdbcTemplate().execute("ALTER TABLE action DROP COLUMN searchSucceeded");
+        }
+                
+        if (actionColumnList.containsKey("numberOfFoundItems")) {
+            getJdbcTemplate().execute("ALTER TABLE action DROP COLUMN numberOfFoundItems");
+        }
+        if (actionColumnList.containsKey("description")) {
+            getJdbcTemplate().execute("ALTER TABLE action CHANGE COLUMN description actionInfo VARCHAR(500) CHARACTER SET utf8");
+        }
+        
+        logger.info("checking actionType table colums...");
+        final HashMap<String, Integer> aTcolumnList = new HashMap<>();
+        getJdbcTemplate().query("SHOW COLUMNS FROM actionType", new RowCallbackHandler() {
+            public void processRow(ResultSet resultSet) throws SQLException {
+                String column = resultSet.getString("Field");
+                aTcolumnList.put(column, 1);
+            }
+        });
+        
+        if (!aTcolumnList.containsKey("weight")) {
+            getJdbcTemplate().execute("ALTER TABLE actiontype ADD COLUMN weight INT(11) NOT NULL DEFAULT 1");
+        }
+        
+        logger.info("checking backtracking table colums...");
+        final HashMap<String, Integer> bTcolumnList = new HashMap<>();
+        getJdbcTemplate().query("SHOW COLUMNS FROM backtracking", new RowCallbackHandler() {
+            public void processRow(ResultSet resultSet) throws SQLException {
+                String column = resultSet.getString("Field");
+                bTcolumnList.put(column, 1);
+            }
+        });
+        
+        if (!bTcolumnList.containsKey("itemFromTypeId")) {
+            getJdbcTemplate().execute("ALTER TABLE backtracking ADD COLUMN itemFromTypeId int(11) NOT NULL AFTER itemFromId");
+        }
+        
+        if (!bTcolumnList.containsKey("itemFromTypeId")) {
+            getJdbcTemplate().execute("ALTER TABLE backtracking ADD COLUMN itemToTypeId int(11) NOT NULL AFTER itemToId");
+        }
+        
+        if (bTcolumnList.containsKey("assocType")) {
+            getJdbcTemplate().execute("ALTER TABLE backtracking CHANGE COLUMN assocType recType INT(11) UNSIGNED NOT NULL");
+        }
+        
+        if (bTcolumnList.containsKey("timestamp")) {
+            getJdbcTemplate().execute("ALTER TABLE backtracking CHANGE COLUMN timestamp actionTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
+        }
+
+    }
+    
     /*
      * Items now have a profile field so the profile table moved to the item table
      * this function will move the items from the profile table to the items table and

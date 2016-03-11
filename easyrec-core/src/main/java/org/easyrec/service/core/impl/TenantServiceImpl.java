@@ -250,7 +250,6 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public void deleteItemTypeForTenant(Integer tenantId, Integer itemType) throws Exception {
-        // TODO:  
         // delete all Rules with itemtype
         itemAssocDAO.removeItemAssocByTenantAndItemType(tenantId, itemType);
         // delete all actions with itemtype

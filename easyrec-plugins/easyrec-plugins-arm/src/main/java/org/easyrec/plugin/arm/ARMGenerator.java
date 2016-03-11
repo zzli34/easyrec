@@ -45,7 +45,7 @@ import org.easyrec.utils.io.MySQL;
 public class ARMGenerator extends GeneratorPluginSupport<ARMConfiguration, ARMStatistics> implements RunConditionEnabled {
 
     public static final String DISPLAY_NAME = "ARM";
-    public static final Version VERSION = new Version("0.98");
+    public static final Version VERSION = new Version("1.00");
     public static final URI ID = URI.create("http://www.easyrec.org/plugins/ARM");
 
     private static final Log logger = LogFactory.getLog(ARMGenerator.class);

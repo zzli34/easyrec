@@ -37,9 +37,9 @@
                 {name: 'API Documentation',
                 url: 'apidoc'},
                 {name: 'Test the API',
-                url: '${webappPath}/apitest'},
+                url: '${webappPath}/apitest?operatorId=${operatorId}&tenantId=${tenantId}'},
                 {name: 'Test the Profile API',
-                url: '${webappPath}/apitestprofile'}
+                url: '${webappPath}/apitestprofile?operatorId=${operatorId}&tenantId=${tenantId}'}
             ];
             
             $scope.setActive = function(i) {
@@ -1048,6 +1048,28 @@
                 <a target="_blank"
                    href="http://easyrec.sourceforge.net/wiki/index.php?title=JavaScript_API_v0.98#Receiving_Itemtypes">
                     <img style="" alt="wiki link" src="${webappPath}/img/button_wiki-js.png"/>
+                </a>
+            </td>
+        </tr>
+        <tr style="background-color: rgb(239, 239, 239);">
+            <td>
+                add itemtype
+            </td>
+            <td style="width:200px;">
+                <a target="_blank"
+                   href="http://sourceforge.net/p/easyrec/wiki/ImportAPI/#add-itemtype">
+                    <img style="" alt="wiki link" src="${webappPath}/img/button_wiki-rest.png"/>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                delete itemtype
+            </td>
+            <td style="width:200px;">
+                <a target="_blank"
+                   href="http://sourceforge.net/p/easyrec/wiki/ImportAPI/#delete-itemtype">
+                    <img style="" alt="wiki link" src="${webappPath}/img/button_wiki-rest.png"/>
                 </a>
             </td>
         </tr>

@@ -32,7 +32,7 @@ public class ArchivePseudoGenerator
         extends GeneratorPluginSupport<ArchivePseudoConfiguration, ArchivePseudoStatistics> {
 
     public static final String DISPLAY_NAME = "Archiving";
-    public static final PluginId ID = new PluginId("http://www.easyrec.org/internal/Archive", "0.96");
+    public static final PluginId ID = new PluginId("http://www.easyrec.org/internal/Archive", "1.00");
     public static final int ASSOCTYPE = 0;
 
     private ArchiveDAO archiveDAO;

@@ -1546,7 +1546,7 @@ public class EasyRec {
             throws EasyRecException {
         Monitor mon = MonitorFactory.start(JAMON_REST_ADDITEMTYPE);
 
-        if (easyrecSettings.getSecuredAPIMethods().contains("itemtypes")) {
+        if (easyrecSettings.getSecuredAPIMethods().contains("additemtype")) {
             Operator o = operatorDAO.getOperatorFromToken(token);
             if (o == null)
                 exceptionResponse(WS.ACTION_ADDITEMTYPE, MSG.WRONG_TOKEN, type, callback);
@@ -1591,7 +1591,7 @@ public class EasyRec {
             throws EasyRecException {
         Monitor mon = MonitorFactory.start(JAMON_REST_DELETEITEMTYPE);
 
-        if (easyrecSettings.getSecuredAPIMethods().contains("itemtypes")) {
+        if (easyrecSettings.getSecuredAPIMethods().contains("deleteitemtype")) {
             Operator o = operatorDAO.getOperatorFromToken(token);
             if (o == null)
                 exceptionResponse(WS.ACTION_DELETEITEMTYPE, MSG.WRONG_TOKEN, type, callback);
@@ -1621,12 +1621,12 @@ public class EasyRec {
         
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding("itemType " + itemType + " and all references successfuly removed!", callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONWithPadding(new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!"), callback), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
-                return Response.ok("itemType " + itemType + " and all references successfuly removed!", WS.RESPONSE_TYPE_JSON).build();
+                return Response.ok(new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!"), WS.RESPONSE_TYPE_JSON).build();
             }
         } else {
-            return Response.ok("itemType " + itemType + " and all references successfuly removed!", WS.RESPONSE_TYPE_XML).build();
+            return Response.ok(new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!"), WS.RESPONSE_TYPE_XML).build();
         }
     }
 

@@ -63,13 +63,13 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
     @Override
     public String getActualArchiveTableName() {
 
-        String actualArchiveTableName = "actionarchive";
+        String actualArchiveTableName = "actionarch";
         String oldArchiveTableName = actualArchiveTableName;
 
         for (int i = 1; i < Integer.MAX_VALUE; i++) {
             try {
                 actualArchiveTableName = (String) getJdbcTemplate()
-                        .queryForObject("SHOW TABLES LIKE 'actionarchive" + i + "'", String.class);
+                        .queryForObject("SHOW TABLES LIKE 'actionarch" + i + "'", String.class);
             } catch (Exception e) {
                 logger.warn("ArchiveDAO stopped looking for archive tables at index " + i);
                 actualArchiveTableName = "";
@@ -84,7 +84,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
     }
 
     /**
-     * Generates a new archive table, which is named actionarchive[i++].
+     * Generates a new archive table, which is named actionarch[i++].
      * where i is an autoincrementing number.
      *
      * @param actualArchiveTableName
@@ -95,14 +95,14 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
 
         Integer getNextIndex = null;
         try {
-            String index = actualArchiveTableName.replace("actionarchive", "");
+            String index = actualArchiveTableName.replace("actionarch", "");
 
             if(Strings.isNullOrEmpty(index))
                 getNextIndex = 1;
             else
                 getNextIndex = Integer.valueOf(index) + 1;
 
-            StringBuilder sql = new StringBuilder().append("CREATE TABLE actionarchive").append(getNextIndex)
+            StringBuilder sql = new StringBuilder().append("CREATE TABLE actionarch").append(getNextIndex)
                     .append(" ( ").append("  id int(11) unsigned NOT NULL auto_increment, ")
                     .append("  tenantId int(11) NOT NULL, ").append("  userId int(11) default NULL, ")
                     .append("  sessionId varchar(50) default NULL, ").append("  ip varchar(45) default NULL, ")
@@ -115,7 +115,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
                     .append(") ENGINE=MyISAM COMMENT='Table containing archived actions'; ");
             getJdbcTemplate().update(sql.toString());
 
-            return "actionarchive" + getNextIndex;
+            return "actionarch" + getNextIndex;
         } catch (Exception e) {
             logger.warn("An error occurred!", e);
             return actualArchiveTableName;
