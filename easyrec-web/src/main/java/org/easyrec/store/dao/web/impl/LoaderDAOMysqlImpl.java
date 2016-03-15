@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.easyrec.model.core.web.Operator;
 import org.easyrec.store.dao.web.LoaderDAO;
 import org.easyrec.store.dao.web.OperatorDAO;
+import org.easyrec.utils.spring.store.service.sqlscript.impl.SqlScriptServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -45,14 +46,15 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.sql.*;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
-import java.util.Date;
-import javax.sql.DataSource;
-import org.easyrec.utils.spring.store.service.sqlscript.impl.SqlScriptServiceImpl;
 
 /**
  * @author szavrel
@@ -249,6 +251,8 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
             getJdbcTemplate().execute("ALTER TABLE backtracking CHANGE COLUMN timestamp actionTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
         }
 
+        getJdbcTemplate().execute("ALTER TABLE backtracking DROP INDEX assoc ");
+        getJdbcTemplate().execute("ALTER TABLE backtracking ADD INDEX assoc(tenantId, itemFromId, itemFromTypeId, recType, itemToId, itemToTypeId)");
     }
     
     /*
