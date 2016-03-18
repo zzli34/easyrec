@@ -9,7 +9,7 @@
         Add <span class="fartblack">easyrec</span> recommendations to your website within minutes!
         <span class="fartblack">easyrec</span> is a web application that provides recommendation services using
         standardized web technologies ready to be integrated into your site. To get started with easyrec we
-        recommend to read the <easyrec:wikiLink name="get started guide"/> and the <a href="${webappPath}/API" title="REST API">API</a> page.
+        recommend to read the <a href="https://sourceforge.net/p/easyrec/wiki/get_started/" target="_blank"> getting started guide</a> and the <a href="https://sourceforge.net/p/easyrec/wiki/API/" target="_blank">REST API</a> page.
         <br/>
     </div>
     <br/><br/>
@@ -30,7 +30,7 @@
                 <li style="list-style-image: url('${webappPath}/img/icon_nav_light.gif')">
                     easy to integrate - due to
                     a
-                    <a href="${webappPath}/API" title="REST API">REST API</a>
+                    <a href="https://sourceforge.net/p/easyrec/wiki/API/" target="_blank">REST API</a>
                     or placing javascript
                     <a href="${webappPath}/API" title="API-JS">codesnippets</a>
                     in your web pages.

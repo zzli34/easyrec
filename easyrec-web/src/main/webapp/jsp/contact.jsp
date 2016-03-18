@@ -12,29 +12,28 @@
         with us in the forum. Feel free to contact us under
         <a href="mailto:office@easyrec.org">office@easyrec.org</a></span> or post in
         our
-        <a target="_blank" href="http://sourceforge.net/apps/phpbb/easyrec/">Forums</a>
-        to get more information's about how to use and install easyrec.
+        <a href="https://sourceforge.net/p/easyrec/forum/" target="_blank">forums</a>
+        to get more information about how to use and install easyrec.
 
     </p>
 
 
     <h3>Blog</h3>
 
-    <a target="_blank" href="http://easyrec.sourceforge.net/blog/">
-        http://easyrec.sourceforge.net/blog/
+    <a target="_blank" href="https://sourceforge.net/p/easyrec/blog/">
+        https://sourceforge.net/p/easyrec/blog/
     </a>
 
 
     <h3>Wiki</h3>
-    <a target="_blank" href="http://easyrec.sourceforge.net/wiki/">
-        http://easyrec.sourceforge.net/wiki/
+    <a target="_blank" href="https://sourceforge.net/p/easyrec/wiki/Home/">
+        https://sourceforge.net/p/easyrec/wiki/Home/
     </a>
 
 
     <h3>Forum</h3>
-    <a target="_blank" href="http://sourceforge.net/apps/phpbb/easyrec/">
-        http://sourceforge.net/apps/phpbb/easyrec/
+    <a href="https://sourceforge.net/p/easyrec/forum/" target="_blank">
+        https://sourceforge.net/p/easyrec/forum/
     </a>
-
 
 </div>
