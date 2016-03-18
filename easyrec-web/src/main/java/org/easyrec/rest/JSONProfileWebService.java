@@ -18,11 +18,11 @@
 package org.easyrec.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.IOException;
 import org.easyrec.service.core.exception.ItemNotFoundException;
@@ -690,7 +690,7 @@ public class JSONProfileWebService {
 
         //convert respondData to Respond object
         if (callback != null) {
-            return Response.ok(new JSONWithPadding(respondData, callback),
+            return Response.ok(new JSONPObject(callback, respondData),
                     WS.RESPONSE_TYPE_JSCRIPT).build();
         } else {
             return Response.ok(respondData, WS.RESPONSE_TYPE_JSON).build();

@@ -673,13 +673,13 @@
 
 <script type="text/ng-template" id="apidoc" >
     <p>
-        We provide full access to easyrec's functionality through a <easyrec:wikiLink name="REST API"
-                          pageName="REST_API_v0.98"/>.
-        Recommendations are returned in XML or JSON notation.You can also include a small snippet of
-        <easyrec:wikiLink name="javascript code" pageName="JavaScript_API_v0.98"/> in your website to get
-        recommendations. To get started with easyrec we recommend to read the <easyrec:wikiLink name="get started guide"/>
-        and if you are completely lost feel free to ask us at the <a href="http://sourceforge.net/p/easyrec/forum/"
-                                                                     target="_blank">forums</a>.
+        We provide full access to easyrec's functionality through a <a href="https://sourceforge.net/p/easyrec/wiki/API/" target="_blank">REST API</a>.
+        Recommendations are returned in XML or JSON notation. <br/>
+        We also povide an AngularJS service that covers all API functions. You can find more details about using it at the <a href="https://sourceforge.net/p/easyrec/wiki/API/#angularjs-service" target="_blank">AngularJS service page</a> of our wiki.<br/>
+        <b>Legacy:</b> You can also include a small snippet of <easyrec:wikiLink name="javascript code" pageName="JavaScript_API_v0.98"/> in your website to get
+        recommendations.<br/>
+        To get started with easyrec we recommend to read the <a href="https://sourceforge.net/p/easyrec/wiki/get_started/" target="_blank"> getting started guide.</a>
+        and if you are completely lost feel free to ask us at the <a href="https://sourceforge.net/p/easyrec/forum/" target="_blank">forums</a>.
     </p>
 
     <br/>

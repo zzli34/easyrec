@@ -18,9 +18,9 @@
  */
 package org.easyrec.rest;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
 import org.easyrec.service.core.exception.ItemNotFoundException;
 import org.easyrec.model.core.web.Message;
@@ -557,7 +557,7 @@ public class ProfileWebservice {
         //convert respondData to Respond object
         if (WS.RESPONSE_TYPE_PATH_JSON.equals(responseType)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(respondData, callback),
+                return Response.ok(new JSONPObject(callback, respondData),
                         WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(respondData, WS.RESPONSE_TYPE_JSON).build();

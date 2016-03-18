@@ -201,7 +201,7 @@ function drawRecommendationListToDiv(json, recommenderDiv) {
     if ("undefined" == typeof(json.error)) { // if no error show recommendations
 
         try {
-            var items = json.recommendeditems.item;
+            var items = json.recommendedItems;//.item;
         } catch(e) {
             return;
         }
@@ -236,7 +236,7 @@ function drawRecommendationListWithPicturesToDiv(json, recommenderDiv) {
     if ("undefined" == typeof(json.error)) { // if no error show recommendations
 
         try {
-            var items = json.recommendeditems.item;
+            var items = json.recommendedItems;//.item;
         } catch(e) {
             return;
         }

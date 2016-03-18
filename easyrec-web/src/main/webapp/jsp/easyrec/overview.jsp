@@ -42,7 +42,7 @@
         <a href="javascript:simulateBuyAction()">generate a buy action</a> |
         <a href="javascript:simulateRateAction()">generate a rate action</a>.
 
-        The <easyrec:wikiLink name="getting started guide" pageName="Getting Started" /> gives you a quick overview on how
+        The <a href="https://sourceforge.net/p/easyrec/wiki/get_started/" target="_blank"> getting started guide</a> gives you a quick overview on how
         to set up a tenant.
 
     </div>

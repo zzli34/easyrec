@@ -51,7 +51,7 @@ import org.springframework.core.io.Resource;
 public class SolrSimilarityGenerator extends GeneratorPluginSupport<SolrSimilarityConfiguration, SolrSimilarityStatistics> implements RunConditionEnabled, DisposableBean {
 
     public static final String DISPLAY_NAME = "Solr Profile Similarity";
-    public static final Version VERSION = new Version("0.98");
+    public static final Version VERSION = new Version("1.00");
     public static final URI ID = URI.create("http://www.easyrec.org/plugins/solr");
     public static final String ITEMTYPE_USER = "USER";
 

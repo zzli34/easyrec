@@ -18,13 +18,13 @@
 package org.easyrec.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.spi.resource.Singleton;
 import org.easyrec.exception.core.ClusterException;
 import org.easyrec.model.core.ClusterVO;
@@ -222,7 +222,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT)
                         .build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
@@ -307,7 +307,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
         } else {
@@ -378,7 +378,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -470,7 +470,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
         } else {
@@ -567,7 +567,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT)
                         .build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
@@ -633,7 +633,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -718,7 +718,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -792,7 +792,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -856,7 +856,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -923,7 +923,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -994,7 +994,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rr), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1068,7 +1068,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rr), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1138,7 +1138,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rr), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1210,7 +1210,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(recommendation, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, recommendation), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(recommendation, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1277,7 +1277,7 @@ public class EasyRec {
 
             if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
                 if (callback != null)
-                    return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                    return Response.ok(new JSONPObject(callback, rr), WS.RESPONSE_TYPE_JSCRIPT).build();
                 else
                     return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
             } else
@@ -1344,7 +1344,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rr, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rr), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rr, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1423,7 +1423,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(rec, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, rec), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(rec, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1480,7 +1480,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1525,7 +1525,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(responseItemTypes, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, responseItemTypes), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(responseItemTypes, WS.RESPONSE_TYPE_JSON).build();
             }
@@ -1570,7 +1570,7 @@ public class EasyRec {
         
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(newId, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, newId), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(newId, WS.RESPONSE_TYPE_JSON).build();
             }
@@ -1621,7 +1621,7 @@ public class EasyRec {
         
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!"), callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!")), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(new SuccessMessage(930, "itemType " + itemType + " and all references successfuly removed!"), WS.RESPONSE_TYPE_JSON).build();
             }
@@ -1668,7 +1668,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(responseClusters, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, responseClusters), WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(responseClusters, WS.RESPONSE_TYPE_JSON).build();
             }
@@ -1778,7 +1778,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respRule, callback), WS.RESPONSE_TYPE_JSCRIPT).build();
+                return Response.ok(new JSONPObject(callback, respRule), WS.RESPONSE_TYPE_JSCRIPT).build();
             else
                 return Response.ok(respRule, WS.RESPONSE_TYPE_JSON).build();
         } else
@@ -1835,7 +1835,7 @@ public class EasyRec {
 
         if (type.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null)
-                return Response.ok(new JSONWithPadding(respItem, callback), WS.RESPONSE_TYPE_JSCRIPT)
+                return Response.ok(new JSONPObject(callback, respItem), WS.RESPONSE_TYPE_JSCRIPT)
                         .build();
             else
                 return Response.ok(respItem, WS.RESPONSE_TYPE_JSON).build();
@@ -2212,7 +2212,7 @@ public class EasyRec {
         //convert respondData to Respond object
         if (responseType.endsWith(WS.RESPONSE_TYPE_PATH_JSON)) {
             if (callback != null) {
-                return Response.ok(new JSONWithPadding(respondData, callback),
+                return Response.ok(new JSONPObject(callback, respondData),
                         WS.RESPONSE_TYPE_JSCRIPT).build();
             } else {
                 return Response.ok(respondData, WS.RESPONSE_TYPE_JSON).build();

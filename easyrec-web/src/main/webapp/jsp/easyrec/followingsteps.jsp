@@ -67,12 +67,16 @@
             &nbsp;&nbsp;&nbsp;var tenantId = "<span class="tenantId"></span>";<br>
             &lt;/script&gt;
         </code>
+        
+        <p>
+            The Javascript API is considered legagcy and does not support all API functions anymore. Consider using our <a href="https://sourceforge.net/p/easyrec/wiki/API/#angularjs-service" target="_blank">AngularJS service</a> instead.
+        </p>
 
     </div>
 
     <div id="restApi">
         <p>
-            The <easyrec:wikiLink pageName="REST_API_v0.98" name="REST API"/> can be used in client-side code (as is
+            The <a href="https://sourceforge.net/p/easyrec/wiki/API/" target="_blank">REST API</a> can be used in client-side code (as is
             the case with the javascript API) or in server side code.
             The following data is required for accessing the API:
         </p>

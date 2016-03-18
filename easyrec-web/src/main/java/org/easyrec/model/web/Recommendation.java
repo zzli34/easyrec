@@ -17,6 +17,7 @@
  */
 package org.easyrec.model.web;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.easyrec.model.core.web.Item;
 
 import javax.xml.bind.annotation.XmlElement;
