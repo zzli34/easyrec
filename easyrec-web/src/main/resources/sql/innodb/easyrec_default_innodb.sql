@@ -308,7 +308,7 @@ CREATE TABLE easyrec (
   version float(9,3) DEFAULT NULL
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1;
 
-INSERT INTO easyrec (version) VALUES (1.00);
+INSERT INTO easyrec (version) VALUES (1.0);
 
 DROP TABLE IF EXISTS plugin_log;
 CREATE TABLE plugin_log (
