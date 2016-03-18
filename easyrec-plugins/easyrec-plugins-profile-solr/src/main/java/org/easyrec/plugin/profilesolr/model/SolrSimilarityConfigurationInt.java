@@ -36,7 +36,7 @@ public class SolrSimilarityConfigurationInt {
     private Integer assocType;
     private Integer itemTypeUser;
     private Integer maxRulesPerItem;
-    private Boolean doDeltaUpdate;
+//    private Boolean doDeltaUpdate;
     private Date lastRun;
     private List<JsonPath> indexFields = new ArrayList<>();
     private List<QueryFieldConfiguration> queryFields = new ArrayList<>();
@@ -46,22 +46,22 @@ public class SolrSimilarityConfigurationInt {
 
     }
 
-    public SolrSimilarityConfigurationInt(Integer tenantId, Integer assocType, List<Integer> itemTypes, Integer actionType, Integer maxRulesPerItem, Boolean doDeltaUpdate, Date lastRun) {
+    public SolrSimilarityConfigurationInt(Integer tenantId, Integer assocType, List<Integer> itemTypes, Integer actionType, Integer maxRulesPerItem, Date lastRun) {
         this.tenantId = tenantId;
         this.assocType = assocType;
         this.maxRulesPerItem = maxRulesPerItem;
-        this.doDeltaUpdate = doDeltaUpdate;
+//        this.doDeltaUpdate = doDeltaUpdate;
         this.lastRun = lastRun;
         this.configuration = Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.ALWAYS_RETURN_LIST);
     }
 
-    public Boolean getDoDeltaUpdate() {
-        return doDeltaUpdate;
-    }
-
-    public void setDoDeltaUpdate(Boolean doDeltaUpdate) {
-        this.doDeltaUpdate = doDeltaUpdate;
-    }
+//    public Boolean getDoDeltaUpdate() {
+//        return doDeltaUpdate;
+//    }
+//
+//    public void setDoDeltaUpdate(Boolean doDeltaUpdate) {
+//        this.doDeltaUpdate = doDeltaUpdate;
+//    }
 
     public Integer getMaxRulesPerItem() {
         return maxRulesPerItem;

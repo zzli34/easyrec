@@ -26,7 +26,6 @@ import org.easyrec.model.core.RankedItemVO;
 import org.easyrec.model.core.RatingVO;
 import org.easyrec.model.core.transfer.TimeConstraintVO;
 import org.easyrec.service.core.ClusterService;
-import org.easyrec.service.core.TenantService;
 import org.easyrec.store.dao.core.ActionDAO;
 import org.easyrec.store.dao.core.types.AssocTypeDAO;
 import org.easyrec.store.dao.impl.AbstractBaseActionDAOMysqlImpl;

@@ -36,7 +36,7 @@ CREATE TABLE actionarch (
   ratingValue int(11) default NULL,
   actionInfo varchar(500) CHARACTER SET utf8 default NULL,
   actionTime datetime NOT NULL,
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id)
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1 COMMENT='Table containing archived actions';
 
 --
@@ -308,7 +308,7 @@ CREATE TABLE easyrec (
   version float(9,3) DEFAULT NULL
 ) ENGINE=InnoDb DEFAULT CHARSET=latin1;
 
-INSERT INTO easyrec (version) VALUES (0.98);
+INSERT INTO easyrec (version) VALUES (1.00);
 
 DROP TABLE IF EXISTS plugin_log;
 CREATE TABLE plugin_log (

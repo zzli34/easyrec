@@ -152,14 +152,14 @@ public class NamedConfigurationServiceImpl implements NamedConfigurationService 
         int isRelatedAssocTypeId = typeMappingService.getIdOfAssocType(tenantId, "IS_RELATED");
         createDefaultConfiguration(slopeOnePluginId, tenantId, isRelatedAssocTypeId);
 
-        PluginId profileDukePluginId =
-                new PluginId("http://www.easyrec.org/plugins/profileSimilarity", easyrecSettings.getVersion());
-        sourceTypeDAO.insertOrUpdate(tenantId, profileDukePluginId.toString());
-        int profileSimilarityAssocTypeId = typeMappingService.getIdOfAssocType(tenantId, "PROFILE_SIMILARITY");
-        createDefaultConfiguration(profileDukePluginId, tenantId, profileSimilarityAssocTypeId);
-
-        // deactivate the profileSimilarity plugin by default
-        namedConfigurationDAO.deactivateByPlugin(profileDukePluginId);
+//        PluginId profileDukePluginId =
+//                new PluginId("http://www.easyrec.org/plugins/profileSimilarity", easyrecSettings.getVersion());
+//        sourceTypeDAO.insertOrUpdate(tenantId, profileDukePluginId.toString());
+//        int profileSimilarityAssocTypeId = typeMappingService.getIdOfAssocType(tenantId, "PROFILE_SIMILARITY");
+//        createDefaultConfiguration(profileDukePluginId, tenantId, profileSimilarityAssocTypeId);
+//
+//        // deactivate the profileSimilarity plugin by default
+//        namedConfigurationDAO.deactivateByPlugin(profileDukePluginId);
 
         generatorContainer.runGeneratorsForTenant(tenantId, true);
 

@@ -80,7 +80,7 @@ public class SolrSimilarityServiceImpl implements SolrSimilarityService {
 
         SolrSimilarityConfigurationInt ret;
 
-        ret = new SolrSimilarityConfigurationInt(configuration.getTenantId(), null ,new ArrayList<Integer>(), null, configuration.getMaxRulesPerItem(), configuration.getDoDeltaUpdate(), configuration.getLastRun());
+        ret = new SolrSimilarityConfigurationInt(configuration.getTenantId(), null ,new ArrayList<Integer>(), null, configuration.getMaxRulesPerItem(), configuration.getLastRun());
 
         Integer typeUser;
         try {

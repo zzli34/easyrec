@@ -59,9 +59,10 @@ public class AggregatorConfiguration extends GeneratorConfiguration {
     @PluginParameter(
         displayName = "action info fields",
         shortDescription = "JSON fields in the actionInfo to be analysed.",
-        description = "The JSON fields in the actionInfo to be analysed. Use the following format: targetField,sourceJSONPath,(itemType);itemType is optional:"
-                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE; tries to read the field "
-                + "$.genre from the actionInfo where the item type is MOVIE and writes the result to the field genres in the result profile.",
+        description = "The JSON fields in the actionInfo to be analysed. Use the following format: targetField,sourceJSONPath,(itemType),(threshold);itemType and threshold are optional:"
+                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE,3; tries to read the field "
+                + "$.genre from the actionInfo where the item type is MOVIE and writes the result to the field genres in the result profile. At least 3 (threshold) counts of the specific genre are needed"
+                + "to be stored in the profile",
         optional = true,
         asTextArea = true)
     private String actionInfoFields;
@@ -69,9 +70,10 @@ public class AggregatorConfiguration extends GeneratorConfiguration {
     @PluginParameter(
         displayName = "item profile fields",
         shortDescription = "JSON fields in the item profile to be analysed.",
-        description = "The JSON fields in the item profile to be analysed. Use the following format: targetField,sourceJSONPath,(itemType);itemType is optional:"
-                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE; tries to read the field "
-                + "$.genre from the item profile where the item type is MOVIE and writes the result to the field genres in the result profile.",
+        description = "The JSON fields in the item profile to be analysed. Use the following format: targetField,sourceJSONPath,(itemType), (threshold);itemType and threshold are optional:"
+                + "if not provided items of all types are considered. Use semicolon to define multiple fields for analysis. Example: genres,$.genre,MOVIE,3; tries to read the field "
+                + "$.genre from the item profile where the item type is MOVIE and writes the result to the field genres in the result profile. At least 3 (threshold) counts of the specific genre are needed"
+                + "to be stored in the profile",
         optional = true,
         asTextArea = true)
     private String itemProfileFields;

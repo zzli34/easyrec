@@ -60,21 +60,21 @@ public class SolrSimilarityConfiguration extends GeneratorConfiguration {
     
     private Integer maxRulesPerItem;
 
-    @PluginParameter(
-        displayName = "do delta update",
-        shortDescription = "If true, only the actions since the last plugin run are considered.",
-        description = "If true, only the actions since the last plugin run are considered and the profiles updated accordingly.",
-        optional = false)
-    private Boolean doDeltaUpdate = true;
-
-
-    public Boolean getDoDeltaUpdate() {
-        return doDeltaUpdate;
-    }
-
-    public void setDoDeltaUpdate(Boolean doDeltaUpdate) {
-        this.doDeltaUpdate = doDeltaUpdate;
-    }
+//    @PluginParameter(
+//        displayName = "do delta update",
+//        shortDescription = "If true, only the actions since the last plugin run are considered.",
+//        description = "If true, only the actions since the last plugin run are considered and the profiles updated accordingly.",
+//        optional = false)
+//    private Boolean doDeltaUpdate = true;
+//
+//
+//    public Boolean getDoDeltaUpdate() {
+//        return doDeltaUpdate;
+//    }
+//
+//    public void setDoDeltaUpdate(Boolean doDeltaUpdate) {
+//        this.doDeltaUpdate = doDeltaUpdate;
+//    }
 
 
     public List<String> getItemTypes() {
