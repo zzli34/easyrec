@@ -25,12 +25,12 @@
     <parent>
         <artifactId>easyrec-plugins</artifactId>
         <groupId>org.easyrec</groupId>
-        <version>0.99-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>easyrec-plugins-profile-solr</artifactId>
-    <version>0.99-SNAPSHOT</version>
+    <version>1.0</version>
     <name>easyrec - Plugins - JSON Profile Solr Matching</name>
     <description>Calculates similar items based on their profile with Solr.</description>
 
@@ -68,7 +68,7 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
                     </execution>
