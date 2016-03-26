@@ -22,7 +22,7 @@
 
 <p>
     Here you can import content for existing clusters. Read the
-    <easyrec:wikiLink name="Cluster CSV import guide" pageName="Cluster#Cluster_CSV_import"/>
+    <a href="https://sourceforge.net/p/easyrec/wiki/Cluster/#csv-import" target="_blank">Cluster CSV import guide</a>
     to get started.
 </p>
 

@@ -48,7 +48,7 @@
 <h2>Assoc Type Manager</h2>
 
 <p>
-    Use the assoc type manager to create <easyrec:wikiLink name="Assoc Types" pageName="assoc type"/>.
+    Use the assoc type manager to create <a href="https://sourceforge.net/p/easyrec/wiki/Assoc Types/" target="_blank">Assoc types</a>.
     Assoc types are used to define the relation between two items. As an Administrator you can set specific
     Plugins for each assoc type.
 </p>

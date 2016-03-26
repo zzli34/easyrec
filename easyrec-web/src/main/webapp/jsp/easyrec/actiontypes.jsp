@@ -81,7 +81,7 @@
     <h2>Action Type Manager</h2>
 
     <p>
-        Use the action type manager to create <easyrec:wikiLink name="Action types" pageName="action type"/>.
+        Use the action type manager to create <a href="https://sourceforge.net/p/easyrec/wiki/Action Types/" target="_blank">Action types</a>.
         Action types are the types of your actions you send to easyrec.
         After creating an actions type you are ready to use it in API calls.
     </p>

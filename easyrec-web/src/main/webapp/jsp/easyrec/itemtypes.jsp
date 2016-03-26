@@ -48,7 +48,7 @@
     <h2>Item Type Manager</h2>
 
     <p>
-        Use the item type manager to create <easyrec:wikiLink name="Item types" pageName="item type"/>.
+        Use the item type manager to create <a href="https://sourceforge.net/p/easyrec/wiki/Item%20Types/" target="_blank">Item types</a>.
         Item types are the main categories of your items, e.g. Books, Music or Movies.
         After creating an item type you are ready to use it in API calls.
     </p>

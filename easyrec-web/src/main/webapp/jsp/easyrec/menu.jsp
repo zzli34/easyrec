@@ -117,8 +117,8 @@
         </table>
         <div style="padding-bottom: 10px;"></div>
         <ul class="subMenu">
-            <li><easyrec:wikiLink name="FAQ"/></li>
-            <li><easyrec:wikiLink name="Documentation" pageName="Documentation_v0.98"/></li>
+            <li><a href="https://sourceforge.net/p/easyrec/wiki/FAQ/" target="_blank">FAQ</a></li>
+            <li><a href="https://sourceforge.net/p/easyrec/wiki/Home/" target="_blank">Documentation</a></li>
         </ul>
 
         <c:if test="${heapsize<640}">

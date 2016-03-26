@@ -349,17 +349,17 @@ function rewriteClusterItemSorting(containerDiv) {
     <h2>Cluster Manager</h2>
 
     <p>
-        Use the <easyrec:wikiLink name="cluster manager" pageName="Cluster"/> to create, delete, move and populate clusters.
+        Use the <a href="https://sourceforge.net/p/easyrec/wiki/Cluster/" target="_blank">cluster manager</a> to create, delete, move and populate clusters.
         You can use the clustering system to create recommendations based on your categories e.g. for special sales.
     </p>
 
     <p>
-        Use the <easyrec:wikiLink name="cluster API" pageName="REST_API_v0.98#Cluster"/> to get recommendations based on the clusters here.
+        Use the <a href="https://sourceforge.net/p/easyrec/wiki/ClusterAPI/" target="_blank">cluster API</a> to get recommendations based on the clusters here.
     </p>
 
     <p>
         If you want to import the content of a cluster you can
-        <easyrec:wikiLink name="create a CSV file for the cluster upload" pageName="Cluster#Cluster_CSV_import"/>
+        <a href="https://sourceforge.net/p/easyrec/wiki/Cluster/#csv-import" target="_blank">create a CSV file for the cluster upload</a>
         and upload it here.
     </p>
 
