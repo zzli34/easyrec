@@ -105,7 +105,7 @@ public class AggregatorGenerator extends GeneratorPluginSupport<AggregatorConfig
                 if (control.isAbortRequested()) throw new Exception("UPA was manually aborted!");
                 i++;
             }
-
+            stats.setNumberOfRulesCreated(i-1);
             stats.setNumberOfActionsConsidered(aggregatorService.getNumberOfActions(intConfiguration, null));
             // remove old Rules
             //aggregatorService.removeOldRules(intConfiguration, stats);
@@ -119,7 +119,7 @@ public class AggregatorGenerator extends GeneratorPluginSupport<AggregatorConfig
 
     @Override
     public String getPluginDescription() {
-        return "This plugin allows the aggragation of item and action metadata into simple user/item profiles. "
+        return "This plugin allows the aggregation of item and action metadata into simple user/item profiles. "
                 + "It does not generate rules, just enriches the metadata in profiles. The generated data can then be used for matching techniques";
     }
 
