@@ -101,7 +101,7 @@
         <compile.forked>false</compile.forked>
         <java.source.version>1.7</java.source.version>
         <java.target.version>1.7</java.target.version>
-        <surefire.skip>true</surefire.skip>
+        <surefire.skip>false</surefire.skip>
         <surefire.failure.ignore>true</surefire.failure.ignore>
         <surefire.forkmode>once</surefire.forkmode>
         <surefire.reportformat>brief</surefire.reportformat>
@@ -195,7 +195,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -582,8 +582,8 @@ to be able to deploy and site-deploy during daily/nightly builds -->
     </issueManagement>
 
     <scm>
-        <connection>scm:git:ssh://git.code.sf.net/p/easyrec/code</connection>
-        <developerConnection>scm:git:ssh://git.code.sf.net/p/easyrec/code</developerConnection>
+        <connection>scm:git:ssh://easyrec.git.sourceforge.net/gitroot/easyrec/easyrec</connection>
+        <developerConnection>scm:git:ssh://easyrec.git.sourceforge.net/gitroot/easyrec/easyrec</developerConnection>
     </scm>
 
     <modules>
