@@ -582,8 +582,8 @@ to be able to deploy and site-deploy during daily/nightly builds -->
     </issueManagement>
 
     <scm>
-        <connection>scm:git:ssh://easyrec.git.sourceforge.net/gitroot/easyrec/easyrec</connection>
-        <developerConnection>scm:git:ssh://easyrec.git.sourceforge.net/gitroot/easyrec/easyrec</developerConnection>
+        <connection>scm:git:ssh://git.code.sf.net/p/easyrec/code</connection>
+        <developerConnection>scm:git:ssh://git.code.sf.net/p/easyrec/code</developerConnection>
     </scm>
 
     <modules>
