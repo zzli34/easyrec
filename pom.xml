@@ -101,7 +101,7 @@
         <compile.forked>false</compile.forked>
         <java.source.version>1.7</java.source.version>
         <java.target.version>1.7</java.target.version>
-        <surefire.skip>false</surefire.skip>
+        <surefire.skip>true</surefire.skip>
         <surefire.failure.ignore>true</surefire.failure.ignore>
         <surefire.forkmode>once</surefire.forkmode>
         <surefire.reportformat>brief</surefire.reportformat>
