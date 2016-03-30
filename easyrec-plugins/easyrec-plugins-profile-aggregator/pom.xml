@@ -4,11 +4,11 @@
     <parent>
         <artifactId>easyrec-plugins</artifactId>
         <groupId>org.easyrec</groupId>
-        <version>0.99-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <groupId>org.easyrec</groupId>
     <artifactId>easyrec-plugins-aggregator</artifactId>
-    <version>0.99-SNAPSHOT</version>
+    <version>1.0</version>
     <name>easyrec - Plugins - Profile Aggregator</name>
     <description>A plugin that analyses user actions on items and aggregates a user profile based on those actions.</description>
     <dependencies>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.easyrec</groupId>
             <artifactId>easyrec-plugin-container</artifactId>
-            <version>0.99-SNAPSHOT</version>
+            <version>1.0</version>
             <type>jar</type>
         </dependency>
     </dependencies>
