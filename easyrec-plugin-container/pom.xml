@@ -4,11 +4,11 @@
     <parent>
         <artifactId>easyrec</artifactId>
         <groupId>org.easyrec</groupId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <groupId>org.easyrec</groupId>
     <artifactId>easyrec-plugin-container</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>easyrec - Plugin Container</name>
     <description>This module provides the framework for plugin execution.</description>
 
