@@ -143,9 +143,15 @@ public class AggregatorServiceImpl implements AggregatorService {
         }
 
         userProfile = convertAndOrderProfile(tmpProfile, configurationInt);
-            
+        String path = "$";
+        String field = "upa";
+        if (configurationInt.getActionType() != null) {
+            String actionType = actionTypeDAO.getTypeById(configurationInt.getTenantId(), configurationInt.getActionType());
+            path += ".upa";
+            field = actionType.toLowerCase();
+        }
         try {
-            jsonProfileService.storeProfileFieldParsed(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "$", "upa", userProfile);
+            jsonProfileService.storeProfileFieldParsed(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), path, field, userProfile);
         } catch (Exception ex) {
             logger.error("An error occured storing the user profile", ex);
         }
