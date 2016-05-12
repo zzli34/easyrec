@@ -104,7 +104,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         //if user profile does not exist, create it
         String userIdStr = idMappingDAO.lookup(userId);
         Item userItem = itemDAO.get(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER);
-        LinkedHashMap<String, Object> userProfile = null;
+        Object userProfile = null;
         if (userItem == null) {
             userItem = itemDAO.add(configurationInt.getTenantId(), userIdStr, AggregatorGenerator.ITEMTYPE_USER, userIdStr, "", "");
             jsonProfileService.storeProfile(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "{}");
@@ -143,15 +143,16 @@ public class AggregatorServiceImpl implements AggregatorService {
         }
 
         userProfile = convertAndOrderProfile(tmpProfile, configurationInt);
-        String path = "$";
-        String field = "upa";
         if (configurationInt.getActionType() != null) {
-            String actionType = actionTypeDAO.getTypeById(configurationInt.getTenantId(), configurationInt.getActionType());
-            path += ".upa";
-            field = actionType.toLowerCase();
+            if (!((LinkedHashMap<String, Object>) userProfile).isEmpty()) {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                String actionType = actionTypeDAO.getTypeById(configurationInt.getTenantId(), configurationInt.getActionType());
+                map.put(actionType.toLowerCase(), userProfile);
+                userProfile = map;
+            }
         }
         try {
-            jsonProfileService.storeProfileFieldParsed(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), path, field, userProfile);
+            jsonProfileService.storeProfileFieldParsed(userItem.getTenantId(), userItem.getItemId(), userItem.getItemType(), "$", "upa", userProfile);
         } catch (Exception ex) {
             logger.error("An error occured storing the user profile", ex);
         }
