@@ -17,7 +17,7 @@
  */
 package org.easyrec.rest;
 
-import com.sun.jersey.api.json.JSONWithPadding;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.easyrec.model.core.web.Message;
 import org.easyrec.vocabulary.WS;
 
@@ -53,7 +53,7 @@ public class EasyRecException extends WebApplicationException {
     public EasyRecException(List<Message> messages, String action, String type, String callback) {
         //GenericEntity<List<Message>> entity = new GenericEntity<List<Message>>(messages) {};
         super(callback != null ?
-              Response.ok(new JSONWithPadding(messagesToArray(messages), callback),
+              Response.ok(new JSONPObject(callback, messagesToArray(messages)),
                       WS.RESPONSE_TYPE_JSCRIPT).build() :
               Response.ok(messagesToArray(messages), type).build());
     }
