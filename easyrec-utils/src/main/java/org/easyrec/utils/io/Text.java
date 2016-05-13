@@ -41,7 +41,7 @@ public class Text {
      * trimLast("peter")-->"pete"
      *
      * @param s
-     * @return
+     *
      */
     public static String removeLast(String s) {
         if (Strings.isNullOrEmpty(s)) return s;
@@ -54,7 +54,7 @@ public class Text {
      * "hallo" --> "b6834520c5cf3df80886803e1af41b47"
      *
      * @param key
-     * @return
+     *
      */
     public static String generateHash(String key) {
 
@@ -88,7 +88,7 @@ public class Text {
      * e.g. peter --> Peter
      *
      * @param s
-     * @return
+     *
      */
     public static String capitalize(String s) {
         if (Strings.isNullOrEmpty(s)) return s;
@@ -140,7 +140,7 @@ public class Text {
      * contains any of the chars %,>,<,',".
      *
      * @param stringToCheck
-     * @return
+     *
      */
     public static boolean containsEvilSpecialChar(String stringToCheck) {
         return CharMatcher.anyOf("%<>'\"").countIn(stringToCheck) > 0;
@@ -149,10 +149,10 @@ public class Text {
     /**
      * Extract a Substring between two Strings from the given String.
      *
-     * @param sTest
+     * @param str
      * @param prefix
      * @param suffix
-     * @return
+     *
      */
     public static String containingString(String str, String prefix, String suffix) {
         if(Strings.isNullOrEmpty(str)) return str;

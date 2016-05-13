@@ -260,7 +260,7 @@ public class Benchmark {
      * Most of the items are not interesting to the users. Only
      * some of them are viewed a lot.
      *
-     * @return
+     *
      */
     private static int getItemId() {
         int n = r.nextInt(itemIdDistribution[NUMBER_OF_ITEMS - 1]);
@@ -274,7 +274,7 @@ public class Benchmark {
      * Users are distributed as expontial occurences (longtail)
      * Most of the Users show up 1 time only very view do more actions
      *
-     * @return
+     *
      */
     private static int getUserId() {
         int n = r.nextInt(userIdDistribution[NUMBER_OF_USERS - 1]);
@@ -306,7 +306,7 @@ public class Benchmark {
      * This function loads a Webpage into a string (like view source in a browser).
      *
      * @param url
-     * @return
+     *
      */
     private static String loadWebsiteHtmlCode(String url) {
 

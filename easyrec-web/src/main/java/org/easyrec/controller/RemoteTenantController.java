@@ -376,7 +376,7 @@ public class RemoteTenantController extends MultiActionController {
      * @param signedInOperatorId
      * @param signedInOperator
      * @param remoteTenant
-     * @return
+     *
      */
     private RemoteTenant initializeView(HttpServletRequest request, ModelAndView mav, String operatorId,
                                         String tenantId, String url, String description, String signedInOperatorId,

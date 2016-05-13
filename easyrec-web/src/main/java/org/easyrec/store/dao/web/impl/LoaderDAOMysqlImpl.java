@@ -609,7 +609,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
      * depending on the presence of a version table. If
      * no version table is present return the inital version
      *
-     * @return
+     *
      */
     @Override
     public Float checkVersion() throws Exception {

@@ -40,7 +40,7 @@ public class LoggerUtils {
     /**
      * @param logger
      * @param logLevel
-     * @return
+     *
      */
     public static boolean isLogLevelEnabled(Log logger, String logLevel) {
         if (logLevel.equalsIgnoreCase("info")) {

@@ -53,7 +53,7 @@ public class ViewInitializationService {
      * this code is used very often. Look into this controller tro understand the usage better - sorry
      * @param request
      * @param mav
-     * @return
+     *
      */
     public RemoteTenant initializeView(HttpServletRequest request, ModelAndView mav) {
         RemoteTenant remoteTenant = null;

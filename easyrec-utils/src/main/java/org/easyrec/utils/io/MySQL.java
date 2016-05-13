@@ -39,7 +39,7 @@ public class MySQL {
      * @param sql
      * @param attribute
      * @param attributeValue
-     * @return
+     *
      */
     public static StringBuilder addLikeClause(StringBuilder sql, String attribute, String attributeValue) {
         if (Strings.isNullOrEmpty(attributeValue)) return sql;
@@ -58,7 +58,7 @@ public class MySQL {
      * @param sql
      * @param offset
      * @param number
-     * @return
+     *
      */
     public static StringBuilder addLimitClause(StringBuilder sql, int offset, int number) {
         if (offset < 0 || number <= 0) return sql;

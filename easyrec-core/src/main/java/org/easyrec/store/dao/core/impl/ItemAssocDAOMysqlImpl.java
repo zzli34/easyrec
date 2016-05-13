@@ -883,7 +883,7 @@ public class ItemAssocDAOMysqlImpl extends
      * <p/>
      * unique key: (tenantId, itemFromId, itemToId, itemFromTypeId, itemToTypeId, assocTypeId, sourceTypeId, sourceInfo)
      * @param itemAssoc
-     * @return 
+     *
      */
     @Override
     public ItemAssocVO<Integer,Integer> loadItemAssocByUniqueKey(

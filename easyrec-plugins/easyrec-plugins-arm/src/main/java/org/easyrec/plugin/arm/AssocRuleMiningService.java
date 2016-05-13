@@ -85,14 +85,14 @@ public interface AssocRuleMiningService {
     /**
      * Return true if ruleminer is running.
      *
-     * @return
+     *
      */
     public boolean isRunning();
 
     /**
      * Return the integer id of the current running tenantid.
      *
-     * @return
+     *
      */
     public Integer getRunningTenantId();
 }

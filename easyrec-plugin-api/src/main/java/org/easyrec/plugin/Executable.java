@@ -24,7 +24,7 @@ public interface Executable<S extends ExecutableStatistics> {
     /**
      * Fetches the last progress information of the current execution.
      *
-     * @return
+     *
      */
     public Progress getProgress();
 
@@ -33,14 +33,14 @@ public interface Executable<S extends ExecutableStatistics> {
      * Fetch the delegate used to (un)register observers that monitor the
      * <code>Executable</code>'s progress.
      *
-     * @return
+     *
      */
     public ObserverRegistry<Executable> getExecutableObserverRegistry();
 
     /**
      * Returns the actual class of the <code>ExecutableStatistics</code> object used.
      *
-     * @return
+     *
      */
     public Class<S> getStatisticsClass();
 

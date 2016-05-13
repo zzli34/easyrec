@@ -84,7 +84,7 @@ public interface BaseTenantDAO {
      *
      * @param tenant the tenant to be set active or inactive
      * @param active the value the active flag will be set to.
-     * @return
+     *
      */
     public int setTenantActive(TenantVO tenant, boolean active);
 }

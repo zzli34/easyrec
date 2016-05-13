@@ -8,7 +8,7 @@ public interface Configurable<C extends Configuration> {
      * a new configuration using default values, sets it as the
      * {@link Configurable}'s configuration and returns it.
      *
-     * @return
+     *
      */
     public C getConfiguration();
 
@@ -21,12 +21,12 @@ public interface Configurable<C extends Configuration> {
     public void setConfiguration(C config);
 
     /**
-     * @return
+     *
      */
     public C newConfiguration();
 
     /**
-     * @return
+     *
      */
     public Class<C> getConfigurationClass();
 

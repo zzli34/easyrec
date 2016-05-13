@@ -205,7 +205,7 @@ public class StatisticsDAOMySql extends JdbcDaoSupport implements StatisticsDAO 
      * @param tenantId
      * @param actionTypeId
      * @param assocTypeId
-     * @return 
+     *
      */
     @Override
     public AssocStatistic getAssocStatistics(int tenantId, int actionTypeId, int assocTypeId) {

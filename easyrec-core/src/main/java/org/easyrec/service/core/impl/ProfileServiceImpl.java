@@ -109,7 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @param itemId
      * @param itemType
      * @param profileXML
-     * @return 
+     *
      */
     @Override
     public boolean storeProfile(Integer tenantId, String itemId, String itemType, String profileXML) {
@@ -122,7 +122,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @param tenantId
      * @param itemId
      * @param itemType
-     * @return 
+     *
      */
     @Override
     public boolean deleteProfile(Integer tenantId, String itemId, String itemType) {
@@ -154,7 +154,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @param tenantId
      * @param itemId
      * @param itemTypeId
-     * @return 
+     *
      */
     @Override
     public String getProfile(Integer tenantId, String itemId, String itemTypeId) {
@@ -168,7 +168,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @param itemId
      * @param itemType
      * @param dimensionXPath
-     * @return
+     *
      * @throws Exception
      */
     @Override
@@ -202,8 +202,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @param itemTypeId
      * @param dimensionXPath
      * @param value
-     * @return
- 
+     *
      */
     @Override
     public synchronized boolean storeProfileField(Integer tenantId, String itemId, String itemTypeId,
@@ -255,7 +254,7 @@ public class ProfileServiceImpl implements ProfileService {
  * @param itemType
  * @param deleteXPath
  * @throws Exception
- * @return
+ *
  */
     @Override
     public boolean deleteProfileField(Integer tenantId, String itemId, String itemType, String deleteXPath)

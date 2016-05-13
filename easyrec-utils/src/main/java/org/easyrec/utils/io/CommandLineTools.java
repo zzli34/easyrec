@@ -77,7 +77,7 @@ public class CommandLineTools {
      *
      * @param args
      * @param option the option char
-     * @return
+     *
      */
     public static boolean isShortOptionSet(String[] args, char option) {
         for (int i = 0; i < args.length; i++) {
@@ -95,7 +95,7 @@ public class CommandLineTools {
      *
      * @param args
      * @param option the option string (without "--")
-     * @return
+     *
      */
     public static boolean isExtendedOptionSet(String[] args, String option) {
         for (int i = 0; i < args.length; i++) {
@@ -112,7 +112,7 @@ public class CommandLineTools {
      *
      * @param args
      * @param option the option char
-     * @return
+     *
      */
     public static boolean isOptionSet(String[] args, char option, String extendedOption) {
         return isShortOptionSet(args, option) || isExtendedOptionSet(args, extendedOption);

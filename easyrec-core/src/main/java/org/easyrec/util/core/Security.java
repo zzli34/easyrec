@@ -69,7 +69,7 @@ public class Security {
      * This function checks if an operator is signed in
      *
      * @param request
-     * @return
+     *
      */
     public static boolean isSignedIn(HttpServletRequest request) {
         return request.getSession().getAttribute("signedInOperatorId") != null;
@@ -80,7 +80,7 @@ public class Security {
      * Developer can edit/remove core-, remote-tenants and operators
      *
      * @param request
-     * @return
+     *
      */
     public static boolean isDeveloper(HttpServletRequest request) {
         if (request.getSession(false) != null) {
@@ -99,7 +99,7 @@ public class Security {
      * Returns the operator Id of the signed in operator, "" otherwise.
      *
      * @param request
-     * @return
+     *
      */
     public static String signedInOperatorId(HttpServletRequest request) {
         Object signedInOperatorId = "";
@@ -115,7 +115,7 @@ public class Security {
      * Returns the operator Object of the signed in operator, "" otherwise.
      *
      * @param request
-     * @return
+     *
      */
     public static Operator signedInOperator(HttpServletRequest request) {
         Operator operator;
@@ -134,7 +134,7 @@ public class Security {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public static ModelAndView redirectHome(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -151,7 +151,7 @@ public class Security {
      * If not signed in, null is returned.
      *
      * @param request
-     * @return
+     *
      */
     public static String getOperatorId(HttpServletRequest request) {
 
@@ -178,7 +178,7 @@ public class Security {
      * If not signed in, null is returned.
      *
      * @param request
-     * @return
+     *
      */
     public static String getSecurityToken(HttpServletRequest request) {
 
@@ -199,7 +199,7 @@ public class Security {
      * contains a domain that is in white list.
      *
      * @param url
-     * @return
+     *
      */
     public static boolean inWhiteListDomain(String url) {
 
@@ -217,7 +217,7 @@ public class Security {
     /**
      * This function returns a new randomized 8-digit password.
      *
-     * @return
+     *
      */
     public static String getNewPassword() {
         String password = "";
@@ -248,7 +248,7 @@ public class Security {
      *
      * @param request
      * @param name
-     * @return
+     *
      */
     public static Object getAttribute(HttpServletRequest request, String name) {
         HttpSession session = request.getSession(false);
@@ -263,7 +263,7 @@ public class Security {
      *
      * @param request
      * @param name
-     * @return
+     *
      */
     public static Boolean nullAttribute(HttpServletRequest request, String name) {
         HttpSession session = request.getSession(false);

@@ -134,7 +134,7 @@ public class ItemServiceImpl implements ItemService {
      * may not be appropiate.
      *
      * @param items
-     * @return
+     *
      */
     @Override
     public List<Item> filterDeactivatedItems(List<Item> items) {

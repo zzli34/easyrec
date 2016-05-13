@@ -36,7 +36,7 @@ public interface StatisticsDAO {
      * Return information about a tenant.
      *
      * @param remoteTenant
-     * @return
+     *
      */
     public TenantStatistic getTenantStatistics(RemoteTenant remoteTenant);
 
@@ -44,7 +44,7 @@ public interface StatisticsDAO {
      * Return information about user statistics for a tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public UserStatistic getUserStatistics(int tenantId);
 
@@ -54,7 +54,7 @@ public interface StatisticsDAO {
      *
      * @param tenantId
      * @param days
-     * @return
+     *
      */
     public UserStatistic getUserStatistics(int tenantId, int days);
 
@@ -62,7 +62,7 @@ public interface StatisticsDAO {
      * Return Information about converstion rate for a tenantd
      *
      * @param tenantId
-     * @return
+     *
      */
     public ConversionStatistic getConversionStatistics(Integer tenantId, Integer buyActionTypeId);
 
@@ -84,7 +84,7 @@ public interface StatisticsDAO {
      * @param to
      * @param actionType
      * @param assocType
-     * @return
+     *
      */
     public HashMap<Integer, HashMap<Integer, Integer>> getActionBundleMap(int tenant, long from, long to,
                                                                           Integer actionType, Integer assocType);
@@ -99,7 +99,7 @@ public interface StatisticsDAO {
      * @param minAssocValue2
      * @param minAssocValue3
      * @param minAssocValue4
-     * @return
+     *
      */
     public RuleMinerStatistic getRuleMinerStatistics(Integer tenantId, Integer minAssocValue1, Integer minAssocValue2,
                                                      Integer minAssocValue3, Integer minAssocValue4);
@@ -108,7 +108,7 @@ public interface StatisticsDAO {
      * Returns the number of actions for the current month
      *
      * @param tenantId
-     * @return
+     *
      */
     public Integer getMonthlyActions(Integer tenantId);
 

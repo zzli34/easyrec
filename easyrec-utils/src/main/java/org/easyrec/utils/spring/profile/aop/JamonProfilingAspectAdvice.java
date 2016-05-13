@@ -162,7 +162,7 @@ public class JamonProfilingAspectAdvice implements DisposableBean, InitializingB
 
     /**
      * @param pjp
-     * @return
+     *
      */
     private String createMonitorName(ProceedingJoinPoint pjp) {
         if (GROUPING_CLASS.equals(grouping)) {

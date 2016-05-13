@@ -50,7 +50,7 @@ public interface RemoteTenantService {
      * Returns Tenant specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public TenantStatistic getTenantStatistics(Integer tenantId);
 
@@ -59,7 +59,7 @@ public interface RemoteTenantService {
      * Returns User specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public UserStatistic getUserStatistics(Integer tenantId);
 
@@ -67,7 +67,7 @@ public interface RemoteTenantService {
      * Returns RuleMiner specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public RuleMinerStatistic getRuleMinerStatistics(Integer tenantId);
 
@@ -76,7 +76,7 @@ public interface RemoteTenantService {
      * Returns Conversion specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public ConversionStatistic getConversionStatistics(Integer tenantId);
 
@@ -85,7 +85,7 @@ public interface RemoteTenantService {
      * Get Assoc specficic Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public HashMap<String, AssocStatistic> getAssocStatistic(Integer tenantId);
 

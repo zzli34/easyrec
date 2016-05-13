@@ -102,7 +102,7 @@ public class Item implements Serializable {
     /**
      * Returns the internal id of the item table
      *
-     * @return
+     *
      */
     @XmlTransient
     @JsonIgnore
@@ -127,7 +127,7 @@ public class Item implements Serializable {
     /**
      * returns the itemid that was set by the user through the REST-API
      *
-     * @return
+     *
      */
     @XmlElement(name = "id")
     public String getItemId() {
@@ -150,7 +150,7 @@ public class Item implements Serializable {
      * return a trimmed decoded item description, if decoding fails the
      * trimmed description is returned.
      *
-     * @return
+     *
      */
     @XmlElement(nillable = true)
     public String getDescription() {
@@ -219,7 +219,7 @@ public class Item implements Serializable {
      * If tenant url is part of item url,
      * return only the relative item image url else return the full item image url.
      *
-     * @return
+     *
      */
     @JsonIgnore
     public String getRelativeImageUrl() {
@@ -251,7 +251,7 @@ public class Item implements Serializable {
      * If tenant url is part of item url,
      * return only the relative item url else return the full item url.
      *
-     * @return
+     *
      */
     @JsonIgnore
     public String getRelativeUrl() {
@@ -279,7 +279,7 @@ public class Item implements Serializable {
     /**
      * Returns the absolut Image Url of an Item (if was set with setRelativeImageUrl
      *
-     * @return
+     *
      */
     @JsonIgnore
     public String getAbsoluteImageUrl() {
@@ -289,7 +289,7 @@ public class Item implements Serializable {
     /**
      * Returns the absolut Url of an Item (if was set with setRelativeUrl
      *
-     * @return
+     *
      */
     @JsonIgnore
     public String getAbsoluteUrl() {
@@ -318,7 +318,6 @@ public class Item implements Serializable {
      * @param itemToType
      * @param assocType
      * @param url
-     * @return 
      */
     public static String getTrackingUrl(Session session, Integer userId, RemoteTenant tenant, Integer itemFrom, Integer itemFromType,
                                         Integer itemTo, Integer itemToType, Integer assocType, String url) {

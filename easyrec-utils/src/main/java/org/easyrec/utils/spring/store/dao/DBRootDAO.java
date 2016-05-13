@@ -39,7 +39,7 @@ public interface DBRootDAO {
      * Checks if the specified database exists.
      *
      * @param databaseName
-     * @return
+     *
      */
     public boolean existsDatabase(String databaseName);
 

@@ -60,28 +60,30 @@ public interface TabularInput {
     /**
      * Returns the column names.
      *
-     * @return
+     *
      */
     public List<String> getColumnNames();
 
     /**
      * Processes the data from the specified reader.
      *
-     * @param reader
+     * @param stream
+     * @param encoding
      */
     public void setSource(InputStream stream, String encoding);
 
     /**
      * Processes the data from the specified file.
      *
-     * @param reader
+     * @param file
+     * @param encoding
      */
     public void setSource(File file, String encoding);
 
     /**
      * Reads all data from the current position on into a List<List<String>>.
      *
-     * @return
+     *
      */
     public List<List<String>> readAll();
 
@@ -92,7 +94,7 @@ public interface TabularInput {
      *
      * @param <T>
      * @param mapper
-     * @return
+     *
      */
     public <T> List<T> readAll(TabularInputRowMapper<T> mapper);
 
@@ -102,21 +104,21 @@ public interface TabularInput {
      * this case the advantage over readAll() is that this method does not have
      * the overhead of creating a List for the whole data set.
      *
-     * @return
+     *
      */
     public void visitAll();
 
     /**
      * Returns true if nextRow() will return another row.
      *
-     * @return
+     *
      */
     public boolean hasNext();
 
     /**
      * Returns the next data row.
      *
-     * @return
+     *
      */
     public List<String> next();
 
@@ -127,7 +129,7 @@ public interface TabularInput {
      *
      * @param <T>
      * @param mapper
-     * @return
+     *
      */
     public <T> T next(TabularInputRowMapper<T> mapper);
 

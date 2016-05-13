@@ -498,7 +498,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
     /**
      * Return true if ruleminer is running.
      *
-     * @return
+     *
      */
     @Override
     public boolean isRunning() {
@@ -508,7 +508,7 @@ public class AssocRuleMiningServiceImpl implements AssocRuleMiningService {
     /**
      * Return the integer id of the current running tenantid.
      *
-     * @return
+     *
      */
     @Override
     public Integer getRunningTenantId() {

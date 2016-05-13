@@ -26,11 +26,11 @@ public @interface PluginParameter {
 
     /**
      * If set, determines the display ordering of the parameter in the admin interface.
-     * @return
+     *
      */
     int displayOrder() default -1;
     /**
-     * @return
+     *
      */
     boolean optional() default false;
 

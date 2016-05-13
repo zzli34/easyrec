@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * meant for use with batch sql functions.
  * <p>
  * The class that can be used to execute an sql comfortably is
- * {@link at.researchstudio.sat.utio.store.service.sqlscript.impl.SqlScriptServiceImpl}. It relies
+ * {@link org.easyrec.utils.spring.store.service.sqlscript.SqlScriptService}. It relies
  * on this class for sql file parsing.
  * </p>
  * <p/>
@@ -73,7 +73,7 @@ public class SqlFileParser {
     /**
      * creates a new parser object for the given file
      *
-     * @param filename
+     * @param sqlScript
      * @throws IllegalArgumentException if the file does not exist
      */
     public SqlFileParser(File sqlScript) {

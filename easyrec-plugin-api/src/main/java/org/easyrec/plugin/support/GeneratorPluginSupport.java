@@ -32,7 +32,7 @@ public abstract class GeneratorPluginSupport<C extends GeneratorConfiguration, S
 
     /**
      * @deprecated  use #getId().toString() instead
-     * @return
+     *
      */
     @Deprecated
     @Override
