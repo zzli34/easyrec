@@ -60,7 +60,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      *
      * @param tenantId
      * @param operatorId
-     * @return
+     *
      */
     public boolean exists(String operatorId, String tenantId);
 
@@ -78,7 +78,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      *
      * @param tenantId
      * @param operatorId
-     * @return 
+     *
      */
     public RemoteTenant get(String operatorId, String tenantId);
 
@@ -87,7 +87,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * with the given tenantid.
      *
      * @param tenantId
-     * @return 
+     *
      */
     public RemoteTenant get(Integer tenantId);
 
@@ -96,7 +96,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * that is retrieved from the given request Object.
      *
      * @param request
-     * @return
+     *
      */
     public RemoteTenant get(HttpServletRequest request);
 
@@ -114,7 +114,7 @@ public interface RemoteTenantDAO extends BasicDAO {
     /**
      * Get a list of all tenants
      *
-     * @return
+     *
      */
     public List<RemoteTenant> getAllTenants();
 
@@ -123,7 +123,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      *
      * @param offset
      * @param limit
-     * @return
+     *
      */
     public List<RemoteTenant> getTenants(int offset, int limit);
 
@@ -139,7 +139,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * @param filterDemoTenants set this parameter to true if you want to filter out the auto generated
      *       Demo Tenants you will get the same amount of items but none of them will be a Demo Tenant.
       *      Set it to false to get the same response as you would get from filterDemoTenants.
-     * @return
+     *
      */
     public List<RemoteTenant> getTenants(int offset, int limit,boolean filterDemoTenants);
     
@@ -152,7 +152,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * @param limit
      * @param filterDemoTenants
      * @param searchString
-     * @return 
+     *
      */
     public List<RemoteTenant> getTenants(int offset, int limit,boolean filterDemoTenants, String searchString);
 
@@ -160,7 +160,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * Get a list of tenants that are assigned to an operator
      *
      * @param operatorId
-     * @return
+     *
      */
     public List<RemoteTenant> getTenantsFromOperator(String operatorId);
 
@@ -183,7 +183,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * tenant should match.
      * @param propertyKey
      * @param executionTime
-     * @return 
+     *
      */
     public List<RemoteTenant> getTenantsByExecutionTime(String propertyKey, String executionTime);
     
@@ -192,7 +192,7 @@ public interface RemoteTenantDAO extends BasicDAO {
      * 
      * @param filterDemoTenants
      * @param stringId
-     * @return 
+     *
      */
     public int count(boolean filterDemoTenants, String stringId);
 }

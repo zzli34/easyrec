@@ -48,7 +48,7 @@ public interface LoaderDAO {
      * This function returns the current version of easyrec,
      * depending on the presence of a version table
      *
-     * @return
+     *
      */
     public Float checkVersion() throws Exception;
 

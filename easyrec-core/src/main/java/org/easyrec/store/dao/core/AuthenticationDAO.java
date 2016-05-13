@@ -63,7 +63,7 @@ public interface AuthenticationDAO {
      *
      * @param tenantId
      * @param domain
-     * @return
+     *
      */
     public int insertDomainURLForTenant(Integer tenantId, String domain);
 

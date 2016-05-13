@@ -28,7 +28,7 @@ public class CollectionUtils
   /**
    * Returns 0 if the specified offset is null or negative.
    * @param offset
-   * @return
+   *
    */
   public static int getSafeOffset(final Integer offset) {
     return (offset == null || offset < 0)?0:offset;

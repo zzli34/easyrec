@@ -42,7 +42,7 @@ public interface ArchiveDAO {
      * An archive contains MAX_TABLE_RECORDS. If the archive reached this
      * limit, a new archive with an autoincrement number will be created.
      *
-     * @return
+     *
      */
     public String getActualArchiveTableName();
 
@@ -68,14 +68,14 @@ public interface ArchiveDAO {
      * where is an autoincrementing number.
      *
      * @param actualArchiveTableName
-     * @return
+     *
      */
     public String generateNewArchive(String actualArchiveTableName);
 
     /**
      * Returns the number of records in the archive
      *
-     * @return
+     *
      */
     public Integer getArchiveSize(String tablename);
 
@@ -83,7 +83,7 @@ public interface ArchiveDAO {
      * Returns true, if archive table is not capable of the number of actions.
      *
      * @param actionsToAdd
-     * @return
+     *
      */
     public boolean isArchiveFull(String tablename, Integer actionsToAdd);
 

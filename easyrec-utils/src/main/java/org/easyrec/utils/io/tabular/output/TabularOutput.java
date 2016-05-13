@@ -75,7 +75,7 @@ public interface TabularOutput {
     /**
      * Returns the number of columns that this table is configured to have.
      *
-     * @return
+     *
      */
     public int getColumnCount();
 

@@ -56,7 +56,7 @@ public class ActionToRatingAggregator {
      * @param actionsForUserItemPair
      * @param actionMapping
      * @param aggregateType
-     * @return
+     *
      */
     public static RatingVO<Integer, String> getRating(
             Collection<ActionVO<Integer, String>> actionsForTenantUserItemTriple,

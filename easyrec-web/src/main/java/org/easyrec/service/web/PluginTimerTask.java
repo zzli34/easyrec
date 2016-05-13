@@ -115,7 +115,7 @@ public class PluginTimerTask {
      * This functions returns the time when the plugins have to be executed for the first time for a given time String.
      *
      * @param exeTime: e.g. 23:45
-     * @return
+     *
      */
     private Date getExecutionTime(String exeTime) {
         try {

@@ -139,7 +139,7 @@ public abstract class AbstractTabularInput implements TabularInput {
     /**
      * Reads all data from the current position on into a List<List<String>>.
      *
-     * @return
+     *
      */
     public List<List<String>> readAll() {
         List<List<String>> data = new ArrayList<List<String>>();
@@ -165,7 +165,7 @@ public abstract class AbstractTabularInput implements TabularInput {
      * Reads all data from the current position but does not return anything.
      * This method is only useful in connection with registering observers.
      *
-     * @return
+     *
      */
     public void visitAll() {
         while (hasNext()) {

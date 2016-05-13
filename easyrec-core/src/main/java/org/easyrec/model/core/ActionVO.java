@@ -266,7 +266,6 @@ public class ActionVO<I extends Comparable<I>, T extends Comparable<T>>
      * Implemetation of the <code>Cloneable</code> interface
      *
      * @param obj
-     * @return
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -329,7 +328,6 @@ public class ActionVO<I extends Comparable<I>, T extends Comparable<T>>
      * Checks whether two <code>Action</code> objects point to the same item
      *
      * @param action
-     * @return
      */
     public boolean hasSameBelongingItem(ActionVO<I,T> action) {
         return isBelongingToItem(action.getItem());

@@ -407,7 +407,7 @@ public interface ShopRecommenderService
    * @param requestedItemType
    * @param numberOfRecommendations
    * @param offset          an optional starting index for the result (to support simplem paging)
-   * @return
+   *
    * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
    */
   public Recommendation itemsBasedOnActionHistory(Integer tenantId, String userId, Session session,
@@ -428,7 +428,7 @@ public interface ShopRecommenderService
    * @param numberOfLastActionsConsidered
    * @param numberOfRecommendations
    * @param offset          an optional starting index for the result (to support simplem paging)
-   * @return
+   *
    * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
    */
   public Recommendation actionHistory(Integer tenantId, String userId, Session session,
@@ -447,7 +447,7 @@ public interface ShopRecommenderService
    * @param assocType
    * @param requestedItemType
    * @param numberOfRecommendations
-   * @return
+   *
    * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
    */
   public Recommendation itemsForUser(Integer tenantId, String userId, Session session,
@@ -525,7 +525,7 @@ public interface ShopRecommenderService
    * @param requestedItemType
    * @param session
    * @param offset          an optional starting index for the result (to support simplem paging)
-   * @return
+   *
    * @throws org.easyrec.rest.nodomain.exception.EasyRecRestException
    */
   public Recommendation relatedItems(Integer tenantId, String assocType, String userId, String itemId, String itemType,

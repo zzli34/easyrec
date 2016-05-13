@@ -88,7 +88,7 @@ public class PageStringGenerator {
      *
      * @param itemCount
      * @param selectedSiteNumber
-     * @return
+     *
      */
     public String getPageMenuString(int itemCount, int selectedSiteNumber) {
 

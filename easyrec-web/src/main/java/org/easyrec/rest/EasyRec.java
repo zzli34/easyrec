@@ -1854,7 +1854,7 @@ public class EasyRec {
      * @param clusterParent
      * @param callback
      *
-     * @param apiKey @return
+     * @param apiKey
      * @throws EasyRecException
      */
     @GET
@@ -1925,7 +1925,7 @@ public class EasyRec {
      * @param callback
      * @param apiKey
      * @param forceRun
-     * @return 
+     *
      * @throws EasyRecException
      */
 

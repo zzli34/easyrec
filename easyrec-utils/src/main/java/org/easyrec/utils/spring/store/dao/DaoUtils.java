@@ -404,7 +404,7 @@ public class DaoUtils {
      *
      * @param values
      * @param quoteValues if true, values are quoted.
-     * @return
+     *
      */
     public static String createSqlList(Iterable values, boolean quoteValues) {
         if (values == null || !values.iterator().hasNext()) {
@@ -435,7 +435,7 @@ public class DaoUtils {
      *
      * @param values
      * @param quoteValues f true, values are quoted.
-     * @return
+     *
      */
     public static String createSqlList(Object[] values, boolean quoteValues) {
         if (values == null || values.length == 0) {

@@ -68,7 +68,7 @@ public class MessageBlock {
      * A messageblock may be displayed to a user after filling in a form
      * and list the error he has made.
      *
-     * @return
+     *
      */
     public static ModelAndView create(ModelAndView mav, List<Message> messages, String action, String title) {
 
@@ -85,7 +85,7 @@ public class MessageBlock {
      * and list the error he has made.
      *
      * @param mav
-     * @return
+     *
      */
     public static ModelAndView create(ModelAndView mav, String viewName, List<Message> messages, String action,
                                       String title) {
@@ -103,7 +103,7 @@ public class MessageBlock {
      * A messageblock may be displayed to a user after filling in a form
      * and list the error he has made.
      *
-     * @return
+     *
      */
     public static ModelAndView createSingle(ModelAndView mav, Message message, String action, String title) {
 

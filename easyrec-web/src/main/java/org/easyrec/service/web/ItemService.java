@@ -76,7 +76,7 @@ public interface ItemService {
      * Filters a given list of items and returns only activated items.
      *
      * @param items
-     * @return
+     *
      */
     public List<Item> filterDeactivatedItems(List<Item> items);
 

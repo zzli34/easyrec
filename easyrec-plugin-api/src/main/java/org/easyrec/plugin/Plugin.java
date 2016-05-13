@@ -23,7 +23,7 @@ public interface Plugin {
     /**
      * Returns the plugin's name as it should be displayed in UIs etc.
      *
-     * @return
+     *
      */
     public String getDisplayName();
 
@@ -39,7 +39,7 @@ public interface Plugin {
      * Fetch the delegate used to (un)register observers that monitor the
      * plugin's lifecycle state.
      *
-     * @return
+     *
      */
     public ObserverRegistry<Plugin> getPluginObserverRegistry();
 
@@ -71,7 +71,7 @@ public interface Plugin {
     /**
      * Retrieves the plugin lifecycle phase.
      *
-     * @return
+     *
      */
     public LifecyclePhase getLifecyclePhase();
 

@@ -56,7 +56,7 @@ public interface TableCreatingDAO {
     /**
      * checks if the table (name retrieved from <code>getDefaultTableName()</code> exists.
      *
-     * @return
+     *
      */
     public boolean existsTable();
 }

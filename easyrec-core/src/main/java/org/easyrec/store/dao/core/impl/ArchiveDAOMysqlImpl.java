@@ -58,7 +58,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
      * An archive contains MAX_TABLE_RECORDS. If the archive reached this
      * limit, a new archive with an autoincrement number will be created.
      *
-     * @return
+     *
      */
     @Override
     public String getActualArchiveTableName() {
@@ -88,7 +88,7 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
      * where i is an autoincrementing number.
      *
      * @param actualArchiveTableName
-     * @return
+     *
      */
     @Override
     public String generateNewArchive(String actualArchiveTableName) {

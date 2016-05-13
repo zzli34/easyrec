@@ -38,21 +38,21 @@ public interface BasicDAO {
     /**
      * This property return the name auf the DB.
      *
-     * @return
+     *
      */
     public String getDbName();
 
     /**
      * This property return the user name auf the DB.
      *
-     * @return
+     *
      */
     public String getDbUserName();
 
     /**
      * This function returns the number of records in the Table.
      *
-     * @return
+     *
      */
     public int count();
 
@@ -60,7 +60,7 @@ public interface BasicDAO {
      * This function returns true if a record with the given Id exists.
      *
      * @param id
-     * @return
+     *
      */
     public boolean exists(String id);
 

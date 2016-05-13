@@ -195,7 +195,7 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
      * Returns Tenant specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public TenantStatistic getTenantStatistics(Integer tenantId) {
 
@@ -208,7 +208,7 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
      * Returns User specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public UserStatistic getUserStatistics(Integer tenantId) {
         RemoteTenant r = remoteTenantDAO.get(tenantId);
@@ -219,7 +219,7 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
      * Returns Conversion specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public ConversionStatistic getConversionStatistics(Integer tenantId) {
         RemoteTenant r = remoteTenantDAO.get(tenantId);
@@ -231,7 +231,7 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
      * Returns RuleMiner specific Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public RuleMinerStatistic getRuleMinerStatistics(Integer tenantId) {
         RemoteTenant r = remoteTenantDAO.get(tenantId);
@@ -242,7 +242,7 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
      * Get Assoc specficic Statistics for the given Tenant
      *
      * @param tenantId
-     * @return
+     *
      */
     public HashMap<String, AssocStatistic> getAssocStatistic(Integer tenantId) {
         RemoteTenant r = remoteTenantDAO.get(tenantId);

@@ -45,7 +45,7 @@ public class AssocStatistic implements Serializable {
     /**
      * Get number of actions for that assocType
      *
-     * @return
+     *
      */
     public Integer getActions() {
         return actions;
@@ -58,7 +58,7 @@ public class AssocStatistic implements Serializable {
     /**
      * Get average Number of Rules per Item for that assoc Type
      *
-     * @return
+     *
      */
     public Integer getAverageNumberOfRulesPerItem() {
         return averageNumberOfRulesPerItem;
@@ -71,7 +71,7 @@ public class AssocStatistic implements Serializable {
     /**
      * Get number of Items for that assoc Type
      *
-     * @return
+     *
      */
     public Integer getItemsWithRules() {
         return itemsWithRules;
@@ -84,7 +84,7 @@ public class AssocStatistic implements Serializable {
     /**
      * Get Number of total Rules for that assoc Type
      *
-     * @return
+     *
      */
     public Integer getRules() {
         return rules;
@@ -97,7 +97,7 @@ public class AssocStatistic implements Serializable {
     /**
      * Get standard deviation of rules for an item
      *
-     * @return
+     *
      */
     public Integer getStdNumberOfRulesPerItem() {
         return stdNumberOfRulesPerItem;

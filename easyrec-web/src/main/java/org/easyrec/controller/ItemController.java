@@ -96,7 +96,7 @@ public class ItemController extends MultiActionController {
     /**
      * @param request
      * @param action
-     * @return
+     *
      */
     private ModelAndView security(HttpServletRequest request, String action) {
 
@@ -120,7 +120,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView activate(HttpServletRequest request, HttpServletResponse response) {
 
@@ -142,7 +142,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView deactivate(HttpServletRequest request, HttpServletResponse response) {
 
@@ -161,7 +161,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
 
@@ -184,7 +184,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView viewitemdetails(HttpServletRequest request, HttpServletResponse response) {
 
@@ -237,7 +237,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView viewitemstatistics(HttpServletRequest request, HttpServletResponse response) {
 
@@ -264,7 +264,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
 
@@ -282,7 +282,7 @@ public class ItemController extends MultiActionController {
      *
      * @param request
      * @param response
-     * @return
+     *
      */
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
 

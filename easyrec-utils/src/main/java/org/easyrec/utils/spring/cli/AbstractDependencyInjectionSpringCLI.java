@@ -52,7 +52,7 @@ public abstract class AbstractDependencyInjectionSpringCLI extends AbstractCLI {
     /**
      * returns the location to the spring.xml files
      *
-     * @return
+     *
      */
     protected abstract String[] getConfigLocations();
 }

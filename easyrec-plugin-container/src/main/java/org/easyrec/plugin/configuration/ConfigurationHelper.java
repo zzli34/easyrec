@@ -114,7 +114,7 @@ public class ConfigurationHelper {
      * <code>toString()</code> method is called. If the value is <code>null</code>, <code>null</code> is returned.
      *
      * @param parameterName
-     * @return
+     *
      * @throws IllegalArgumentException if no parameter of given name exists.
      */
     public String getParameterStringValue(String parameterName) {
@@ -136,7 +136,7 @@ public class ConfigurationHelper {
      * Returns the value for the specified parameter name.
      *
      * @param parameterName
-     * @return
+     *
      */
     public Object getParameterValue(String parameterName) {
         return this.configurationWrapper.getPropertyValue(parameterName);
@@ -145,7 +145,7 @@ public class ConfigurationHelper {
     /**
      * Returns all values as a {@link PropertyValues} object, using no property key prefix.
      *
-     * @return
+     *
      */
     public PropertyValues getValues() {
         return getValues(null);
@@ -155,7 +155,7 @@ public class ConfigurationHelper {
      * Same as getValues(), but property keys are prefixed with the specified prefix.
      *
      * @param propertyKeyPrefix
-     * @return
+     *
      */
     public PropertyValues getValues(String propertyKeyPrefix) {
         if (propertyKeyPrefix == null) {
@@ -176,7 +176,7 @@ public class ConfigurationHelper {
     /**
      * Delegates the call to <code>getValuesAsProperties(null,null)</code>.
      *
-     * @return
+     *
      */
     public Properties getValuesAsProperties() {
         return getValuesAsProperties(null, null);
@@ -186,7 +186,7 @@ public class ConfigurationHelper {
      * Delegates the call to <code>getValuesAsProperties(props,null)</code>
      *
      * @param props
-     * @return
+     *
      */
     public Properties getValuesAsProperties(Properties props) {
         return getValuesAsProperties(props, null);
@@ -198,7 +198,7 @@ public class ConfigurationHelper {
      *
      * @param props             properties to populate. New Properties are created if null.
      * @param propertyKeyPrefix prefix for property keys. Use null to omit prefix.
-     * @return
+     *
      */
     public Properties getValuesAsProperties(Properties props, String propertyKeyPrefix) {
         if (props == null) {
@@ -222,7 +222,7 @@ public class ConfigurationHelper {
      * Delegates the call to <code>getValuesAsProperties(null,propertyKeyPrefix)</code>
      *
      * @param propertyKeyPrefix
-     * @return
+     *
      */
     public Properties getValuesAsProperties(String propertyKeyPrefix) {
         return getValuesAsProperties(null, propertyKeyPrefix);
@@ -233,7 +233,7 @@ public class ConfigurationHelper {
      * if the respective property is not present.
      *
      * @param values
-     * @return
+     *
      */
     public BindingResult setValues(PropertyValues values) {
         this.dataBinder.bind(values);
@@ -253,7 +253,7 @@ public class ConfigurationHelper {
      *
      * @param properties
      * @param propertyKeyPrefix
-     * @return
+     *
      */
     public BindingResult setValues(Properties properties, String propertyKeyPrefix) {
         if (propertyKeyPrefix == null) {
@@ -272,7 +272,7 @@ public class ConfigurationHelper {
      * Returns the PluginParameter annotation for the specified name.
      *
      * @param parameterName
-     * @return
+     *
      */
     protected PluginParameter getParameterAnnotation(String parameterName) {
         Field field = getParameterField(parameterName);
@@ -285,7 +285,7 @@ public class ConfigurationHelper {
      * {@link IllegalArgumentException} is raised.
      *
      * @param parameterName
-     * @return
+     *
      * @throws IllegalArgumentException if no parameter of the specified name is found.
      */
     protected Field getParameterField(String parameterName) {

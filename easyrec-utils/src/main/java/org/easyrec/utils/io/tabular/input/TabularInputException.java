@@ -54,7 +54,9 @@ public class TabularInputException extends RuntimeException {
     }
 
     /**
-     * @param message
+     * @param rowIndex
+     * @param colIndex
+     *
      */
     public TabularInputException(int rowIndex, int colIndex) {
         super("Error at row #" + rowIndex + " column #" + colIndex);

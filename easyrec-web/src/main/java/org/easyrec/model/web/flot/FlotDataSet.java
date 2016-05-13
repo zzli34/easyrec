@@ -35,7 +35,7 @@ public class FlotDataSet {
     /**
      * Creates a JSON formated return String containing the plot Data
      *
-     * @return
+     *
      */
     @Override
     public String toString() {

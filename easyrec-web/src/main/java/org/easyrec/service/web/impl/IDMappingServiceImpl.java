@@ -318,7 +318,7 @@ public class IDMappingServiceImpl implements IDMappingService {
      * @param userId
      * @param session
      * @param numberOfRecommendations
-     * @return 
+     *
      */
     @Override
     public List<Item> mapRecommendedItems(
@@ -395,7 +395,7 @@ public class IDMappingServiceImpl implements IDMappingService {
      * @param remoteTenant
      * @param session
      * @param numberOfRecommendations
-     * @return 
+     *
      */
     @Override
     public List<Item> mapRankedItems(List<RankedItemVO<Integer, String>> rankedItems,
@@ -521,7 +521,7 @@ public class IDMappingServiceImpl implements IDMappingService {
      * @param remoteTenant
      * @param session
      * @param numberOfRecommendations
-     * @return 
+     *
      */
     @Override
     public List<Item> mapClusterItems(List<ItemVO<Integer, Integer>> clusterItems,

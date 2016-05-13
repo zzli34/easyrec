@@ -66,7 +66,7 @@ public interface OperatorDAO extends BasicDAO {
      * is allowed to communicate with the recommender.
      *
      * @param operatorId
-     * @return
+     *
      */
     @Override
     public boolean exists(String operatorId);
@@ -103,7 +103,7 @@ public interface OperatorDAO extends BasicDAO {
      * @param address
      * @param apiKey
      * @param ip
-     * @return
+     *
      */
     public boolean update(String operatorId, String firstName, String lastName, String email, String phone,
                           String company, String address, String apiKey, String ip);
@@ -132,7 +132,7 @@ public interface OperatorDAO extends BasicDAO {
      * A token is genrated if an operator signs in and stays valid until signed out.
      *
      * @param token
-     * @return
+     *
      */
     public Operator getOperatorFromToken(String token);
 
@@ -168,7 +168,7 @@ public interface OperatorDAO extends BasicDAO {
      * tenants.
      *
      * @param operatorId
-     * @return
+     *
      */
     public boolean hasTenants(String operatorId);
 
@@ -183,7 +183,7 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param apiKey
-     * @return 
+     *
      */
     public boolean activate(String operatorId, String apiKey);
 
@@ -191,7 +191,7 @@ public interface OperatorDAO extends BasicDAO {
      * This function deactivates an Operator.
      *
      * @param operatorId
-     * @return 
+     *
      */
     public boolean deactivate(String operatorId);
 
@@ -202,7 +202,7 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param password
-     * @return 
+     *
      */
     public Operator signIn(String operatorId, String password);
 
@@ -229,14 +229,14 @@ public interface OperatorDAO extends BasicDAO {
      *
      * @param operatorId
      * @param password
-     * @return 
+     *
      */
     public boolean correctPassword(String operatorId, String password);
 
     /**
      * gets a Token based on the number of actions.
      *
-     * @return
+     *
      */
     public int getToken();
 
@@ -244,7 +244,7 @@ public interface OperatorDAO extends BasicDAO {
      * 
      * 
      * @param operatorId
-     * @return 
+     *
      */
     public int count(String operatorId);
 
