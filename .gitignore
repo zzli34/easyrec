@@ -176,6 +176,7 @@
 /easyrec-plugin-container/nbactions.xml
 /easyrec-plugins/easyrec-plugins-arm/nbactions.xml
 /easyrec-plugins/easyrec-plugins-profile-solr/nbactions.xml
+/easyrec-plugins/easyrec-plugins-profile-solr/dependency-reduced-pom.xml
 /easyrec-plugins/easyrec-plugins-profile-aggregator/nbactions.xml
 /easyrec-testutils/nbactions.xml
 /easyrec-utils/nbactions.xml
