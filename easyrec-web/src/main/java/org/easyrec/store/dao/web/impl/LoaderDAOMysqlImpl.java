@@ -215,7 +215,7 @@ public class LoaderDAOMysqlImpl extends JdbcDaoSupport
         
         logger.info("checking actionType table colums...");
         final HashMap<String, Integer> aTcolumnList = new HashMap<>();
-        getJdbcTemplate().query("SHOW COLUMNS FROM actionType", new RowCallbackHandler() {
+        getJdbcTemplate().query("SHOW COLUMNS FROM actiontype", new RowCallbackHandler() {
             public void processRow(ResultSet resultSet) throws SQLException {
                 String column = resultSet.getString("Field");
                 aTcolumnList.put(column, 1);
