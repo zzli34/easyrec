@@ -21,7 +21,7 @@
 <div class="menu_admin">
     <div style="position:absolute; left:13px; top:25px; padding: 10px;">
         <a href="${webappPath}/home">
-            <span class="logo">easyrec<sup style="font-size: 9px">BETA</sup> :: Administration</span>
+            <span class="logo">easyrec :: Administration</span>
         </a>
     </div>
 

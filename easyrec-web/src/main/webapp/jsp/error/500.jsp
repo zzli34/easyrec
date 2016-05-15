@@ -19,7 +19,7 @@
     <div class="menu">
         <div style="padding: 10px; position: absolute; left: 13px; top: 25px;">
             <a href="<%=request.getContextPath()%>/">
-                <span class="logo">easyrec<sup style="font-size: 9px">BETA</sup></span>
+                <span class="logo">easyrec</span>
             </a>
         </div>
     </div>
