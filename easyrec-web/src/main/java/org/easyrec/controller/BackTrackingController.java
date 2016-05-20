@@ -17,6 +17,7 @@
  */
 package org.easyrec.controller;
 
+import org.easyrec.store.dao.core.types.ItemTypeDAO;
 import org.easyrec.store.dao.web.BackTrackingDAO;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -52,10 +53,15 @@ public class BackTrackingController extends AbstractController {
 
 
     private BackTrackingDAO backTrackingDAO;
+    private ItemTypeDAO itemTypeDAO;
 
     public void setBackTrackingDAO(BackTrackingDAO backTrackingDAO) {
         this.backTrackingDAO = backTrackingDAO;
     }
+
+    public void setItemTypeDAO(final ItemTypeDAO itemTypeDAO) { this.itemTypeDAO = itemTypeDAO; }
+
+    public ItemTypeDAO getItemTypeDAO() { return itemTypeDAO; }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
@@ -77,11 +83,19 @@ public class BackTrackingController extends AbstractController {
         try {
             tenantId = Integer.parseInt(request.getParameter("t"));
             itemFromId = Integer.parseInt(request.getParameter("f"));
-            itemFromType = Integer.parseInt(request.getParameter("ft"));
             itemToId = Integer.parseInt(request.getParameter("i"));
-            itemToType = Integer.parseInt(request.getParameter("it"));
             recType = Integer.parseInt(request.getParameter("a"));
-
+            //handle old backtracking calls gracefully:
+            String itemFromTypeString = request.getParameter("ft");
+            String itemToTypeString = request.getParameter("it");
+            //if the parameters aren't present, assume item type ITEM:
+            if (itemFromTypeString == null || itemToTypeString == null){
+                itemFromType = itemTypeDAO.getIdOfType(tenantId, "ITEM");
+                itemToType = itemTypeDAO.getIdOfType(tenantId, "ITEM");
+            } else {
+                itemFromType = Integer.parseInt(itemFromTypeString);
+                itemToType = Integer.parseInt(itemToTypeString);
+            }
             backTrackingDAO.track(userId, tenantId, itemFromId, itemFromType, itemToId, itemToType, recType);
         } catch (Exception e) {
             logger.warn("error storing tracking information", e);
