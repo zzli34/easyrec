@@ -166,7 +166,7 @@ public class LogEntryDAOMysqlImpl extends AbstractTableCreatingDAOImpl implement
 
 
         getLogEntries = new GetLogEntriesStatement(dataSource, pluginRegistry,
-                "SELECT * FROM plugin_log ORDER BY startDate DESC, id DESC LIMIT ?, ?");
+                "SELECT * FROM plugin_log ORDER BY endDate DESC, id DESC LIMIT ?, ?");
         getLogEntries.declareParameter(new SqlParameter("offset", Types.INTEGER));
         getLogEntries.declareParameter(new SqlParameter("limit", Types.INTEGER));
         getLogEntries.compile();
