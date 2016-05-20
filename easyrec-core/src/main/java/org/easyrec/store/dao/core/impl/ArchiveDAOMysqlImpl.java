@@ -20,6 +20,7 @@ package org.easyrec.store.dao.core.impl;
 
 import com.google.common.base.Strings;
 import org.easyrec.store.dao.core.ArchiveDAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
@@ -70,16 +71,22 @@ public class ArchiveDAOMysqlImpl extends JdbcDaoSupport implements ArchiveDAO {
             try {
                 actualArchiveTableName = (String) getJdbcTemplate()
                         .queryForObject("SHOW TABLES LIKE 'actionarch" + i + "'", String.class);
+            } catch (EmptyResultDataAccessException e){
+                logger.debug("ArchiveDAO did not find archive table " + i);
+                actualArchiveTableName = "";
             } catch (Exception e) {
-                logger.warn("ArchiveDAO stopped looking for archive tables at index " + i);
+                logger.warn("ArchiveDAO encountered an error while checking archive table " + i, e);
                 actualArchiveTableName = "";
             }
 
-            if (Strings.isNullOrEmpty(actualArchiveTableName))
+            if (Strings.isNullOrEmpty(actualArchiveTableName)) {
+                logger.debug("using archive table " + oldArchiveTableName);
                 return oldArchiveTableName;
-            else
+            } else {
                 oldArchiveTableName = actualArchiveTableName;
+            }
         }
+        logger.info("ArchiveDAO did not find an archive table name");
         return null;
     }
 
