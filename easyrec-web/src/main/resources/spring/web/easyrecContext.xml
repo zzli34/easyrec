@@ -183,6 +183,7 @@
     <!-- Tracking -->
     <bean name="backTrackingController" class="org.easyrec.controller.BackTrackingController">
         <property name="backTrackingDAO" ref="backtrackingDAO"/>
+        <property name="itemTypeDAO" ref="itemTypeDAO" />
     </bean>
 
     <bean id="clusterManagerController" class="org.easyrec.controller.clusterManager.ClusterManagerController">
