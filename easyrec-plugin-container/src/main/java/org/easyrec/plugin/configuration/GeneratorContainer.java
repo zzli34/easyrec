@@ -11,15 +11,16 @@ import org.easyrec.model.plugin.NamedConfiguration;
 import org.easyrec.plugin.container.PluginRegistry;
 import org.easyrec.plugin.generator.Generator;
 import org.easyrec.plugin.generator.GeneratorConfiguration;
+import org.easyrec.plugin.generator.RunConditionEnabled;
 import org.easyrec.plugin.stats.GeneratorStatistics;
 import org.easyrec.plugin.stats.StatisticsConstants;
 import org.easyrec.store.dao.core.types.AssocTypeDAO;
 import org.easyrec.store.dao.plugin.LogEntryDAO;
 import org.easyrec.store.dao.plugin.NamedConfigurationDAO;
+import org.easyrec.utils.spring.profile.Stopwatch;
 
 import java.util.Date;
 import java.util.List;
-import org.easyrec.plugin.generator.RunConditionEnabled;
 
 public class GeneratorContainer {
 
@@ -67,7 +68,11 @@ public class GeneratorContainer {
         Preconditions.checkNotNull(namedConfiguration.getName());
         Preconditions.checkNotNull(namedConfiguration.getPluginId());
         Preconditions.checkNotNull(writeLog);
-
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.start();
+        logger.info("considering to run generator " + namedConfiguration.getPluginId().getUri() + " for assoc type " +
+                      namedConfiguration.getAssocTypeId() + " for tenant " + namedConfiguration.getTenantId() + " " +
+                      " [time since start of method: " + stopwatch.timePassed()+ "]");
         Generator<GeneratorConfiguration, GeneratorStatistics> generator =
                 registry.getGenerators().get(namedConfiguration.getPluginId());
         GeneratorConfiguration configuration = namedConfiguration.getConfiguration();
@@ -78,17 +83,23 @@ public class GeneratorContainer {
         
         boolean doRun = true;
         if (!forceRun) {
+            logger.debug("generator run not forced.");
             if (generator instanceof RunConditionEnabled) {
-
+                logger.debug("checking run condition");
                 // returns the newest entry for that tenant and assocType
                 List<LogEntry> lastRun = logEntryDAO.getLogEntriesForTenant(namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId(), 0, 1);
                 if ((lastRun != null) && (!lastRun.isEmpty())) {
                     LogEntry le = lastRun.get(0);
                     doRun = ((RunConditionEnabled) generator).evaluateRuncondition(le.getStartDate());
                 }
+                logger.debug("run condition checked. dorRun="+doRun + " [time since start of method: " + stopwatch
+                  .timePassed()+ "]");
             }
         }
         if (doRun) {
+            logger.info("Running generator " + namedConfiguration.getPluginId().getUri() + " for tenant " +
+                          namedConfiguration.getTenantId()+ " [time since start of method: " + stopwatch
+              .timePassed()+ "]");
             LogEntry logEntry = new LogEntry(namedConfiguration.getTenantId(), namedConfiguration.getPluginId(), new Date(),
                     namedConfiguration.getAssocTypeId(), configuration);
             GeneratorStatistics statistics;
@@ -107,10 +118,10 @@ public class GeneratorContainer {
                 logger.error(
                         String.format("Running plugin %s with configuration \"%s\" for tenant %d with assocType %d failed",
                                 namedConfiguration.getPluginId(), namedConfiguration.getName(),
-                                namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId()), e);
+                                namedConfiguration.getTenantId(), namedConfiguration.getAssocTypeId())+ " [time since start of method: " + stopwatch
+                          .timePassed()+ "]", e);
                 statistics = new StatisticsConstants.ExecutionFailedStatistics(e);
             }
-
             boolean doWriteLog = writeLog.apply(statistics);
 
             logEntry.setStatistics(statistics);
@@ -122,10 +133,13 @@ public class GeneratorContainer {
                 logEntryDAO.endEntry(logEntry);
             } else if (!writeLogLast)
                 logEntryDAO.deleteEntry(logEntry);
-
+            logger.info("Finished running generator " + namedConfiguration.getPluginId().getUri() + " for tenant " +
+                          namedConfiguration.getTenantId()+ " [time since start of method: " + stopwatch
+              .timePassed()+ "]");
             return logEntry;
         } else {
-            logger.info("Nothing new since last run." + namedConfiguration.getPluginId().getUri() + " Skipping calculation for tenant " + namedConfiguration.getTenantId());
+            logger.info("Nothing new since last run." + namedConfiguration.getPluginId().getUri() + " Skipping calculation for tenant " + namedConfiguration.getTenantId()+ " [time since start of method: " + stopwatch
+              .timePassed()+ "]");
            return null; 
         }
         
